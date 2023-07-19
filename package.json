@@ -1,0 +1,43 @@
+{
+  "name": "deliverit-back",
+  "version": "1.0.0",
+  "description": "delivery app",
+  "main": "server.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.ts",
+    "dev": "node server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julianbesteiro/deliverit-back.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/julianbesteiro/deliverit-back/issues"
+  },
+  "homepage": "https://github.com/julianbesteiro/deliverit-back#readme",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "bulma": "^0.9.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.4",
+    "dotenv": "^10.0.0",
+    "express": "~4.16.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.5.0",
+    "mongoose": "^7.1.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "qs": "^6.10.1"
+  }
+}
