@@ -25,4 +25,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: facundoinza/deliverit-back:${{ github.sha }}
+          tags: facundoinza/deliverit-back:v1.0.0
