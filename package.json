@@ -1,6 +1,6 @@
 {
   "name": "deliverit-back",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "delivery app",
   "main": "server.js",
   "directories": {
@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node server.ts",
-    "dev": "node server.ts",
+    "start": "ts-node server.mjs",
+    "dev": "node server.mjs",
     "build": "tsc"
   },
   "repository": {
