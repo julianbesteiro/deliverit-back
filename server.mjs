@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 
 const app = express();
 
@@ -8,7 +8,7 @@ app.use(express.json({ limit: "50mb" }));
 // Your router
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => res.send("hola"));
+router.get("/", (req, res) => res.send("hola"));
 
 // Mount the router on a specific path (e.g., "/api")
 app.use("/api", router);
