@@ -13,7 +13,7 @@ services:
     #   - mongodb
 
   deliverit-front:
-    image: facundoinza/deliverit-front:dd456a37d9fab4693d1cf064ee509ce028a72ff3
+    image: facundoinza/deliverit-front:v1.0.0
 
     ports:
       - "3001:3000"
