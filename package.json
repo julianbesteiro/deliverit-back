@@ -8,9 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node server.mjs",
-    "dev": "node server.mjs",
-    "build": "tsc"
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,12 @@
   "homepage": "https://github.com/julianbesteiro/deliverit-back#readme",
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "eslint": "^8.45.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
@@ -40,7 +47,6 @@
     "mongodb": "^5.5.0",
     "mongoose": "^7.1.1",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.22",
     "qs": "^6.10.1"
   }
 }
