@@ -52,3 +52,82 @@ git tag [tag name]
 git push –tags -u origin [branch name]
 
 If needed, git branches named “release” can be used in the development process.
+
+
+----------------------------------------------------------------------------------
+
+
+# Project Creation Process
+
+## Back end
+
+The back-end part of the project, named **deliverit-back**, uses Express, NodeJs, Typescript, and configuration files necessary for the application to work with Docker.
+
+The basic steps for its construction were as follows:
+
+1. Create an empty repository on Github.
+
+2. Clone the repository to the local computer.
+
+3. Manually create the empty folders and files for the back-end by following this basic structure:
+
+![Alt text](public/images/image-5.png)
+
+
+4. Generate the "package.json" file with the command:
+
+	$ npm init
+
+
+5. Install Typescript with the command:
+
+	$ npm i typescript –save-dev
+
+
+6. Add the dependencies to be used in the "package.json" file, so they can be installed later.
+
+7. Create the Typescript configuration file with:
+
+	$ npx tsc –init
+
+
+8. Create the "dist" folder in the root of "deliverit-back."
+
+9. Add an "index.ts" file to each project folder to prevent all files from being uploaded to Github.
+
+10. Inside the "github/workflows" folder, create a "push.yml" file.
+
+11. Complete the ".gitignore" file with:
+
+![Alt text](public/images/image-6.png)
+
+
+12. Create the ".env" file in the root and fill it with the required configuration:
+
+![Alt text](public/images/image-17.png)
+
+
+13. Create the "docker-compose.yml" file in the root, shaping the folder and file structure as follows:
+
+![Alt text](public/images/image-8.png)
+
+
+14. Complete the "dockerfile" with the configuration to build the image:
+
+![Alt text](public/images/image-16.png)
+
+
+15. Complete the "docker-compose.yml" file with the following content:
+
+![Alt text](public/images/image-10.png)
+
+
+16. Push the initial basic repository to Github, resulting in:
+
+![Alt text](public/images/image-11.png)
+
+
+17. Create a branch called "develop" on Github and set it as the default branch.
+
+
+Our team performed various tests to ensure that the "deliverit-back" repository is functioning and ready to start developing functionalities for the next sprint.
