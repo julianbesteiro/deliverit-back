@@ -1,5 +1,5 @@
 // src/server.ts
-import express, { Request, Response } from 'express';
+import express from 'express';
 
 const app = express();
 const port = 3000; // Puedes cambiar el número del puerto si lo deseas
@@ -10,7 +10,7 @@ app.use(express.json({ limit: '50mb' }));
 // Your router
 const router = express.Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (req, res) => {
   res.send('¡Hola, mundo!');
 });
 

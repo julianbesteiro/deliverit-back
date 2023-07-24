@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/server.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "start": "node src/server.mjs",
+    "dev": "nodemon --watch 'src/**/*.mjs' --exec 'ts-node' src/server.mjs",
     "build": "tsc",
     "prepare": "husky install"
   },
