@@ -56,78 +56,58 @@ If needed, git branches named “release” can be used in the development proce
 
 ----------------------------------------------------------------------------------
 
+# Project description
 
-# Project Creation Process
+## Project Repository about a Package Distribution Application
 
-## Back end
+This project is about an application for a package distribution company that manages delivery drivers responsible for distributing packages. Each driver will receive a certain number of packages during the day to be delivered to customers with different addresses.
 
-The back-end part of the project, named **deliverit-back**, uses Express, NodeJs, Typescript, and configuration files necessary for the application to work with Docker.
+The application will have the presence of two main roles:
 
-The basic steps for its construction were as follows:
+- **Package Delivery Driver Role**: This role is responsible for receiving the package delivery requests for the day and has the freedom to choose the order of delivery.
 
-1. Create an empty repository on Github.
-
-2. Clone the repository to the local computer.
-
-3. Manually create the empty folders and files for the back-end by following this basic structure:
-
-![Alt text](public/images/image-5.png)
+- **Administrator Role**: The administrator role is responsible for:
+  - Assigning/reassigning packages.
+  - Editing delivery addresses.
+  - Monitoring the delivery of packages by the drivers throughout the day.
 
 
-4. Generate the "package.json" file with the command:
+## Back-End
 
-	$ npm init
+The project named  **deliverit-back** is a back-end project and it uses Express, NodeJs, Typescript, and configuration files necessary for the application to work with Docker.
 
-
-5. Install Typescript with the command:
-
-	$ npm i typescript –save-dev
+Our team performed various tests to ensure that the "deliverit-front" repository is functioning and ready to start developing functionalities for the next sprint.
 
 
-6. Add the dependencies to be used in the "package.json" file, so they can be installed later.
 
-7. Create the Typescript configuration file with:
+## Back-end folder structure
 
-	$ npx tsc –init
-
-
-8. Create the "dist" folder in the root of "deliverit-back."
-
-9. Add an "index.ts" file to each project folder to prevent all files from being uploaded to Github.
-
-10. Inside the "github/workflows" folder, create a "push.yml" file.
-
-11. Complete the ".gitignore" file with:
-
-![Alt text](public/images/image-6.png)
-
-
-12. Create the ".env" file in the root and fill it with the required configuration:
-
-![Alt text](public/images/image-17.png)
-
-
-13. Create the "docker-compose.yml" file in the root, shaping the folder and file structure as follows:
-
-![Alt text](public/images/image-8.png)
-
-
-14. Complete the "dockerfile" with the configuration to build the image:
-
-![Alt text](public/images/image-16.png)
-
-
-15. Complete the "docker-compose.yml" file with the following content:
-
-![Alt text](public/images/image-10.png)
-
-
-16. Push the initial basic repository to Github, resulting in:
-
-![Alt text](public/images/image-11.png)
-
-
-17. Create a branch called "develop" on Github and set it as the default branch.
-
-
-Our team performed various tests to ensure that the "deliverit-back" repository is functioning and ready to start developing functionalities for the next sprint.
+- `.github/workflows/`: 
+  - `push.yml`
+  - This folder contains GitHub Actions workflows and the file defines the actions to be performed when pushing changes to the repository.
+- `.husky/`: 
+  - `.gitignore`
+  - `husky.sh`
+  - `precommit`
+  - This folder is for Husky, that allows to add Git hooks to our project.
+- `config/`: 
+  - For configuration files.
+- `dist/`: 
+  - Folder generated when we build our project, and it contains the files necessary to run the system on a server.
+- `public/images/`: 
+  - For images. 
+- `src/`: 
+  - `controllers/`: 
+    - The controllers handle the logic of our application.
+  - `middlewares/`: 
+    - This folder is intended for the middlewares which are functions that are executed before the controllers.
+  - `models/`: 
+    -  for the models of our project, which represent the data of our application.
+  - `repositories/`: 
+    - They're repositories of your project, which handle the communication with the database.
+  - `routes/`: 
+    - This folder is intended for the routes of our project, which define the endpoints of our API.
+  - `services/`: 
+    -  For the services of your project, which handle the business logic of our application.
+- `tests/`: 
+  - This folder is intended for the tests of our project.
