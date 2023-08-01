@@ -2,7 +2,7 @@
 import express, { Request, Response } from 'express';
 
 const app = express();
-const port = 3000; // Puedes cambiar el número del puerto si lo deseas
+const port = 5000; // Puedes cambiar el número del puerto si lo deseas
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
