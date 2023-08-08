@@ -1,5 +1,7 @@
 // src/server.ts
 import express, { Request, Response } from 'express';
+import { db } from '../config/db';
+import User from './models/User';
 
 const app = express();
 const port = 5000; // Puedes cambiar el número del puerto si lo deseas
