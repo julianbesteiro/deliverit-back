@@ -10,11 +10,7 @@ class UserService {
       const userRepositoryData = await UserRepository.userRepositoryTest(maxUsers);
       console.log('test service');
 
-      return {
-        status: 200,
-        message: 'Test Service OK',
-        users: userRepositoryData,
-      };
+      return userRepositoryData;
     } catch (error) {
       console.log(error);
     }

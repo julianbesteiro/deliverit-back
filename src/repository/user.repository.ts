@@ -11,11 +11,7 @@ class UserRepository {
       db.disconnect();
 
       console.log('test repository');
-      return {
-        status: 200,
-        message: 'Test Repository OK',
-        users: allUsers,
-      };
+      return allUsers;
     } catch (error) {
       console.log(error);
     }
