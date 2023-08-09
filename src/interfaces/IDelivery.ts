@@ -14,3 +14,9 @@ export interface IDelivery {
   startingDate: Date;
   resolutionDate: Date;
 }
+
+export interface IUser {
+  name: string;
+  password: string;
+  email: string;
+}
