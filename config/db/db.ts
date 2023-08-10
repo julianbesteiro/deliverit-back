@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-const DB_NAME = process.env.DB_NAME;
-const DB_PORT = process.env.DB_PORT;
+const dev = process.env.NODE_ENV !== 'production';
+const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
 
 /**
  * 0 = disconnected
@@ -32,10 +33,10 @@ export const connect = async () => {
     await mongoose.disconnect();
   }
 
-  await mongoose.connect(`mongodb://localhost:${DB_PORT}/${DB_NAME}` || '');
+  await mongoose.connect(MONGO_URL || '');
 
   mongoConnection.isConnected = 1;
-  console.log('Conectado a MongoDb', `mongodb://localhost:${DB_PORT}/${DB_NAME}`);
+  console.log('Conectado a MongoDb', MONGO_URL);
 };
 
 export const disconnect = async () => {
