@@ -4,17 +4,34 @@ import bcrypt from 'bcrypt';
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+  },
+  lastName: {
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
   },
   password: {
     type: String,
     required: true,
+    minlength: [8, 'Password must be at least 8 characters long'],
   },
   email: {
     type: String,
-    match: /^\S+@\S+.\S+$/,
+    match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
     unique: true,
     required: true,
+    trim: true,
+    lowercase: true,
+  },
+  picture: {
+    type: String,
+  },
+  profileCompleted: {
+    type: Boolean,
+    default: false,
   },
 });
 

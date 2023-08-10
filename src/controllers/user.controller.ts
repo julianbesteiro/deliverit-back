@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { Types } from 'mongoose';
 import { UserService } from '../services';
 
 class UserController {
@@ -15,6 +14,16 @@ class UserController {
       });
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  static async createUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await UserService.createUser(req.body);
+      return res.status(201).send(user);
+    } catch (error) {
+      res.status(500).send({ message: 'User creation failed: ', error });
+      next(error);
     }
   }
 }

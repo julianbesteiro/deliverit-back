@@ -1,3 +1,4 @@
+import { IUser } from '../interfaces';
 import { UserRepository } from '../repository';
 
 class UserService {
@@ -14,6 +15,10 @@ class UserService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  static async createUser(user: IUser) {
+    return await UserRepository.createUser(user);
   }
 }
 
