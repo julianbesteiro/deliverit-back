@@ -1,5 +1,6 @@
 import User from '../models/User';
 import { db } from '../../config/db';
+import { IUser } from '../interfaces';
 
 class UserRepository {
   static async userRepositoryTest(maxUsers: number) {
@@ -14,6 +15,19 @@ class UserRepository {
       return allUsers;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  static async createUser(user: IUser) {
+    try {
+      await db.connect();
+      const newUser = await User.create(user);
+      db.disconnect();
+
+      return newUser;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error creating user');
     }
   }
 }
