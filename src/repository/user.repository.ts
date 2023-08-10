@@ -26,8 +26,8 @@ class UserRepository {
 
       return newUser;
     } catch (error) {
-      console.log(error);
-      throw new Error('Error creating user');
+      console.log('ESTE ES EL ERROR DE LA DB---->', error);
+      throw error;
     }
   }
 }
