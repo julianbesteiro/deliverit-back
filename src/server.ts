@@ -1,9 +1,43 @@
-// src/server.ts
 import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import helmet from 'helmet';
+import logger from './logger';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { db } from '../config/db';
 import { allRoutes } from './routes';
+dotenv.config();
+
+const dev = process.env.NODE_ENV !== 'production';
+const port = process.env.PORT || 8000;
+const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
+
+(async () => {
+  try {
+    mongoose.set('strictQuery', false);
+    console.log(MONGO_URL);
+    await db.connect();
+    logger.info('connected to db');
+    db.disconnect();
+
+    // async tasks, for ex, inserting email templates to db
+    // logger.info('finished async tasks');
+  } catch (err) {
+    console.log('error:' + err);
+  }
+})();
 
 const app = express();
-const port = 5000; // Puedes cambiar el número del puerto si lo deseas
+
+app.use(
+  cors({
+    origin: dev ? process.env.URL_APP : process.env.PRODUCTION_URL_APP,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }),
+);
+
+app.use(helmet());
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -18,5 +52,6 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api', allRoutes);
 
 app.listen(port, () => {
-  console.log(`Servidor API iniciado en http://localhost:${port}`);
+  logger.debug('debug right before info');
+  logger.info(`> Ready on ${dev ? process.env.URL_API : process.env.PRODUCTION_URL_API}`);
 });
