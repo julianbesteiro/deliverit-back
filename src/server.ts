@@ -5,6 +5,7 @@ import logger from './logger';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from '../config/db';
+import { allRoutes } from './routes';
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -42,14 +43,13 @@ app.use(helmet());
 app.use(express.json({ limit: '50mb' }));
 
 // Your router
-const router = express.Router();
 
-router.get('/', (req: Request, res: Response) => {
-  res.send('¡Hola, mundo!');
+app.get('/', (req: Request, res: Response) => {
+  res.send('¡Hello World!');
 });
 
 // Mount the router on a specific path (e.g., "/api")
-app.use('/api', router);
+app.use('/api', allRoutes);
 
 app.listen(port, () => {
   logger.debug('debug right before info');
