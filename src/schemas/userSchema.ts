@@ -4,13 +4,15 @@ import bcrypt from 'bcrypt';
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
   },
   lastName: {
     type: String,
+    required: true,
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['admin', 'user'],
     default: 'user',
   },
   password: {
@@ -28,10 +30,7 @@ const userSchema = new mongoose.Schema({
   },
   picture: {
     type: String,
-  },
-  profileCompleted: {
-    type: Boolean,
-    default: false,
+    default: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
   },
 });
 
