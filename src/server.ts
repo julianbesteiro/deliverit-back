@@ -6,6 +6,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from '../config/db';
 import { allRoutes } from './routes';
+import errorHandler from './middlewares/errorHandler';
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -50,6 +51,8 @@ app.get('/', (req: Request, res: Response) => {
 
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   logger.debug('debug right before info');
