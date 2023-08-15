@@ -3,48 +3,51 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import logger from './logger';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { db } from '../config/db';
 import { allRoutes } from './routes';
 import errorHandler from './middlewares/errorHandler';
-dotenv.config();
+import config from '../config/config';
+import isAuth from './middlewares/isAuth';
 
-const dev = process.env.NODE_ENV !== 'production';
-const port = process.env.PORT || 8000;
-const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
+const dev = config.node_env !== 'production';
+const port = config.server.port || 8000;
 
+// Connect to MongoDB
 (async () => {
   try {
     mongoose.set('strictQuery', false);
-    console.log(MONGO_URL);
     await db.connect();
     logger.info('connected to db');
     db.disconnect();
-
-    // async tasks, for ex, inserting email templates to db
-    // logger.info('finished async tasks');
   } catch (err) {
     console.log('error:' + err);
   }
 })();
 
+// Create Express server
 const app = express();
 
+// Express configuration
 app.use(
   cors({
-    origin: dev ? process.env.URL_APP : process.env.PRODUCTION_URL_APP,
+    origin: dev ? config.cors.cors_origin : config.cors.cors_origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   }),
 );
 
+// Middleware
+app.get('/secret', isAuth, (_req, res) => {
+  res.json({
+    message: 'Hello World !',
+  });
+});
+
+app.use(express.json({ limit: '50mb' }));
+app.use(errorHandler);
 app.use(helmet());
 
-// Middleware
-app.use(express.json({ limit: '50mb' }));
-
 // Your router
-
 app.get('/', (req: Request, res: Response) => {
   res.send('¡Hello World!');
 });
@@ -52,9 +55,7 @@ app.get('/', (req: Request, res: Response) => {
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
 
-app.use(errorHandler);
-
 app.listen(port, () => {
   logger.debug('debug right before info');
-  logger.info(`> Ready on ${dev ? process.env.URL_API : process.env.PRODUCTION_URL_API}`);
+  logger.info(`> Ready on ${dev ? config.server.local_url : config.server.producction_url}`);
 });
