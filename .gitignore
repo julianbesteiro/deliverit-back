@@ -1,2 +1,26 @@
-node_modules/
-.env 
+
+.env
+# Ignora los archivos generados por TypeScript
+/dist/
+/out/
+
+# Ignora las dependencias de Node.js
+/node_modules/
+
+# Ignora los archivos de configuración de editor específicos
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignora los archivos de compilación de JavaScript generados
+*.js
+*.js.map
+
+# Ignora los archivos de registro
+*.log
+
+# Ignora los archivos de respaldo de varios editores
+*~
+*.swp
+*.bak

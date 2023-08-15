@@ -1,54 +1,112 @@
-import mongoose, { CallbackError } from 'mongoose';
+import mongoose, { Schema, UpdateQuery } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { IUserDocument } from '../interfaces';
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'user'],
-    default: 'user',
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: [8, 'Password must be at least 8 characters long'],
-  },
-  email: {
-    type: String,
-    match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-    unique: true,
-    required: true,
-    trim: true,
-    lowercase: true,
-  },
-  picture: {
-    type: String,
-    default: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
-  },
+export const PasswordResetSchema: Schema = new Schema({
+  token: { type: String, required: true },
+  expiration: { type: Date, required: true },
 });
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+const userSchema: Schema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'user'],
+      default: 'user',
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: [8, 'Password must be at least 8 characters long'],
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    passwordReset: PasswordResetSchema,
+    urlImage: {
+      type: String,
+      default: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
+    },
+    enabled: {
+      type: Boolean,
+      default: true,
+    },
+    lastSeenAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { timestamps: true },
+);
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(this.password, salt);
-    this.password = hash;
+userSchema.pre<IUserDocument>('save', function (next) {
+  const user = this as IUserDocument;
+
+  // Make sure not to rehash the password if it is already hashed
+  if (!user.isModified('password')) {
     return next();
-  } catch (err) {
-    return next(err as CallbackError);
+  }
+
+  // Generate a salt and use it to hash the user's password
+  bcrypt.genSalt(10, (genSaltError, salt) => {
+    if (genSaltError) {
+      return next(genSaltError);
+    }
+
+    bcrypt.hash(user.password, salt, (err, hash) => {
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    });
+  });
+});
+
+userSchema.pre('findOneAndUpdate', function (next) {
+  const update: UpdateQuery<IUserDocument> | null = this.getUpdate();
+
+  if (update) {
+    bcrypt.genSalt(10, (genSaltError, salt) => {
+      if (genSaltError) {
+        return next(genSaltError);
+      }
+
+      bcrypt.hash(update.password, salt, (err, hash) => {
+        if (err) {
+          return next(err);
+        }
+        update.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
   }
 });
 
-userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+userSchema.methods.checkPassword = function (password: string): Promise<boolean> {
+  const user = this as IUserDocument;
+
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, user.password, (error, isMatch) => {
+      if (error) {
+        reject(error);
+      }
+
+      resolve(isMatch);
+    });
+  });
 };
 
 export default userSchema;

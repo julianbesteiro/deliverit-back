@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import config from '../config';
 
-dotenv.config();
-
-const dev = process.env.NODE_ENV !== 'production';
-const MONGO_URL = dev ? process.env.MONGO_URL_TEST : process.env.MONGO_URL;
+const dev = config.node_env !== 'production';
+const MONGO_URL = dev ? config.db.local_url : config.db.producction_url;
 
 /**
  * 0 = disconnected
