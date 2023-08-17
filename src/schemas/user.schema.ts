@@ -7,7 +7,7 @@ export const PasswordResetSchema: Schema = new Schema({
   expiration: { type: Date, required: true },
 });
 
-const userSchema: Schema = new mongoose.Schema(
+export const userSchema: Schema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -108,5 +108,3 @@ userSchema.methods.checkPassword = function (password: string): Promise<boolean>
     });
   });
 };
-
-export default userSchema;

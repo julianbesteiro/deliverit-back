@@ -1,2 +1,3 @@
-export * from './deliverySchema';
-export * from './orderSchema';
+export * from './delivery.schema';
+export * from './order.schema';
+export * from './user.schema';

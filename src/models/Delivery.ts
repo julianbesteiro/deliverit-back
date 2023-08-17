@@ -1,6 +1,6 @@
 import mongoose, { Model } from 'mongoose';
 import { IDelivery, ValidStatus } from '../interfaces';
-import deliverySchema from '../schemas/deliverySchema';
+import { deliverySchema } from '../schemas';
 
 // Método estático para actualizar el estado y establecer la fecha de inicio o resolución según el nuevo estado
 deliverySchema.statics.updateStatusAndSetDates = async function (

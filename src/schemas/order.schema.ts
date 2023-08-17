@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-const orderSchema = new Schema({
+export const orderSchema = new Schema({
   status: {
     type: String,
     default: 'unassigned',
@@ -27,5 +27,3 @@ const orderSchema = new Schema({
   },
   deliveryDate: { type: Date, default: null },
 });
-
-export default orderSchema;
