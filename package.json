@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "test": "jest",
+    "test": "NODE_ENV=test jest",
     "start": "node dist/server.js",
     "build": "tsc",
     "prepare": "husky install"
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/julianbesteiro/deliverit-back#readme",
   "devDependencies": {
+    "@babel/preset-typescript": "^7.22.5",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",

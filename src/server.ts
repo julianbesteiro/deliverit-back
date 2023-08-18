@@ -59,3 +59,5 @@ app.listen(port, () => {
   logger.debug('debug right before info');
   logger.info(`> Ready on ${dev ? config.server.local_url : config.server.producction_url}`);
 });
+
+export default app;

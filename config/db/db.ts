@@ -1,8 +1,21 @@
 import mongoose from 'mongoose';
 import config from '../config';
 
-const dev = config.node_env !== 'production';
-const MONGO_URL = dev ? config.db.local_url : config.db.producction_url;
+let MONGO_URL: string;
+
+switch (config.node_env) {
+  case 'development':
+    MONGO_URL = config.db.local_url;
+    break;
+  case 'production':
+    MONGO_URL = config.db.producction_url;
+    break;
+  case 'test':
+    MONGO_URL = config.db.test_url;
+    break;
+  default:
+    MONGO_URL = config.db.local_url;
+}
 
 /**
  * 0 = disconnected
