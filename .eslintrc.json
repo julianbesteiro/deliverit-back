@@ -14,5 +14,13 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "prettier"],
-  "rules": {}
+  "rules": {},
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"], // Patrón para archivos en la carpeta src
+      "rules": {
+        // Reglas específicas para archivos en la carpeta src
+      }
+    }
+  ]
 }

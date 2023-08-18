@@ -16,6 +16,7 @@ const envSchema = Joi.object().keys({
   REFRESH_TOKEN_COOKIE_NAME: Joi.string().required().default('jid'),
   DATABASE_LOCAL_URL: Joi.string().required(),
   DATABASE_URL: Joi.string().required(),
+  DATABASE_URL_TEST: Joi.string().required(),
   SMTP_HOST: Joi.string().required(),
   SMTP_PORT: Joi.string().default('587'),
   SMTP_USERNAME: Joi.string().required(),
@@ -40,6 +41,7 @@ const config = {
   db: {
     local_url: validatedEnv.DATABASE_LOCAL_URL,
     producction_url: validatedEnv.DATABASE_URL,
+    test_url: validatedEnv.DATABASE_URL_TEST,
   },
   server: {
     port: validatedEnv.PORT,

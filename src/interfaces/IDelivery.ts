@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export type Cords = {
   lat: number;
   lng: number;
@@ -7,8 +9,8 @@ export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 
 export interface IDelivery {
   status: ValidStatus;
-  packageId: string;
-  workerId: string;
+  orderId: ObjectId;
+  userId: ObjectId;
   startingLocation: Cords;
   destinationLocation: Cords;
   startingDate: Date;
