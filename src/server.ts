@@ -44,7 +44,6 @@ app.get('/secret', isAuth, (_req, res) => {
 });
 
 app.use(express.json({ limit: '50mb' }));
-app.use(errorHandler);
 app.use(helmet());
 
 // Your router
@@ -54,6 +53,8 @@ app.get('/', (req: Request, res: Response) => {
 
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   logger.debug('debug right before info');

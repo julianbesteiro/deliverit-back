@@ -32,7 +32,7 @@ class UserRepository {
 
       return newUser;
     } catch (error) {
-      console.log('ESTE ES EL ERROR DE LA DB---->', error);
+      // console.log('ESTE ES EL ERROR DE LA DB---->', error);
       if (isCustomError(error)) {
         if (error.name === 'ValidationError') {
           throw new ValidationError(error.message);
