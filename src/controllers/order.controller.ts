@@ -11,7 +11,6 @@ class OrderController {
     try {
       const orderServiceData = await OrderService.orderServiceTest(1);
 
-      console.log('test controller');
       return res.status(200).send({
         status: 200,
         message: 'Test Controller OK',
