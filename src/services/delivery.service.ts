@@ -1,4 +1,8 @@
+import { IDeliveryRepository } from '@/repository/delivery.repository';
+
 class DeliveryService {
+  constructor(private readonly deliveryRepository: IDeliveryRepository) {}
+
   public static async getDelivery() {
     return 'getDelivery';
   }
