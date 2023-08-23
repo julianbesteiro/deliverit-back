@@ -1,7 +1,7 @@
-import { IDeliveryRepository } from '@/repository/delivery.repository';
+import { IRepository } from '@/interfaces';
 
 class DeliveryService {
-  constructor(private readonly deliveryRepository: IDeliveryRepository) {}
+  constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
 
   public static async getDelivery() {
     return 'getDelivery';
