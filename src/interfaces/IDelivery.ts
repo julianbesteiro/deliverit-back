@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Model } from 'mongoose';
 
 export type Cords = {
   lat: number;
@@ -16,3 +17,7 @@ export interface IDelivery {
   startingDate: Date;
   resolutionDate: Date;
 }
+
+export interface IDeliveryDocument extends IDelivery, Document {}
+
+export interface IDeliveryModel extends Model<IDelivery> {}
