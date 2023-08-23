@@ -1,16 +1,9 @@
-import { IDelivery, IDeliveryDocument } from '@/interfaces';
+import { BaseFilters, IDelivery, IDeliveryDocument } from '@/interfaces';
 import { IDeliveryModel } from '@/interfaces';
+import { IRepository } from '@/interfaces/IRepository';
 import { UpdateResult } from 'mongodb';
 
-export interface IDeliveryRepository {
-  create(delivery: IDelivery): Promise<IDelivery | null>;
-  findAll(): Promise<IDelivery[] | null>;
-  findById(id: string): Promise<IDelivery | null>;
-  update(id: string, delivery: IDelivery): Promise<IDelivery | null>;
-  delete(id: string): Promise<void>;
-}
-
-class DeliveryRepository {
+class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
 
   async create(delivery: IDelivery): Promise<IDelivery | null> {
@@ -18,12 +11,19 @@ class DeliveryRepository {
     return deliveryCreated;
   }
 
-  async findAll(): Promise<IDelivery[] | null> {
+  async findAll(filters?: BaseFilters): Promise<IDelivery[] | null> {
+    if (filters) {
+      return await this.deliveryModel.find(filters);
+    }
+
     const deliveries = await this.deliveryModel.find();
     return deliveries;
   }
 
-  async findById(id: string): Promise<IDelivery | null> {
+  async findById(id: string, filters?: BaseFilters): Promise<IDelivery | null> {
+    if (filters) {
+      return await this.deliveryModel.findOne({ where: { id }, ...filters });
+    }
     const delivery = await this.deliveryModel.findById(id);
     return delivery;
   }
