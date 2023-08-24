@@ -9,13 +9,13 @@ export type Cords = {
 export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 
 export interface IDelivery {
-  status: ValidStatus;
+  status?: ValidStatus;
   orderId: ObjectId;
   userId: ObjectId;
-  startingLocation: Cords;
-  destinationLocation: Cords;
-  startingDate: Date;
-  resolutionDate: Date;
+  startingLocation?: Cords;
+  destinationLocation?: Cords;
+  startingDate?: Date;
+  resolutionDate?: Date;
 }
 
 export interface IDeliveryDocument extends IDelivery, Document {}
