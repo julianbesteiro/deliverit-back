@@ -3,26 +3,9 @@ version: '3'
 services:
   deliverit-back:
     build: .
-    # env-file:
-    #   - .env
-    # volumes:
-    #   - .:/app
     ports:
       - '3000:3000'
-    # depends_on:
-    #   - mongodb
-
   deliverit-front:
     image: facundoinza/deliverit-front:v1.0.0
-
     ports:
       - '5000:5000'
-# mongodb:
-#   image: mongo:latest
-#   volumes:
-#     - mongodb_data:/data/db
-#   ports:
-#     - "27017:27017"
-
-# volumes:
-#   mongodb_data:
