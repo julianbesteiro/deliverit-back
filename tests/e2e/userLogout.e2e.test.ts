@@ -1,6 +1,5 @@
 import request from 'supertest';
 import express from 'express';
-import { UserController } from '../../src/controllers';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
 
