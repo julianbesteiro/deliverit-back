@@ -1,8 +1,10 @@
+import { IDeliveryService } from '@/interfaces';
 import { asyncHandler } from '@/utils/asyncHandler';
-
 // Utilizando el alias para importar
 
 class DeliveryController {
+  constructor(private readonly deliveryServices: IDeliveryService) {}
+
   public static createDelivery = asyncHandler(async () => {});
 
   public static getDelivery = asyncHandler(async () => {});

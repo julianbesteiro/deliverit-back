@@ -1,62 +1,62 @@
 import mongoose from 'mongoose';
 import config from '../config';
 
-let MONGO_URL: string;
-
-switch (config.node_env) {
-  case 'development':
-    MONGO_URL = config.db.local_url;
-    break;
-  case 'production':
-    MONGO_URL = config.db.producction_url;
-    break;
-  case 'test':
-    MONGO_URL = config.db.test_url;
-    break;
-  default:
-    MONGO_URL = config.db.local_url;
-}
-
-/**
- * 0 = disconnected
- * 1 = Conenected
- * 2 = Connecting
- * 3 = Disconnecting
- */
-
-const mongoConnection = {
-  isConnected: 0,
-};
-
-export const connect = async () => {
-  if (mongoConnection.isConnected) {
-    console.log('Ya estamos conectados');
-    return;
+const MONGO_URL: string = (() => {
+  switch (config.node_env) {
+    case 'production':
+      return config.db.producction_url;
+    case 'test':
+      return config.db.test_url;
+    default:
+      return config.db.local_url;
   }
-  if (mongoose.connections.length > 0) {
-    mongoConnection.isConnected = mongoose.connections[0].readyState;
+})();
 
-    if (mongoConnection.isConnected === 1) {
-      console.log('Usando Conexion Anterior');
+class MongoConnection {
+  private static instance: MongoConnection;
+  private isConnected: number = 0;
+
+  private constructor() {}
+
+  public static getInstance(): MongoConnection {
+    if (!MongoConnection.instance) {
+      MongoConnection.instance = new MongoConnection();
+    }
+    return MongoConnection.instance;
+  }
+
+  public async connect(): Promise<void> {
+    if (this.isConnected) {
+      console.log('Ya estamos conectados');
       return;
     }
 
-    await mongoose.disconnect();
+    try {
+      await mongoose.connect(MONGO_URL);
+      this.isConnected = 1;
+      console.log('Conectado a MongoDB', MONGO_URL);
+    } catch (error) {
+      console.error('Error al conectar a MongoDB:', error);
+    }
   }
 
-  await mongoose.connect(MONGO_URL || '');
+  public async disconnect(): Promise<void> {
+    if (process.env.NODE_ENV === 'development') {
+      return;
+    }
 
-  mongoConnection.isConnected = 1;
-  console.log('Conectado a MongoDb', MONGO_URL);
-};
+    if (this.isConnected === 0) {
+      return;
+    }
 
-export const disconnect = async () => {
-  if (process.env.NODE_ENV === 'development') return;
+    try {
+      await mongoose.disconnect();
+      this.isConnected = 0;
+      console.log('Desconectado de MongoDB');
+    } catch (error) {
+      console.error('Error al desconectar de MongoDB:', error);
+    }
+  }
+}
 
-  if (mongoConnection.isConnected === 0) return;
-
-  await mongoose.disconnect();
-
-  mongoConnection.isConnected = 0;
-  console.log('Desconectado de MongoDB');
-};
+export default MongoConnection.getInstance();

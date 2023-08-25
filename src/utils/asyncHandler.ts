@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { MiddlewareFunction } from '../interfaces/IError';
+import { MiddlewareFunction } from '@/interfaces/IError';
 
 export const asyncHandler =
   (fn: MiddlewareFunction) => (req: Request, res: Response, next: NextFunction) => {

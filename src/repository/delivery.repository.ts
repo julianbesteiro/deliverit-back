@@ -2,9 +2,13 @@ import { BaseFilters, IDelivery, IDeliveryDocument } from '@/interfaces';
 import { IDeliveryModel } from '@/interfaces';
 import { IRepository } from '@/interfaces/IRepository';
 import { UpdateResult } from 'mongodb';
+import { Connection } from 'mongoose';
 
 class DeliveryRepository implements IRepository<IDelivery> {
-  constructor(private readonly deliveryModel: IDeliveryModel) {}
+  constructor(
+    private readonly deliveryModel: IDeliveryModel,
+    private readonly db: Connection,
+  ) {}
 
   async create(delivery: IDelivery): Promise<IDelivery | null> {
     const deliveryCreated = await this.deliveryModel.create(delivery);
