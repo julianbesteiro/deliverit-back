@@ -16,6 +16,12 @@ class UserController {
     const user = await UserService.createUser(req.body);
     return res.status(201).send(user);
   });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static loginUser = asyncHandler((req: Request, res: Response) => {
+    // TODO: Implement this
+    throw new Error('Not implemented yet');
+  });
 }
 
 export { UserController };
