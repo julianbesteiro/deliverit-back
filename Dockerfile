@@ -7,7 +7,7 @@ COPY package*.json ./
 COPY dist ./dist
 
 # Instalar las dependencias
-RUN npm install --production
+RUN npm install --production --omit=dev
 
 EXPOSE 5000
 
