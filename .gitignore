@@ -1,8 +1,4 @@
-
 .env
-# Ignora los archivos generados por TypeScript
-/out/
-
 # Ignora las dependencias de Node.js
 /node_modules/
 
@@ -11,10 +7,6 @@
 .idea/
 *.sublime-project
 *.sublime-workspace
-
-# Ignora los archivos de compilación de JavaScript generados
-*.js
-*.js.map
 
 # Ignora los archivos de registro
 *.log
