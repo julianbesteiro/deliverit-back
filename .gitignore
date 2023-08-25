@@ -1,7 +1,6 @@
 
 .env
 # Ignora los archivos generados por TypeScript
-/dist/
 /out/
 
 # Ignora las dependencias de Node.js
