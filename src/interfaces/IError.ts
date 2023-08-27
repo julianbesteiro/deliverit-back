@@ -6,4 +6,8 @@ export interface CustomError {
   message: string;
 }
 
+export interface ErrorWithCode extends Error {
+  code?: number;
+}
+
 export type MiddlewareFunction = (req: Request, res: Response, _next: NextFunction) => void;
