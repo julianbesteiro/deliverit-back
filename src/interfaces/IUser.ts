@@ -8,6 +8,14 @@ export interface IUser {
   lastSeenAt: Date;
 }
 
+export interface IUserInput {
+  name: string;
+  lastName: string;
+  email: string;
+  password: string;
+  urlImage?: string;
+}
+
 import { Document, Model } from 'mongoose';
 
 export interface IUserDocument extends IUser, Document {

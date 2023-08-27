@@ -1,11 +1,12 @@
 import User from '../models/User';
 import { db } from '../../config/db';
-import { IUser } from '../interfaces';
-import { CustomError } from '../interfaces/IError';
+import { IUserInput } from '../interfaces';
 import { ConflictError, DatabaseConnectionError, ValidationError } from '../errors/customErrors';
+import mongoose from 'mongoose';
+import { ErrorWithCode } from '../interfaces/IError';
 
-function isCustomError(error: unknown): error is CustomError {
-  return (error as CustomError).name !== undefined || (error as CustomError).code !== undefined;
+function hasCodeProperty(err: ErrorWithCode): err is ErrorWithCode & { code: number } {
+  return err && typeof err.code === 'number';
 }
 
 class UserRepository {
@@ -24,7 +25,7 @@ class UserRepository {
     }
   }
 
-  static async createUser(user: IUser) {
+  static async createUser(user: IUserInput) {
     try {
       await db.connect();
       const newUser = await User.create(user);
@@ -32,16 +33,15 @@ class UserRepository {
 
       return newUser;
     } catch (error) {
-      // console.log('ESTE ES EL ERROR DE LA DB---->', error);
-      if (isCustomError(error)) {
-        if (error.name === 'ValidationError') {
+      if (hasCodeProperty(error as ErrorWithCode) && (error as ErrorWithCode).code === 11000) {
+        // console.log('ESTE ES EL ERROR DE LA DB---->', error);
+        if (error instanceof mongoose.Error.ValidationError) {
           throw new ValidationError(error.message);
-        } else if (error.code === 11000) {
-          throw new ConflictError(error.message);
+        } else if ((error as ErrorWithCode).code === 11000) {
+          throw new ConflictError('Email already exists');
+        } else {
+          throw new DatabaseConnectionError('An unexpected error occurred.');
         }
-      } else {
-        console.log('Caught something that is not an Error', error);
-        throw new DatabaseConnectionError('An unexpected error occurred.');
       }
     }
   }

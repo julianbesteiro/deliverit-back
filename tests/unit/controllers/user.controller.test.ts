@@ -1,4 +1,5 @@
 import { UserController } from '../../../src/controllers/user.controller';
+import { ConflictError } from '../../../src/errors/customErrors';
 import { UserService } from '../../../src/services/user.service';
 import { mockRequest, mockResponse } from '../../utils/mocks';
 
@@ -14,26 +15,47 @@ describe('UserController', () => {
   });
 
   describe('createUser', () => {
-    it('should create a user and return it', async () => {
-      const mockUserData = {
-        id: 1,
-        name: 'Rafaella',
-        lastName: 'Carra',
-        email: 'rafaella@example.com',
-        role: 'user',
-        enabled: true,
-        lastSeenAt: new Date(),
-        urlImage: 'http://example.com',
-      };
-      const req = mockRequest({ body: mockUserData });
-      const res = mockResponse();
+    const mockUserData = {
+      id: 1,
+      name: 'Rafaella',
+      lastName: 'Carra',
+      email: 'rafaella@example.com',
+      role: 'user',
+      enabled: true,
+      lastSeenAt: new Date(),
+      urlImage: 'http://example.com',
+    };
 
+    const req = mockRequest({ body: mockUserData });
+    const res = mockResponse();
+
+    it('should create a user and return it', async () => {
       (UserService.createUser as jest.Mock).mockResolvedValue(mockUserData);
 
       await UserController.createUser(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.send).toHaveBeenCalledWith(mockUserData);
+    });
+
+    it('should handle conflict error when creating a user with an existing email', async () => {
+      const conflictError = new ConflictError('Email already exists');
+      (UserService.createUser as jest.Mock).mockRejectedValue(conflictError);
+
+      await UserController.createUser(req, res, mockNext);
+
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.send).toHaveBeenCalledWith({ message: conflictError.message });
+    });
+
+    it('should handle unexpected errors when creating a user', async () => {
+      const unexpectedError = new Error('Unexpected error');
+      (UserService.createUser as jest.Mock).mockRejectedValue(unexpectedError);
+
+      await UserController.createUser(req, res, mockNext);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({ message: 'Unexpected error while creating user' });
     });
   });
 
