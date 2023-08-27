@@ -6,7 +6,7 @@ import { connect, disconnect } from '../../config/db/db';
 
 const app = express();
 app.use(express.json());
-app.post('/user/signup', UserController.loginUser);
+app.post('/user/login', UserController.loginUser);
 
 beforeAll(async () => {
   await connect();

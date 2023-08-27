@@ -20,6 +20,18 @@ class UserService {
   static async createUser(user: IUser) {
     return await UserRepository.createUser(user);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async loginUser(userData: { email: string; password: string }): Promise<string> {
+    //TO DO: Implement this
+    throw new Error('Not implemented yet');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async forgotPassword(email: string): Promise<void> {
+    //TO DO: Implement this
+    throw new Error('Not implemented yet');
+  }
 }
 
 export { UserService };
