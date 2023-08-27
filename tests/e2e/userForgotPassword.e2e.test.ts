@@ -2,9 +2,11 @@ import express from 'express';
 import request from 'supertest';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
+import { UserController } from '../../src/controllers';
 
 const app = express();
 app.use(express.json());
+app.post('/user/forgot-password', UserController.forgotPassword);
 
 describe('POST /user/forgot-password', () => {
   beforeAll(async () => {

@@ -22,6 +22,12 @@ class UserController {
     // TODO: Implement this
     throw new Error('Not implemented yet');
   });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+    //TODO: Implement this
+    throw new Error('Not implemented yet');
+  });
 }
 
 export { UserController };
