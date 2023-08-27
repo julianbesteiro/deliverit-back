@@ -9,9 +9,8 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "test": "NODE_ENV=test jest",
-    "start": "node dist/server.js",
-    "build": "tsc",
-    "prepare": "husky install"
+    "start": "node dist/src/server.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

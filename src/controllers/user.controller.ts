@@ -4,7 +4,7 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { ConflictError } from '../errors/customErrors';
 
 class UserController {
-  static userControllerTest = asyncHandler(async (req: Request, res: Response) => {
+  public static userControllerTest = asyncHandler(async (req: Request, res: Response) => {
     const userServiceData = await UserService.userServiceTest(1);
     return res.status(200).send({
       status: 200,
