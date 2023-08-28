@@ -1,5 +1,15 @@
-export interface IOrder extends Document {
-  status: string;
+//import { ObjectId } from 'mongodb';
+import { Model } from 'mongoose';
+
+/* export type Coordenates = {
+  lat: number;
+  lng: number;
+};
+ */
+export type ValidStatuses = 'assigned' | 'unassigned';
+
+export interface IOrder {
+  status?: ValidStatuses;
   address: string;
   coords: {
     lat: number;
@@ -10,3 +20,8 @@ export interface IOrder extends Document {
   recipient: string;
   deliveryDate: Date;
 }
+
+
+export interface IOrderDocument extends IOrder, Document {}
+
+export interface IOrderModel extends Model<IOrder> {}
