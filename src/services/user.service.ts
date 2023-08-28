@@ -1,4 +1,5 @@
-import { IUser } from '../interfaces';
+import { ConflictError } from '../errors/customErrors';
+import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
 
 class UserService {
@@ -17,8 +18,29 @@ class UserService {
     }
   }
 
-  static async createUser(user: IUser) {
-    return await UserRepository.createUser(user);
+  static async createUser(user: IUserInput) {
+    try {
+      return await UserRepository.createUser(user);
+    } catch (error) {
+      if (error instanceof ConflictError) {
+        console.error('Conflict error while creating user', error.message);
+        throw error;
+      }
+
+      throw new Error('Unexpected error while creating user');
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async loginUser(email: string, password: string): Promise<string> {
+    //TO DO: Implement this
+    throw new Error('Not implemented yet');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async forgotPassword(email: string): Promise<void> {
+    //TO DO: Implement this
+    throw new Error('Not implemented yet');
   }
 }
 

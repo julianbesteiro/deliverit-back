@@ -1,29 +1,34 @@
-import { IRepository } from '@/interfaces';
-import { IDelivery } from '@/interfaces';
+import { BaseFilters, IDelivery, IDeliveryService, IRepository } from '@/interfaces';
 
-class DeliveryService {
+class DeliveryService implements IDeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
-
-  public static async getDelivery() {
-    return 'getDelivery';
+  //eslint-disable-next-line
+  getDelivery(id: String): Promise<IDelivery> {
+    throw new Error('Method not implemented.');
   }
-  public static async getDeliveries() {
-    return 'getDeliveries';
+  //eslint-disable-next-line
+  getDeliveries(): Promise<IDelivery[]> {
+    throw new Error('Method not implemented.');
   }
-  public static async createDelivery() {
-    return 'createDelivery';
+  //eslint-disable-next-line
+  createDelivery(delivery: IDelivery): Promise<IDelivery> {
+    throw new Error('Method not implemented.');
   }
-  public static async updateDelivery() {
-    return 'updateDelivery';
+  //eslint-disable-next-line
+  updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {
+    throw new Error('Method not implemented.');
   }
-  public static async deleteDelivery() {
-    return 'deleteDelivery';
+  //eslint-disable-next-line
+  deleteDelivery(id: String): Promise<void> {
+    throw new Error('Method not implemented.');
   }
-  public static async getDeliveriesByUser() {
-    return 'getDeliveriesByUser';
+  //eslint-disable-next-line
+  getDeliveriesByUser(filter: BaseFilters): Promise<IDelivery[]> {
+    throw new Error('Method not implemented.');
   }
-  public static async patchDelivery() {
-    return 'patchDelivery';
+  //eslint-disable-next-line
+  patchDelivery(filter: BaseFilters): Promise<IDelivery> {
+    throw new Error('Method not implemented.');
   }
 }
 
