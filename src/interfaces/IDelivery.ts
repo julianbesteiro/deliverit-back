@@ -18,6 +18,11 @@ export interface IDelivery {
   resolutionDate: Date;
 }
 
+export interface IDeliveryForTesting {
+  orderId: number;
+  address: string;
+}
+
 export interface IDeliveryDocument extends IDelivery, Document {}
 
 export interface IDeliveryModel extends Model<IDelivery> {}

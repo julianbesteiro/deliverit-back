@@ -1,3 +1,5 @@
+import { Model } from 'mongoose';
+
 export interface IOrder extends Document {
   status: string;
   address: string;
@@ -10,3 +12,7 @@ export interface IOrder extends Document {
   recipient: string;
   deliveryDate: Date;
 }
+
+export interface IOrderDocument extends IOrder, Document {}
+
+export interface IOrderModel extends Model<IOrder> {}

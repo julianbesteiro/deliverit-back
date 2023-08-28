@@ -21,6 +21,12 @@ export interface IUserDocument extends IUser, Document {
   checkPassword(password: string): Promise<boolean>;
 }
 
+export interface IWorker {
+  status: string;
+  workerId: number;
+  percentage: number;
+}
+
 export interface IUserModel extends Model<IUserDocument> {
   // Método para validar una dirección de correo electrónico
   validateEmail(email: string): boolean;

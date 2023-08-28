@@ -1,4 +1,5 @@
 import { IRepository } from '@/interfaces';
+import { IDelivery } from '@/interfaces';
 
 class DeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
