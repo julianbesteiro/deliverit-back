@@ -1,15 +1,7 @@
-//import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 
-/* export type Coordenates = {
-  lat: number;
-  lng: number;
-};
- */
-export type ValidStatuses = 'assigned' | 'unassigned';
-
-export interface IOrder {
-  status?: ValidStatuses;
+export interface IOrder extends Document {
+  status: string;
   address: string;
   coords: {
     lat: number;
