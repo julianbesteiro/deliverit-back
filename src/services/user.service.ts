@@ -1,4 +1,3 @@
-import { ConflictError } from '../errors/customErrors';
 import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
 
@@ -19,16 +18,7 @@ class UserService {
   }
 
   static async createUser(user: IUserInput) {
-    try {
-      return await UserRepository.createUser(user);
-    } catch (error) {
-      if (error instanceof ConflictError) {
-        console.error('Conflict error while creating user', error.message);
-        throw error;
-      }
-
-      throw new Error('Unexpected error while creating user');
-    }
+    return await UserRepository.createUser(user);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
