@@ -1,19 +1,22 @@
-import { DeliveryController } from '@/controllers/delivery.controller';
 import express from 'express';
 import { ObjectId } from 'mongodb';
 
 import DeliveryService from '@/services/delivery.service';
+import { IDeliveryService } from '@/interfaces';
+import { DeliveryController } from '@/controllers';
 
 jest.mock('@/services/delivery.service');
 
-describe('DeliveryController', () => {
+describe('deliveryController', () => {
   let mockRequest: Partial<express.Request>;
   let mockResponse: Partial<express.Response>;
   let mockNext: express.NextFunction;
-  let deliveryService: DeliveryService;
 
+  let deliveryService: IDeliveryService;
+  let deliveryController: DeliveryController;
   beforeAll(() => {
     deliveryService = new DeliveryService({} as any);
+    deliveryController = new DeliveryController(deliveryService);
   });
 
   afterAll(() => {
@@ -31,13 +34,16 @@ describe('DeliveryController', () => {
     });
 
     it('should create a delivery', async () => {
+      let mockOrderId = new ObjectId();
+      let mockUserId = new ObjectId();
+
       mockRequest.body = {
-        orderId: new ObjectId(),
-        userId: new ObjectId(),
+        orderId: mockOrderId,
+        userId: mockUserId,
       };
 
       await expect(
-        DeliveryController.createDelivery(
+        deliveryController.createDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -80,7 +86,7 @@ describe('DeliveryController', () => {
         mockRequest.body = requestBody;
 
         await expect(
-          DeliveryController.createDelivery(
+          deliveryController.createDelivery(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -105,7 +111,7 @@ describe('DeliveryController', () => {
       };
 
       await expect(
-        DeliveryController.createDelivery(
+        deliveryController.createDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -137,7 +143,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { id: new ObjectId() as any };
 
       await expect(
-        DeliveryController.getDelivery(
+        deliveryController.getDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -158,7 +164,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { id: 'invalid id' as any };
 
       await expect(
-        DeliveryController.getDelivery(
+        deliveryController.getDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -201,7 +207,7 @@ describe('DeliveryController', () => {
         mockRequest.params = { id: id as any };
 
         await expect(
-          DeliveryController.getDelivery(
+          deliveryController.getDelivery(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -245,7 +251,7 @@ describe('DeliveryController', () => {
         // Agrega más entregas si es necesario
       ];
 
-      await DeliveryController.getDeliveries(
+      await deliveryController.getDeliveries(
         mockRequest as express.Request,
         mockResponse as express.Response,
         mockNext as express.NextFunction,
@@ -269,7 +275,7 @@ describe('DeliveryController', () => {
       } as any;
 
       await expect(
-        DeliveryController.getDeliveries(
+        deliveryController.getDeliveries(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -312,7 +318,7 @@ describe('DeliveryController', () => {
         mockRequest.query = query as any;
 
         await expect(
-          DeliveryController.getDeliveries(
+          deliveryController.getDeliveries(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -360,7 +366,7 @@ describe('DeliveryController', () => {
         resolutionDate: new Date(),
       };
 
-      await DeliveryController.updateDelivery(
+      await deliveryController.updateDelivery(
         mockRequest as express.Request,
         mockResponse as express.Response,
         mockNext as express.NextFunction,
@@ -379,7 +385,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { id: 'invalid id' as any };
 
       await expect(
-        DeliveryController.updateDelivery(
+        deliveryController.updateDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -422,7 +428,7 @@ describe('DeliveryController', () => {
         mockRequest.params = { id: id as any };
 
         await expect(
-          DeliveryController.updateDelivery(
+          deliveryController.updateDelivery(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -466,7 +472,7 @@ describe('DeliveryController', () => {
         mockRequest.body = requestBody;
 
         await expect(
-          DeliveryController.updateDelivery(
+          deliveryController.updateDelivery(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -491,7 +497,7 @@ describe('DeliveryController', () => {
       };
 
       await expect(
-        DeliveryController.updateDelivery(
+        deliveryController.updateDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -522,7 +528,7 @@ describe('DeliveryController', () => {
     it('should delete a delivery', async () => {
       mockRequest.params = { id: new ObjectId() } as any;
 
-      await DeliveryController.deleteDelivery(
+      await deliveryController.deleteDelivery(
         mockRequest as express.Request,
         mockResponse as express.Response,
         mockNext as express.NextFunction,
@@ -541,7 +547,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { id: 'invalid id' as any };
 
       await expect(
-        DeliveryController.deleteDelivery(
+        deliveryController.deleteDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -587,7 +593,7 @@ describe('DeliveryController', () => {
         // Agrega más entregas si es necesario
       ];
 
-      await DeliveryController.getDeliveriesByUser(
+      await deliveryController.getDeliveriesByUser(
         mockRequest as express.Request,
         mockResponse as express.Response,
         mockNext as express.NextFunction,
@@ -610,7 +616,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { userId: 'invalid id' as any };
 
       await expect(
-        DeliveryController.getDeliveriesByUser(
+        deliveryController.getDeliveriesByUser(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -653,7 +659,7 @@ describe('DeliveryController', () => {
         mockRequest.params = { userId: userId as any };
 
         await expect(
-          DeliveryController.getDeliveriesByUser(
+          deliveryController.getDeliveriesByUser(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,
@@ -679,7 +685,7 @@ describe('DeliveryController', () => {
       } as any;
 
       await expect(
-        DeliveryController.getDeliveriesByUser(
+        deliveryController.getDeliveriesByUser(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -714,7 +720,7 @@ describe('DeliveryController', () => {
         status: 'delivered',
       };
 
-      await DeliveryController.patchDelivery(
+      await deliveryController.patchDelivery(
         mockRequest as express.Request,
         mockResponse as express.Response,
         mockNext as express.NextFunction,
@@ -734,7 +740,7 @@ describe('DeliveryController', () => {
       mockRequest.params = { id: 'invalid id' as any };
 
       await expect(
-        DeliveryController.patchDelivery(
+        deliveryController.patchDelivery(
           mockRequest as express.Request,
           mockResponse as express.Response,
           mockNext as express.NextFunction,
@@ -777,7 +783,7 @@ describe('DeliveryController', () => {
         mockRequest.params = { id: id as any };
 
         await expect(
-          DeliveryController.patchDelivery(
+          deliveryController.patchDelivery(
             mockRequest as express.Request,
             mockResponse as express.Response,
             mockNext as express.NextFunction,

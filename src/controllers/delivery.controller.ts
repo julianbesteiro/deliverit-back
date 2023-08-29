@@ -1,23 +1,38 @@
-import { IDeliveryService } from '@/interfaces';
-import { asyncHandler } from '@/utils/asyncHandler';
-// Utilizando el alias para importar
+import { ValidationError } from '@/errors/customErrors';
+import { IDelivery, IDeliveryService } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
+import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
+import { Request, Response } from 'express';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
 
-  public static createDelivery = asyncHandler(async () => {});
+  createDelivery = asyncHandler(async (req: Request, res: Response) => {
+    const { body } = req;
 
-  public static getDelivery = asyncHandler(async () => {});
+    if (!body || Object.keys(body).length === 0) {
+      throw new ValidationError('Request body is empty');
+    }
 
-  public static getDeliveries = asyncHandler(async () => {});
+    const delivery: IDelivery | null = await this.deliveryServices.createDelivery(body);
 
-  public static updateDelivery = asyncHandler(async () => {});
+    return res.status(201).json({
+      message: 'Delivery created',
+      data: { orderId: delivery?.orderId, userId: delivery?.userId },
+      status: 201,
+    });
+  });
 
-  public static deleteDelivery = asyncHandler(async () => {});
+  getDelivery = asyncHandler(async () => {});
 
-  public static getDeliveriesByUser = asyncHandler(async () => {});
+  getDeliveries = asyncHandler(async () => {});
 
-  public static patchDelivery = asyncHandler(async () => {});
+  updateDelivery = asyncHandler(async () => {});
+
+  deleteDelivery = asyncHandler(async () => {});
+
+  getDeliveriesByUser = asyncHandler(async () => {});
+
+  patchDelivery = asyncHandler(async () => {});
 }
 
 export { DeliveryController };

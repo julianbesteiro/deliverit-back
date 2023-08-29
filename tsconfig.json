@@ -11,11 +11,10 @@
     }
   },
   "include": [
-    "config/*.ts",
-    "src/*.ts",
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.tsx",
+    "jest.config.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
+  
 }

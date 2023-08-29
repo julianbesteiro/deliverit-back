@@ -1,17 +1,18 @@
-import { BaseFilters, IDelivery, IDeliveryDocument } from '@/interfaces';
-import { IDeliveryModel } from '@/interfaces';
 import { IRepository } from '@/interfaces/IRepository';
-import { UpdateResult } from 'mongodb';
-import { Connection } from 'mongoose';
+
+import { BaseFilters, IDelivery, IDeliveryModel } from '../interfaces';
+import { DatabaseConnectionError } from '@/errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
-  constructor(
-    private readonly deliveryModel: IDeliveryModel,
-    private readonly db: Connection,
-  ) {}
+  constructor(private readonly deliveryModel: IDeliveryModel) {}
 
   async create(delivery: IDelivery): Promise<IDelivery | null> {
     const deliveryCreated = await this.deliveryModel.create(delivery);
+
+    if (!deliveryCreated) {
+      throw new DatabaseConnectionError('Delivery not created');
+    }
+
     return deliveryCreated;
   }
 
@@ -26,30 +27,25 @@ class DeliveryRepository implements IRepository<IDelivery> {
 
   async findById(id: string, filters?: BaseFilters): Promise<IDelivery | null> {
     if (filters) {
-      return await this.deliveryModel.findOne({ where: { id }, ...filters });
+      return await this.deliveryModel.findOne({ _id: id, ...filters });
     }
     const delivery = await this.deliveryModel.findById(id);
+
     return delivery;
   }
 
   async update(id: string, delivery: IDelivery): Promise<IDelivery | null> {
-    // Usa el tipo UpdateResult correcto aquí
-    const deliveryUpdated: UpdateResult<IDeliveryDocument> = await this.deliveryModel.updateOne(
-      { where: { id } },
-      { delivery },
+    const deliveryUpdated = await this.deliveryModel.findByIdAndUpdate(
+      id,
+      { $set: delivery },
+      { new: true }, // Devuelve el documento actualizado
     );
 
-    if (deliveryUpdated.modifiedCount === 1) {
-      // Obtiene y devuelve el documento actualizado
-      const updatedDelivery = await this.deliveryModel.findById(id);
-      return updatedDelivery;
-    } else {
-      return null; // Maneja el fallo de la actualización si es necesario
-    }
+    return deliveryUpdated;
   }
 
   async delete(id: string): Promise<void> {
-    await this.deliveryModel.deleteOne({ where: { id } });
+    await this.deliveryModel.findByIdAndDelete(id);
   }
 }
 

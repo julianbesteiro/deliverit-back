@@ -5,3 +5,4 @@ export * from './IRepository';
 export * from './IFilters';
 export * from './IRepository';
 export * from './IDeliveryService';
+export * from './dtos/IDeliveryDTO';
