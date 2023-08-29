@@ -30,14 +30,14 @@ describe('POST /user/signup', () => {
     const response = await request(app).post('/user/signup').send(userData);
 
     expect(response.status).toBe(201);
-    expect(response.body.name).toBe(userData.name);
+    expect(response.text).toBe('Created Successfully');
   });
 
   it("shouldn't create a user with an existing email", async () => {
     const response = await request(app).post('/user/signup').send(userData);
 
-    expect(response.status).toBe(409);
-    expect(response.text).toMatch(/E11000 duplicate key error/);
+    expect(response).toBe(500);
+    expect(response).toMatch('Email already exists');
   });
 
   it("shouldn't create a user with invalid data", async () => {
@@ -48,7 +48,7 @@ describe('POST /user/signup', () => {
       password: '030345',
     });
 
-    expect(response.status).toBe(400);
+    expect(response).toBe(400);
     expect(response.text).toMatch(/password/);
   });
 

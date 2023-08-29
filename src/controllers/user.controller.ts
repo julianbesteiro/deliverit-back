@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services';
 import { asyncHandler } from '../utils/asyncHandler';
-import { ConflictError } from '../errors/customErrors';
 
 class UserController {
   public static userControllerTest = asyncHandler(async (req: Request, res: Response) => {
@@ -14,19 +13,8 @@ class UserController {
   });
 
   static createUser = asyncHandler(async (req: Request, res: Response) => {
-    try {
-      const user = await UserService.createUser(req.body);
-      return res.status(201).send(user);
-    } catch (error) {
-      if (error instanceof ConflictError) {
-        return res.status(409).send({
-          message: error.message,
-        });
-      }
-      return res.status(500).send({
-        message: 'Unexpected error while creating user',
-      });
-    }
+    await UserService.createUser(req.body);
+    return res.status(201).send('Created Successfully');
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -29,13 +29,13 @@ describe('UserController', () => {
     const req = mockRequest({ body: mockUserData });
     const res = mockResponse();
 
-    it('should create a user and return it', async () => {
+    it('should create a user and return `Created Successfully`', async () => {
       (UserService.createUser as jest.Mock).mockResolvedValue(mockUserData);
 
       await UserController.createUser(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.send).toHaveBeenCalledWith(mockUserData);
+      expect(res.send).toHaveBeenCalledWith('Created Successfully');
     });
 
     it('should handle conflict error when creating a user with an existing email', async () => {
