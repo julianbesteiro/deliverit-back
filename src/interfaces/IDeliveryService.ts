@@ -2,11 +2,11 @@ import { IDelivery } from './Entities/IDelivery';
 import { BaseFilters } from './IFilters';
 
 export interface IDeliveryService {
-  getDelivery(id: string): Promise<IDelivery>;
-  getDeliveries(filters?: BaseFilters): Promise<IDelivery[]>;
-  createDelivery(item: IDelivery): Promise<IDelivery>;
-  updateDelivery(id: string, item: IDelivery): Promise<IDelivery>;
+  getDelivery(id: string): Promise<IDelivery | null>;
+  getDeliveries(filters?: BaseFilters): Promise<IDelivery[] | null>;
+  createDelivery(item: IDelivery): Promise<IDelivery | null>;
+  updateDelivery(id: string, item: IDelivery): Promise<IDelivery | null>;
   deleteDelivery(id: string): Promise<void>;
-  getDeliveriesByUser(filters?: BaseFilters): Promise<IDelivery[]>;
-  patchDelivery(filters?: BaseFilters): Promise<IDelivery>;
+  getDeliveriesByUser(filters?: BaseFilters): Promise<IDelivery[] | null>;
+  patchDelivery(filters?: BaseFilters): Promise<IDelivery | null>;
 }

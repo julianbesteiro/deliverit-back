@@ -1,21 +1,66 @@
-import { asyncHandler } from '@/utils/asyncHandler';
-
-// Utilizando el alias para importar
+import { BadUserInputError } from '@/errors/customErrors';
+import { DeliveryRepositoryFilters, IDelivery, IDeliveryService } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
+import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
+import { Request, Response } from 'express';
+import { validateObjectId } from '@/utils/validateObjectId';
+import { validateDeliveryInput } from '@/utils/validationDelivery';
 
 class DeliveryController {
-  public static createDelivery = asyncHandler(async () => {});
+  constructor(private readonly deliveryServices: IDeliveryService) {}
 
-  public static getDelivery = asyncHandler(async () => {});
+  createDelivery = asyncHandler(async (req: Request, res: Response) => {
+    const { body } = req;
 
-  public static getDeliveries = asyncHandler(async () => {});
+    const deliveryClient: IDelivery = body;
 
-  public static updateDelivery = asyncHandler(async () => {});
+    //Validations
+    const validatedData = await validateDeliveryInput(deliveryClient);
 
-  public static deleteDelivery = asyncHandler(async () => {});
+    const delivery: IDelivery | null = await this.deliveryServices.createDelivery(validatedData);
 
-  public static getDeliveriesByUser = asyncHandler(async () => {});
+    return res.status(201).json({
+      message: 'Delivery created',
+      data: { orderId: delivery?.orderId, userId: delivery?.userId },
+      status: 201,
+    });
+  });
 
-  public static patchDelivery = asyncHandler(async () => {});
+  getDelivery = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id)) {
+      throw new BadUserInputError({ id: 'Invalid id' });
+    }
+
+    const delivery: IDelivery | null = await this.deliveryServices.getDelivery(id);
+
+    return res.status(200).json({
+      message: 'Delivery found',
+      data: delivery,
+      status: 200,
+    });
+  });
+
+  getDeliveries = asyncHandler(async (req: Request, res: Response) => {
+    const { query } = req;
+    const filters: DeliveryRepositoryFilters = query;
+
+    const deliveries: IDelivery[] | null = await this.deliveryServices.getDeliveries(filters);
+
+    return res.status(200).json({
+      message: 'Deliveries found',
+      data: deliveries,
+      status: 200,
+    });
+  });
+
+  updateDelivery = asyncHandler(async () => {});
+
+  deleteDelivery = asyncHandler(async () => {});
+
+  getDeliveriesByUser = asyncHandler(async () => {});
+
+  patchDelivery = asyncHandler(async () => {});
 }
 
 export { DeliveryController };

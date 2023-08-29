@@ -13,8 +13,8 @@ class UserController {
   });
 
   static createUser = asyncHandler(async (req: Request, res: Response) => {
-    await UserService.createUser(req.body);
-    return res.status(201).send('Created Successfully');
+    const user = await UserService.createUser(req.body);
+    return res.status(201).send(user);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

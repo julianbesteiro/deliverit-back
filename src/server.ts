@@ -5,9 +5,10 @@ import logger from './logger';
 import cors from 'cors';
 import { db } from '../config/db';
 import { allRoutes } from './routes';
-import errorHandler from './middlewares/errorHandler';
+
 import config from '../config/config';
 import isAuth from './middlewares/isAuth';
+import { handleError } from './middlewares';
 
 const dev = config.node_env !== 'production';
 const port = config.server.port || 8000;
@@ -53,8 +54,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
-
-app.use(errorHandler);
+app.use(handleError);
 
 app.listen(port, () => {
   logger.debug('debug right before info');

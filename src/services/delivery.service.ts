@@ -3,16 +3,17 @@ import { BaseFilters, IDelivery, IDeliveryService, IRepository } from '@/interfa
 class DeliveryService implements IDeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
   //eslint-disable-next-line
-  getDelivery(id: String): Promise<IDelivery> {
-    throw new Error('Method not implemented.');
+  getDelivery(id: string): Promise<IDelivery | null> {
+    const delivery = this.deliveryRepository.findById(id);
+    return delivery;
   }
   //eslint-disable-next-line
   getDeliveries(): Promise<IDelivery[]> {
     throw new Error('Method not implemented.');
   }
-  //eslint-disable-next-line
-  createDelivery(delivery: IDelivery): Promise<IDelivery> {
-    throw new Error('Method not implemented.');
+  createDelivery(delivery: IDelivery): Promise<IDelivery | null> {
+    const deliveryCreated = this.deliveryRepository.create(delivery);
+    return deliveryCreated;
   }
   //eslint-disable-next-line
   updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {

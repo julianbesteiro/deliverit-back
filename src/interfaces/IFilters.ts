@@ -1,7 +1,11 @@
 export interface BaseFilters {
-  // Define propiedades comunes para todos los filtros si es necesario
+  id?: string;
+  limit?: number;
+  skip?: number;
+  sort?: string;
+  page?: number;
 }
 
-export interface UserRepositoryFilters extends BaseFilters {
+export interface DeliveryRepositoryFilters extends BaseFilters {
   status?: string;
 }
