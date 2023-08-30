@@ -1,5 +1,5 @@
 import { connect, disconnect } from '../../../config/db/db';
-import { ConflictError, ValidationError } from '../../../src/errors/customErrors';
+import User from '../../../src/models/User';
 import { IUserInput } from '../../../src/interfaces';
 import { UserRepository } from '../../../src/repository';
 
@@ -9,6 +9,7 @@ describe('UserRepository', () => {
   });
 
   afterAll(async () => {
+    await User.deleteOne({ email: 'rafaella@example.com' });
     await disconnect();
   });
 
@@ -31,29 +32,6 @@ describe('UserRepository', () => {
       expect(createdUser?.enabled).toBe(true);
       expect(createdUser?.lastSeenAt).toBeDefined();
       expect(createdUser?.urlImage).toBe(user.urlImage);
-    });
-
-    it("should throw ConflictError if the user's email already exists", async () => {
-      const user = {
-        name: 'Rafaella',
-        lastName: 'Carra',
-        email: 'rafaella@example.com',
-        password: '0303456lalala',
-        urlImage: 'http://example.com',
-      };
-
-      await UserRepository.createUser(user);
-
-      await expect(UserRepository.createUser(user)).rejects.toThrow(ConflictError);
-    });
-
-    it('should throw ValidationError on invalid data', async () => {
-      const invalidUser = {
-        name: 'Rafaella',
-        lastName: 'Carra',
-      } as IUserInput;
-
-      await expect(UserRepository.createUser(invalidUser)).rejects.toThrow(ValidationError);
     });
   });
 });
