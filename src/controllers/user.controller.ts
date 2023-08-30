@@ -18,9 +18,13 @@ class UserController {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static loginUser = asyncHandler((req: Request, res: Response) => {
-    // TODO: Implement this
-    throw new Error('Not implemented yet');
+  static loginUser = asyncHandler(async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+    const token = await UserService.loginUser(email, password);
+    console.log('this is the token', token);
+    res.setHeader('Authorization', `Bearer ${token}`);
+
+    return res.status(200).send({ message: 'Login Successful' });
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

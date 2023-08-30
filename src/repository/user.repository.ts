@@ -22,6 +22,10 @@ class UserRepository {
     const newUser = await User.create(user);
     return newUser;
   }
+
+  static async findUserByEmail(email: string) {
+    return await User.findOne({ email });
+  }
 }
 
 export { UserRepository };
