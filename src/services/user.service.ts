@@ -1,5 +1,7 @@
+import { generateToken } from '../utils/tokens';
 import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
+import { UnauthorizedError } from '@/errors/customErrors';
 
 class UserService {
   static async userServiceTest(id: number) {
@@ -21,10 +23,19 @@ class UserService {
     return await UserRepository.createUser(user);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static async loginUser(email: string, password: string): Promise<string> {
-    //TO DO: Implement this
-    throw new Error('Not implemented yet');
+    const user = await UserRepository.findUserByEmail(email);
+    if (!user) {
+      throw new UnauthorizedError('User not found');
+    }
+
+    const isMatch = await user.checkPassword(password);
+    if (!isMatch) {
+      throw new UnauthorizedError('Invalid password');
+    }
+
+    const token = generateToken({ id: user._id });
+    return token;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

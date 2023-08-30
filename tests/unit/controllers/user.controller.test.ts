@@ -1,5 +1,5 @@
 import { UserController } from '../../../src/controllers/user.controller';
-import { ConflictError } from '../../../src/errors/customErrors';
+import { ConflictError, UnauthorizedError } from '../../../src/errors/customErrors';
 import { UserService } from '../../../src/services/user.service';
 import { mockRequest, mockResponse } from '../../utils/mocks';
 
@@ -52,6 +52,7 @@ describe('UserController', () => {
     it('should login a user and return a token', async () => {
       const mockUserData = {
         email: 'rafaella@example.com',
+        password: '0303456lalala',
         token: 'sampleToken',
       };
       const req = mockRequest({ body: mockUserData });
@@ -61,23 +62,26 @@ describe('UserController', () => {
 
       await UserController.loginUser(req, res, mockNext);
 
+      expect(res.setHeader).toHaveBeenCalledWith('Authorization', `Bearer ${mockUserData.token}`);
+
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith({ token: mockUserData.token });
+      expect(res.send).toHaveBeenCalledWith({ message: 'Login Successful' });
     });
 
     it("shouldn't login a user with incorrect credentials", async () => {
       const mockUserData = {
         email: 'rafaella@example.com',
+        password: 'wrongPassword',
       };
       const req = mockRequest({ body: mockUserData });
       const res = mockResponse();
 
-      (UserService.loginUser as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
+      const authError = new Error('Invalid credentials');
+      (UserService.loginUser as jest.Mock).mockRejectedValue(authError);
 
       await UserController.loginUser(req, res, mockNext);
 
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.send).toHaveBeenCalledWith('Invalid credentials');
+      expect(mockNext).toHaveBeenCalledWith(authError);
     });
   });
 
