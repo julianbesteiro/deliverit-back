@@ -19,9 +19,7 @@ class UserRepository {
   }
 
   static async createUser(user: IUserInput) {
-    await db.connect();
     const newUser = await User.create(user);
-    db.disconnect();
     return newUser;
   }
 }
