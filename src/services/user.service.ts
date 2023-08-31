@@ -1,7 +1,7 @@
 import { generateToken } from '../utils/tokens';
 import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
-import { UnauthorizedError } from '@/errors/customErrors';
+import { UnauthorizedError } from '../errors/customErrors';
 
 class UserService {
   static async userServiceTest(id: number) {
@@ -17,6 +17,23 @@ class UserService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  static async getUserData(id: string) {
+    const user = await UserRepository.findUserById(id);
+    if (!user) {
+      throw new UnauthorizedError('User not found');
+    }
+    return {
+      id: user._id,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      enabled: user.enabled,
+      lastSeenAt: user.lastSeenAt,
+      urlImage: user.urlImage,
+    };
   }
 
   static async createUser(user: IUserInput) {

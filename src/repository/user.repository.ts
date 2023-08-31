@@ -18,6 +18,10 @@ class UserRepository {
     }
   }
 
+  static async findUserById(id: string) {
+    return await User.findById(id);
+  }
+
   static async createUser(user: IUserInput) {
     const newUser = await User.create(user);
     return newUser;

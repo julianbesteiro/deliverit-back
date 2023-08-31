@@ -73,7 +73,6 @@ describe('POST /user/signup', () => {
       password: '0303456lalala',
     });
 
-    console.log('THIS IS REPSONSE.TEXT--->', response.text);
     expect(response.status).toBe(400);
     expect(response.text).toMatch(/Path `email` is invalid/);
   });
