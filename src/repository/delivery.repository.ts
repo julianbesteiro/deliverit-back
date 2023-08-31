@@ -17,11 +17,18 @@ class DeliveryRepository implements IRepository<IDelivery> {
   }
 
   async findAll(filters?: BaseFilters): Promise<IDelivery[] | null> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10; // Establece un valor predeterminado
+
+    const skip = (page - 1) * limit;
+
     if (filters) {
-      return await this.deliveryModel.find(filters);
+      const query = this.deliveryModel.find(filters);
+      query.skip(skip).limit(limit);
+      return await query.exec();
     }
 
-    const deliveries = await this.deliveryModel.find();
+    const deliveries = await this.deliveryModel.find().skip(skip).limit(limit).exec();
     return deliveries;
   }
 

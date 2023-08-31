@@ -2,14 +2,13 @@ import { BaseFilters, IDelivery, IDeliveryService, IRepository } from '@/interfa
 
 class DeliveryService implements IDeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
-  //eslint-disable-next-line
   getDelivery(id: string): Promise<IDelivery | null> {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  //eslint-disable-next-line
-  getDeliveries(): Promise<IDelivery[]> {
-    throw new Error('Method not implemented.');
+  getDeliveries(filters: BaseFilters): Promise<IDelivery[] | null> {
+    const deliveries = this.deliveryRepository.findAll(filters);
+    return deliveries;
   }
   createDelivery(delivery: IDelivery): Promise<IDelivery | null> {
     const deliveryCreated = this.deliveryRepository.create(delivery);

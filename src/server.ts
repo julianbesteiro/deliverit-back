@@ -5,6 +5,7 @@ import logger from './logger';
 import cors from 'cors';
 import { db } from '../config/db';
 import { allRoutes } from './routes';
+import morgan from 'morgan';
 
 import config from '../config/config';
 import isAuth from './middlewares/isAuth';
@@ -36,6 +37,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(morgan('combined'));
 
 // Middleware
 app.get('/secret', isAuth, (_req, res) => {

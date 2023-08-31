@@ -3,14 +3,14 @@ import { DeliveryRepositoryFilters, IDelivery, IDeliveryService } from '../inter
 import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '@/utils/validateObjectId';
-import { validateDeliveryInput } from '@/utils/validationDelivery';
+import { validateDeliveryFilters, validateDeliveryInput } from '@/utils/validationDelivery';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
 
   createDelivery = asyncHandler(async (req: Request, res: Response) => {
     const { body } = req;
-
+    console.log(body);
     const deliveryClient: IDelivery = body;
 
     //Validations
@@ -43,7 +43,14 @@ class DeliveryController {
 
   getDeliveries = asyncHandler(async (req: Request, res: Response) => {
     const { query } = req;
-    const filters: DeliveryRepositoryFilters = query;
+
+    let filters: DeliveryRepositoryFilters = query;
+
+    console.log(filters);
+
+    if (filters) {
+      filters = await validateDeliveryFilters(filters);
+    }
 
     const deliveries: IDelivery[] | null = await this.deliveryServices.getDeliveries(filters);
 

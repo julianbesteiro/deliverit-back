@@ -4,7 +4,7 @@ import { DeliveryRepositoryFilters, IDelivery } from '@/interfaces';
 import { validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '@/errors/customErrors';
 
-export async function validateDeliveryInput(deliveryData: IDelivery) {
+export async function validateDeliveryInput(deliveryData: IDelivery): Promise<IDelivery> {
   const errors: Error[] = [];
 
   if (!deliveryData || Object.keys(deliveryData).length === 0) {
@@ -41,19 +41,29 @@ export async function validateDeliveryInput(deliveryData: IDelivery) {
   return deliveryData;
 }
 
-export async function validateDeliveryFilters(filters: DeliveryRepositoryFilters) {
+export async function validateDeliveryFilters(
+  filters: DeliveryRepositoryFilters,
+): Promise<DeliveryRepositoryFilters> {
   const errors: Error[] = [];
 
-  if (filters.status && filters.status !== 'pending' && filters.status !== 'delivered') {
+  if (
+    filters.status &&
+    filters.status !== 'pending' &&
+    filters.status !== 'delivered' &&
+    filters.status !== 'cancelled' &&
+    filters.status !== 'on-course'
+  ) {
     errors.push(new BadUserInputError({ message: 'Status is not valid' }));
   }
 
-  if (filters.limit && filters.limit < 0) {
-    errors.push(new BadUserInputError({ message: 'Limit is not valid' }));
-  }
-
-  if (filters.skip && filters.skip < 0) {
-    errors.push(new BadUserInputError({ message: 'Skip is not valid' }));
+  if (filters.limit) {
+    filters.limit = parseInt(filters.limit.toString() as string);
+    if (isNaN(filters.limit)) {
+      errors.push(new BadUserInputError({ message: 'Limit must be a number' }));
+    }
+    if (filters.limit < 0) {
+      errors.push(new BadUserInputError({ message: 'Limit is not valid' }));
+    }
   }
 
   if (filters.page && filters.page < 0) {

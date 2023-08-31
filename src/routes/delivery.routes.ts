@@ -10,6 +10,7 @@ const deliveryRepository = new DeliveryRepository(DeliveryModel);
 const deliveryService = new DeliveryService(deliveryRepository);
 const deliveryController = new DeliveryController(deliveryService);
 
+router.get('/all', deliveryController.getDeliveries);
 router.get('/:id', deliveryController.getDelivery);
 router.post('/', deliveryController.createDelivery);
 
