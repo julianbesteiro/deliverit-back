@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 
 export type Cords = {
@@ -10,10 +9,10 @@ export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 
 export interface IDelivery {
   status?: ValidStatus;
-  orderId: ObjectId;
-  userId: ObjectId;
+  orderId: string;
+  userId: string;
   startingLocation?: Cords;
-  destinationLocation?: Cords;
+  destinationLocation: Cords;
   startingDate?: Date;
   resolutionDate?: Date;
 }

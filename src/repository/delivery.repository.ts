@@ -1,51 +1,58 @@
-import { BaseFilters, IDelivery, IDeliveryDocument } from '@/interfaces';
-import { IDeliveryModel } from '@/interfaces';
 import { IRepository } from '@/interfaces/IRepository';
-import { UpdateResult } from 'mongodb';
+
+import { BaseFilters, IDelivery, IDeliveryModel } from '../interfaces';
+import { DatabaseConnectionError } from '@/errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
 
   async create(delivery: IDelivery): Promise<IDelivery | null> {
     const deliveryCreated = await this.deliveryModel.create(delivery);
+
+    if (!deliveryCreated) {
+      throw new DatabaseConnectionError('Delivery not created');
+    }
+
     return deliveryCreated;
   }
 
   async findAll(filters?: BaseFilters): Promise<IDelivery[] | null> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10; // Establece un valor predeterminado
+
+    const skip = (page - 1) * limit;
+
     if (filters) {
-      return await this.deliveryModel.find(filters);
+      const query = this.deliveryModel.find(filters);
+      query.skip(skip).limit(limit);
+      return await query.exec();
     }
 
-    const deliveries = await this.deliveryModel.find();
+    const deliveries = await this.deliveryModel.find().skip(skip).limit(limit).exec();
     return deliveries;
   }
 
   async findById(id: string, filters?: BaseFilters): Promise<IDelivery | null> {
     if (filters) {
-      return await this.deliveryModel.findOne({ where: { id }, ...filters });
+      return await this.deliveryModel.findOne({ _id: id, ...filters });
     }
     const delivery = await this.deliveryModel.findById(id);
+
     return delivery;
   }
 
   async update(id: string, delivery: IDelivery): Promise<IDelivery | null> {
-    // Usa el tipo UpdateResult correcto aquí
-    const deliveryUpdated: UpdateResult<IDeliveryDocument> = await this.deliveryModel.updateOne(
-      { where: { id } },
-      { delivery },
+    const deliveryUpdated = await this.deliveryModel.findByIdAndUpdate(
+      id,
+      { $set: delivery },
+      { new: true }, // Devuelve el documento actualizado
     );
 
-    if (deliveryUpdated.modifiedCount === 1) {
-      // Obtiene y devuelve el documento actualizado
-      const updatedDelivery = await this.deliveryModel.findById(id);
-      return updatedDelivery;
-    } else {
-      return null; // Maneja el fallo de la actualización si es necesario
-    }
+    return deliveryUpdated;
   }
 
   async delete(id: string): Promise<void> {
-    await this.deliveryModel.deleteOne({ where: { id } });
+    await this.deliveryModel.findByIdAndDelete(id);
   }
 }
 

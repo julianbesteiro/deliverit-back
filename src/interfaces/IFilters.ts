@@ -1,7 +1,12 @@
+import { ValidStatus } from './Entities/IDelivery';
+
 export interface BaseFilters {
-  // Define propiedades comunes para todos los filtros si es necesario
+  id?: string;
+  limit?: number;
+  sort?: string;
+  page?: number;
 }
 
-export interface UserRepositoryFilters extends BaseFilters {
-  status?: string;
+export interface DeliveryRepositoryFilters extends BaseFilters {
+  status?: ValidStatus;
 }
