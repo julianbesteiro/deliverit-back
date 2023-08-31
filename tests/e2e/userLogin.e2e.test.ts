@@ -65,7 +65,7 @@ describe('POST /user/login', () => {
       email: 'rafaella@example.com',
     });
 
-    expect(response.status).toBe(401);
-    expect(response.text).toMatch('arguments required');
+    expect(response.status).toBe(400);
+    expect(response.text).toMatch('Missing fields');
   });
 });

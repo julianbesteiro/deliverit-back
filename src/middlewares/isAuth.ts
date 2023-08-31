@@ -4,11 +4,12 @@ import httpStatus from 'http-status';
 
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { validateToken } from '../utils/tokens';
+import { RequestExpress } from '../interfaces/IRequestExpress';
 
-const isAuth = (req: Request, res: Response, next: NextFunction) => {
+const isAuth = (req: Request | RequestExpress, res: Response, next: NextFunction) => {
   // token looks like 'Bearer vnjaknvijdaknvikbnvreiudfnvriengviewjkdsbnvierj'
   try {
-    const authHeader = req.headers?.authorization;
+    const authHeader = req.headers['authorization'];
 
     if (!authHeader || !authHeader?.startsWith('Bearer ')) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
@@ -21,6 +22,8 @@ const isAuth = (req: Request, res: Response, next: NextFunction) => {
     const payload = validateToken(token);
 
     if (!payload || typeof payload === 'string') return res.sendStatus(httpStatus.UNAUTHORIZED);
+
+    (req as RequestExpress).user = payload.user;
 
     next();
   } catch (err) {
