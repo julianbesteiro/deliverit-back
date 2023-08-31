@@ -41,3 +41,4 @@ export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
     res.status(clientErrorResponses[0].status).send({ errors: clientErrorResponses });
   }
 };
+

@@ -47,7 +47,7 @@ describe('POST /user/login', () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.text).toMatch(/Invalid credentials/);
+    expect(response.text).toMatch('User not found');
   });
 
   it("shouldn't login with invalid credentials", async () => {
@@ -57,7 +57,7 @@ describe('POST /user/login', () => {
     });
 
     expect(response.status).toBe(401);
-    expect(response.text).toMatch(/Invalid credentials/);
+    expect(response.text).toMatch('Invalid password');
   });
 
   it("shouldn't login with missing fields", async () => {
@@ -66,6 +66,6 @@ describe('POST /user/login', () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.text).toMatch(/password/);
+    expect(response.text).toMatch('Missing fields');
   });
 });
