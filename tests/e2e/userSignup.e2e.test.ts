@@ -3,10 +3,12 @@ import express from 'express';
 import { UserController } from '../../src/controllers';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
+import errorHandler from '../../src/middlewares/errorHandler';
 
 const app = express();
 app.use(express.json());
 app.post('/user/signup', UserController.createUser);
+app.use(errorHandler);
 
 beforeEach(async () => {
   await connect();
@@ -36,8 +38,8 @@ describe('POST /user/signup', () => {
   it("shouldn't create a user with an existing email", async () => {
     const response = await request(app).post('/user/signup').send(userData);
 
-    expect(response).toBe(500);
-    expect(response).toMatch('Email already exists');
+    expect(response.status).toBe(409);
+    expect(response.text).toMatch('E11000 duplicate key error');
   });
 
   it("shouldn't create a user with invalid data", async () => {
@@ -48,7 +50,7 @@ describe('POST /user/signup', () => {
       password: '030345',
     });
 
-    expect(response).toBe(400);
+    expect(response.status).toBe(400);
     expect(response.text).toMatch(/password/);
   });
 
@@ -71,7 +73,6 @@ describe('POST /user/signup', () => {
       password: '0303456lalala',
     });
 
-    console.log('THIS IS REPSONSE.TEXT--->', response.text);
     expect(response.status).toBe(400);
     expect(response.text).toMatch(/Path `email` is invalid/);
   });
