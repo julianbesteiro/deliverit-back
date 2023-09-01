@@ -5,7 +5,6 @@ export const orderSchema = new Schema({
     type: String,
     default: 'unassigned',
   },
-
   address: {
     type: String,
     required: true,

@@ -1,6 +1,6 @@
 import { BadUserInputError } from '@/errors/customErrors';
-import { DeliveryRepositoryFilters, IDelivery, IDeliveryService } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
-import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
+import { DeliveryRepositoryFilters, IDelivery, IDeliveryService } from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
+import { asyncHandler } from '@/utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '@/utils/validateObjectId';
 import { validateDeliveryFilters, validateDeliveryInput } from '@/utils/validationDelivery';
@@ -10,17 +10,19 @@ class DeliveryController {
 
   createDelivery = asyncHandler(async (req: Request, res: Response) => {
     const { body } = req;
-    console.log(body);
-    const deliveryClient: IDelivery = body;
+
+    const orders: IDelivery[] = body;
 
     //Validations
-    const validatedData = await validateDeliveryInput(deliveryClient);
+    const validatedData = await validateDeliveryInput(orders);
 
-    const delivery: IDelivery | null = await this.deliveryServices.createDelivery(validatedData);
+    const deliveries: IDelivery | IDelivery[] | null = await this.deliveryServices.createDelivery(
+      validatedData,
+    );
 
     return res.status(201).json({
-      message: 'Delivery created',
-      data: { orderId: delivery?.orderId, userId: delivery?.userId },
+      message: 'Deliveries created',
+      data: deliveries,
       status: 201,
     });
   });
@@ -45,8 +47,6 @@ class DeliveryController {
     const { query } = req;
 
     let filters: DeliveryRepositoryFilters = query;
-
-    console.log(filters);
 
     if (filters) {
       filters = await validateDeliveryFilters(filters);

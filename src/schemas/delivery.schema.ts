@@ -5,7 +5,6 @@ export const deliverySchema: Schema = new Schema(
   {
     destinationLocation: {
       type: Object,
-      required: true,
     },
     orderId: {
       type: ObjectId,

@@ -10,9 +10,9 @@ export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 export interface IDelivery {
   status?: ValidStatus;
   orderId: string;
-  userId: string;
+  userId?: string;
   startingLocation?: Cords;
-  destinationLocation: Cords;
+  destinationLocation?: Cords;
   startingDate?: Date;
   resolutionDate?: Date;
 }

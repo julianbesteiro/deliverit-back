@@ -10,7 +10,7 @@ class DeliveryService implements IDeliveryService {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
-  createDelivery(delivery: IDelivery): Promise<IDelivery | null> {
+  createDelivery(delivery: IDelivery | IDelivery[]): Promise<IDelivery | IDelivery[] | null> {
     const deliveryCreated = this.deliveryRepository.create(delivery);
     return deliveryCreated;
   }
