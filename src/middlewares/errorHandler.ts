@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import { CustomError } from '@/errors/customErrors';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   console.error('function', error);
 
   const isErrorSafeForClient = error instanceof CustomError;
@@ -10,7 +10,6 @@ export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
   let clientErrors;
 
   if (isErrorSafeForClient) {
-    // Si el error es seguro para el cliente, conviértelo en un array de errores
     clientErrors = [error];
   } else if (Array.isArray(error)) {
     // Si el error es un array, asume que ya contiene múltiples errores y úsalo
@@ -35,10 +34,9 @@ export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
   }));
 
   // Si solo hay un error y no es seguro, envía solo el objeto de error en lugar de un array
-  if (clientErrorResponses.length === 1 && !isErrorSafeForClient) {
+  if (clientErrorResponses.length === 1) {
     res.status(clientErrorResponses[0].status).send({ error: clientErrorResponses[0] });
   } else {
     res.status(clientErrorResponses[0].status).send({ errors: clientErrorResponses });
   }
 };
-

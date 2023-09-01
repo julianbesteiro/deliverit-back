@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { RequestExpress } from './IRequestExpress';
 
 export interface CustomError {
   name?: string;
@@ -10,4 +11,8 @@ export interface ErrorWithCode extends Error {
   code?: number;
 }
 
-export type MiddlewareFunction = (req: Request, res: Response, _next: NextFunction) => void;
+export type MiddlewareFunction = (
+  req: RequestExpress | Request,
+  res: Response,
+  _next: NextFunction,
+) => void;

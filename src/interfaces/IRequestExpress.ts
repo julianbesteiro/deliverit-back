@@ -1,10 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// export interface RequestExpress extends Request {
-//   user: {
-//     id: string;
-//   };
-// }
-
 import { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
 

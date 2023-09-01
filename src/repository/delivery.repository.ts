@@ -6,7 +6,7 @@ import { DatabaseConnectionError } from '@/errors/customErrors';
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
 
-  async create(delivery: IDelivery): Promise<IDelivery | null> {
+  async create(delivery: IDelivery): Promise<IDelivery> {
     const deliveryCreated = await this.deliveryModel.create(delivery);
 
     if (!deliveryCreated) {
@@ -16,7 +16,7 @@ class DeliveryRepository implements IRepository<IDelivery> {
     return deliveryCreated;
   }
 
-  async findAll(filters?: BaseFilters): Promise<IDelivery[] | null> {
+  async findAll(filters?: BaseFilters): Promise<IDelivery[]> {
     const page = filters?.page || 1;
     const limit = filters?.limit || 10; // Establece un valor predeterminado
 
@@ -32,21 +32,33 @@ class DeliveryRepository implements IRepository<IDelivery> {
     return deliveries;
   }
 
-  async findById(id: string, filters?: BaseFilters): Promise<IDelivery | null> {
+  async findById(id: string, filters?: BaseFilters): Promise<IDelivery> {
     if (filters) {
-      return await this.deliveryModel.findOne({ _id: id, ...filters });
+      const delivery = await this.deliveryModel.findOne({ _id: id, ...filters });
+      if (!delivery) {
+        throw new DatabaseConnectionError('Delivery not found');
+      }
+      return delivery;
     }
     const delivery = await this.deliveryModel.findById(id);
+
+    if (!delivery) {
+      throw new DatabaseConnectionError('Delivery not found');
+    }
 
     return delivery;
   }
 
-  async update(id: string, delivery: IDelivery): Promise<IDelivery | null> {
+  async update(id: string, delivery: IDelivery): Promise<IDelivery> {
     const deliveryUpdated = await this.deliveryModel.findByIdAndUpdate(
       id,
       { $set: delivery },
       { new: true }, // Devuelve el documento actualizado
     );
+
+    if (!deliveryUpdated) {
+      throw new DatabaseConnectionError('Delivery not updated');
+    }
 
     return deliveryUpdated;
   }

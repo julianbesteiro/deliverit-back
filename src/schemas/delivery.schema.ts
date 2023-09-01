@@ -24,5 +24,5 @@ export const deliverySchema: Schema = new Schema(
     startingDate: { type: Date, default: null },
     resolutionDate: { type: Date, default: null },
   },
-  { timestamps: true },
+  { timestamps: true, strict: 'throw' },
 );

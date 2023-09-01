@@ -1,5 +1,3 @@
-// validationDelivery.ts
-
 import { DeliveryRepositoryFilters, IDelivery } from '@/interfaces';
 import { validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '@/errors/customErrors';
@@ -8,16 +6,20 @@ export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDeliv
   const errors: Error[] = [];
 
   if (!Array.isArray(orders)) {
-    errors.push(new BadUserInputError({ message: 'The input is input is not an array' }));
+    throw new BadUserInputError({ message: 'The input is input is not an array' });
   }
 
   if (orders.length === 0 || orders.length > 10) {
-    errors.push(new BadUserInputError({ message: 'The input is not valid' }));
+    errors.push(
+      new BadUserInputError({
+        message: 'The input is not valid, its length is 0 or greater than 10',
+      }),
+    );
   }
 
   orders.forEach((order) => {
     if (!validateObjectId(order.orderId)) {
-      errors.push(new BadUserInputError({ message: 'Invalid order id' }));
+      errors.push(new BadUserInputError({ message: `Invalid order id : ${order.orderId}` }));
     }
     if (Object.keys(order).length > 1 || Object.keys(order).length === 0) {
       errors.push(new BadUserInputError({ message: 'Invalid data' }));

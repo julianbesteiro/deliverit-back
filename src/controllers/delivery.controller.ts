@@ -4,30 +4,41 @@ import { asyncHandler } from '@/utils/asyncHandler'; // Ajusta la ruta según la
 import { Request, Response } from 'express';
 import { validateObjectId } from '@/utils/validateObjectId';
 import { validateDeliveryFilters, validateDeliveryInput } from '@/utils/validationDelivery';
+import { RequestExpress } from '@/interfaces/IRequestExpress';
+
+interface DataReponse {
+  message: string;
+  data: IDelivery | IDelivery[] | null;
+  status: number;
+}
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
 
-  createDelivery = asyncHandler(async (req: Request, res: Response) => {
-    const { body } = req;
+  createDelivery = asyncHandler(
+    async (req: RequestExpress | Request, res: Response<DataReponse>) => {
+      const { body } = req;
+      const { user } = req as RequestExpress;
 
-    const orders: IDelivery[] = body;
+      const orders: IDelivery[] = body;
 
-    //Validations
-    const validatedData = await validateDeliveryInput(orders);
+      //Validations
+      const ordersValidate = await validateDeliveryInput(orders);
 
-    const deliveries: IDelivery | IDelivery[] | null = await this.deliveryServices.createDelivery(
-      validatedData,
-    );
+      const deliveries: IDelivery | IDelivery[] = await this.deliveryServices.createDelivery({
+        userId: user.id,
+        orders: ordersValidate,
+      });
 
-    return res.status(201).json({
-      message: 'Deliveries created',
-      data: deliveries,
-      status: 201,
-    });
-  });
+      return res.status(201).json({
+        message: 'Deliveries created',
+        data: deliveries,
+        status: 201,
+      });
+    },
+  );
 
-  getDelivery = asyncHandler(async (req: Request, res: Response) => {
+  getDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
     const { id } = req.params;
 
     if (!validateObjectId(id)) {
@@ -43,7 +54,7 @@ class DeliveryController {
     });
   });
 
-  getDeliveries = asyncHandler(async (req: Request, res: Response) => {
+  getDeliveries = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
     const { query } = req;
 
     let filters: DeliveryRepositoryFilters = query;

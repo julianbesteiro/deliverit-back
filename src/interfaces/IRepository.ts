@@ -1,9 +1,9 @@
 import { BaseFilters } from './IFilters';
 
 export interface IRepository<T> {
-  create: (item: T | T[]) => Promise<T | T[] | null>;
-  findAll: (filters?: BaseFilters) => Promise<T[] | null>;
-  findById: (id: string, filters?: BaseFilters) => Promise<T | null>;
-  update: (id: string, item: T) => Promise<T | null>;
+  create: (item: T) => Promise<T>;
+  findAll: (filters?: BaseFilters) => Promise<T[]>;
+  findById: (id: string, filters?: BaseFilters) => Promise<T>;
+  update: (id: string, item: T) => Promise<T>;
   delete: (id: string) => Promise<void>;
 }
