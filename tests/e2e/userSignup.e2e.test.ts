@@ -3,7 +3,7 @@ import express from 'express';
 import { UserController } from '../../src/controllers';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
-import errorHandler from '../../src/middlewares/errorHandler';
+import { errorHandler } from '@/middlewares';
 
 const app = express();
 app.use(express.json());

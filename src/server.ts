@@ -9,7 +9,7 @@ import morgan from 'morgan';
 
 import config from '../config/config';
 import isAuth from './middlewares/isAuth';
-import { handleError } from './middlewares';
+import { errorHandler } from './middlewares';
 
 const dev = config.node_env !== 'production';
 const port = config.server.port || 8000;
@@ -57,7 +57,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
-app.use(handleError);
+app.use(errorHandler);
 
 app.listen(port, () => {
   logger.debug('debug right before info');

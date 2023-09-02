@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import { CustomError } from '@/errors/customErrors';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   console.error('function', error);
 
   const isErrorSafeForClient = error instanceof CustomError;
@@ -41,4 +41,3 @@ export const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
     res.status(clientErrorResponses[0].status).send({ errors: clientErrorResponses });
   }
 };
-
