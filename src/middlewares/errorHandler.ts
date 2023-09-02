@@ -1,9 +1,22 @@
 import { ErrorRequestHandler } from 'express';
-import { CustomError } from '@/errors/customErrors';
+import {
+  ConflictError,
+  CustomError,
+  UnauthorizedError,
+  ValidationError,
+} from '@/errors/customErrors';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   console.error('function', error);
+
+  if (error instanceof UnauthorizedError) {
+    return res.status(401).send({ message: error.message });
+  } else if (error instanceof ConflictError || error.code === 11000) {
+    return res.status(409).send({ message: error.message });
+  } else if (error instanceof ValidationError || error.name === 'ValidationError') {
+    return res.status(400).send({ message: error.message });
+  }
 
   const isErrorSafeForClient = error instanceof CustomError;
 

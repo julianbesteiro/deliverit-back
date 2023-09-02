@@ -22,8 +22,8 @@ class UserController {
   });
 
   static createUser = asyncHandler(async (req: Request, res: Response) => {
-    const user = await UserService.createUser(req.body);
-    return res.status(201).send(user);
+    await UserService.createUser(req.body);
+    return res.status(201).send('Created Successfully');
   });
 
   static loginUser = asyncHandler(async (req: Request, res: Response) => {
