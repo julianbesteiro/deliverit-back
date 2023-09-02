@@ -1,5 +1,5 @@
 import { UserController } from '../../../src/controllers/user.controller';
-import { ConflictError, UnauthorizedError } from '../../../src/errors/customErrors';
+import { ConflictError } from '../../../src/errors/customErrors';
 import { UserService } from '../../../src/services/user.service';
 import { mockRequest, mockResponse } from '../../utils/mocks';
 
