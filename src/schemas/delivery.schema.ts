@@ -21,8 +21,8 @@ export const deliverySchema: Schema = new Schema(
     startingLocation: {
       type: Object,
     },
-    startingDate: { type: Date, default: null },
-    resolutionDate: { type: Date, default: null },
+    startingDeliveryDate: { type: Date, default: null },
+    resolutionDeliveryDate: { type: Date, default: null },
   },
   { timestamps: true, strict: 'throw' },
 );

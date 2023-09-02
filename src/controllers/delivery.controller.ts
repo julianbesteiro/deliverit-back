@@ -1,5 +1,10 @@
 import { BadUserInputError } from '@/errors/customErrors';
-import { DeliveryRepositoryFilters, IDelivery, IDeliveryService } from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
+import {
+  DeliveryRepositoryFilters,
+  IDelivery,
+  IDeliveryService,
+  PaginationData,
+} from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
 import { asyncHandler } from '@/utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '@/utils/validateObjectId';
@@ -10,6 +15,15 @@ interface DataReponse {
   message: string;
   data: IDelivery | IDelivery[] | null;
   status: number;
+}
+
+interface PaginationDataResponse extends DataReponse {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  prevPage: string | null;
+  nextPage: string | null;
 }
 
 class DeliveryController {
@@ -54,23 +68,34 @@ class DeliveryController {
     });
   });
 
-  getDeliveries = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
-    const { query } = req;
+  getDeliveries = asyncHandler(
+    async (req: Request, res: Response<PaginationDataResponse | DataReponse>) => {
+      const { query } = req;
 
-    let filters: DeliveryRepositoryFilters = query;
+      let filters: DeliveryRepositoryFilters = query;
 
-    if (filters) {
       filters = await validateDeliveryFilters(filters);
-    }
 
-    const deliveries: IDelivery[] | null = await this.deliveryServices.getDeliveries(filters);
+      const deliveries: PaginationData<IDelivery> = await this.deliveryServices.getDeliveries(
+        filters,
+      );
 
-    return res.status(200).json({
-      message: 'Deliveries found',
-      data: deliveries,
-      status: 200,
-    });
-  });
+      return res.status(200).json({
+        message: 'Deliveries found',
+        page: deliveries.page,
+        totalPages: deliveries.totalPages,
+        data: deliveries.data,
+        totalItems: deliveries.totalItems,
+        itemsPerPage: deliveries.data.length,
+        prevPage: deliveries.page > 1 ? `/deliveries?page=${deliveries.page - 1}` : null,
+        nextPage:
+          deliveries.page < deliveries.totalPages
+            ? `/deliveries?page=${deliveries.page + 1}`
+            : null,
+        status: 200,
+      });
+    },
+  );
 
   updateDelivery = asyncHandler(async () => {});
 

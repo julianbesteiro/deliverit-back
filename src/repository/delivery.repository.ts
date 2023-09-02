@@ -1,12 +1,18 @@
 import { IRepository } from '@/interfaces/IRepository';
 
 import { BaseFilters, IDelivery, IDeliveryModel } from '../interfaces';
-import { DatabaseConnectionError } from '@/errors/customErrors';
+import { BadUserInputError, DatabaseConnectionError } from '@/errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
 
   async create(delivery: IDelivery): Promise<IDelivery> {
+    const existingDelivery = await this.deliveryModel.findOne({ orderId: delivery.orderId });
+
+    if (existingDelivery) {
+      throw new BadUserInputError({ message: 'Delivery already exists' });
+    }
+
     const deliveryCreated = await this.deliveryModel.create(delivery);
 
     if (!deliveryCreated) {
@@ -16,22 +22,40 @@ class DeliveryRepository implements IRepository<IDelivery> {
     return deliveryCreated;
   }
 
-  async findAll(filters?: BaseFilters): Promise<IDelivery[]> {
+  async findAll(
+    filters?: BaseFilters,
+  ): Promise<{ data: IDelivery[]; page: number; totalPages: number; totalItems: number }> {
     const page = filters?.page || 1;
     const limit = filters?.limit || 10; // Establece un valor predeterminado
 
     const skip = (page - 1) * limit;
 
+    let query = this.deliveryModel.find();
+
+    // Si se proporcionan filtros, aplícalos a la consulta
     if (filters) {
-      const query = this.deliveryModel.find(filters);
-      query.skip(skip).limit(limit);
-      return await query.exec();
+      query = query.find(filters);
     }
 
-    const deliveries = await this.deliveryModel.find().skip(skip).limit(limit).exec();
-    return deliveries;
-  }
+    // Obtén el número total de elementos sin paginación
+    const totalItems = await this.deliveryModel.countDocuments();
 
+    // Calcula el número total de páginas
+    const totalPages = Math.ceil(totalItems / limit);
+
+    // Aplica la paginación a la consulta
+    query = query.skip(skip).limit(limit);
+
+    // Ejecuta la consulta
+    const deliveries = await query.exec();
+
+    return {
+      data: deliveries,
+      page,
+      totalPages,
+      totalItems,
+    };
+  }
   async findById(id: string, filters?: BaseFilters): Promise<IDelivery> {
     if (filters) {
       const delivery = await this.deliveryModel.findOne({ _id: id, ...filters });

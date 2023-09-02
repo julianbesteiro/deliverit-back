@@ -1,4 +1,11 @@
-import { BaseFilters, IDelivery, IDeliveryDTO, IDeliveryService, IRepository } from '@/interfaces';
+import {
+  BaseFilters,
+  IDelivery,
+  IDeliveryDTO,
+  IDeliveryService,
+  IRepository,
+  PaginationData,
+} from '@/interfaces';
 
 class DeliveryService implements IDeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}
@@ -6,7 +13,7 @@ class DeliveryService implements IDeliveryService {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  async getDeliveries(filters: BaseFilters): Promise<IDelivery[]> {
+  async getDeliveries(filters: BaseFilters): Promise<PaginationData<IDelivery>> {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }

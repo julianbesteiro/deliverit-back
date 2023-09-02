@@ -13,8 +13,8 @@ export interface IDelivery {
   userId?: string;
   startingLocation?: Cords;
   destinationLocation?: Cords;
-  startingDate?: Date;
-  resolutionDate?: Date;
+  startingDeliveryDate?: Date;
+  resolutionDeliveryDate?: Date;
 }
 
 export interface IDeliveryForTesting {
