@@ -1,12 +1,18 @@
 import { IDelivery } from './Entities/IDelivery';
 import { BaseFilters } from './IFilters';
+import { PaginationData } from './IRepository';
+
+export interface IDeliveryDTO {
+  userId: string;
+  orders: IDelivery[];
+}
 
 export interface IDeliveryService {
-  getDelivery(id: string): Promise<IDelivery | null>;
-  getDeliveries(filters?: BaseFilters): Promise<IDelivery[] | null>;
-  createDelivery(item: IDelivery): Promise<IDelivery | null>;
-  updateDelivery(id: string, item: IDelivery): Promise<IDelivery | null>;
+  getDelivery(id: string): Promise<IDelivery>;
+  getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>>;
+  createDelivery(item: IDeliveryDTO): Promise<IDelivery | IDelivery[]>;
+  updateDelivery(item: IDelivery): Promise<IDelivery>;
   deleteDelivery(id: string): Promise<void>;
-  getDeliveriesByUser(filters?: BaseFilters): Promise<IDelivery[] | null>;
-  patchDelivery(filters?: BaseFilters): Promise<IDelivery | null>;
+  getDeliveriesByUser(filters?: BaseFilters): Promise<IDelivery[]>;
+  patchDelivery(delivery: IDelivery): Promise<IDelivery>;
 }

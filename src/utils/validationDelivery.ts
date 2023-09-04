@@ -1,44 +1,39 @@
-// validationDelivery.ts
-
 import { DeliveryRepositoryFilters, IDelivery } from '@/interfaces';
 import { validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '@/errors/customErrors';
 
-export async function validateDeliveryInput(deliveryData: IDelivery): Promise<IDelivery> {
+export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDelivery[]> {
   const errors: Error[] = [];
 
-  if (!deliveryData || Object.keys(deliveryData).length === 0) {
-    errors.push(new BadUserInputError({ message: 'Delivery data is empty' }));
+  if (!Array.isArray(orders)) {
+    throw new BadUserInputError({ message: 'The input is input is not an array' });
   }
 
-  if (!deliveryData.orderId || !validateObjectId(deliveryData.orderId)) {
-    errors.push(new BadUserInputError({ message: 'Order id is not valid' }));
+  if (orders.length === 0 || orders.length > 10) {
+    errors.push(
+      new BadUserInputError({
+        message: 'The input is not valid, its length is 0 or greater than 10',
+      }),
+    );
   }
 
-  if (!deliveryData.userId || !validateObjectId(deliveryData.userId)) {
-    errors.push(new BadUserInputError({ message: 'User id is not valid' }));
-  }
-
-  if (!deliveryData.destinationLocation) {
-    errors.push(new BadUserInputError({ message: 'Destination location is required' }));
-  }
-
-  if (!deliveryData.destinationLocation?.lat || !deliveryData.destinationLocation?.lng) {
-    errors.push(new BadUserInputError({ message: 'Destination location is not valid' }));
-  }
-
-  if (
-    typeof deliveryData.destinationLocation.lat !== 'number' ||
-    typeof deliveryData.destinationLocation.lng !== 'number'
-  ) {
-    errors.push(new BadUserInputError({ message: 'Destination location is not valid' }));
-  }
+  orders.forEach((order) => {
+    if (!validateObjectId(order.orderId)) {
+      errors.push(new BadUserInputError({ message: `Invalid order id : ${order.orderId}` }));
+    }
+    if (Object.keys(order).length > 1 || Object.keys(order).length === 0) {
+      errors.push(new BadUserInputError({ message: 'Invalid data' }));
+    }
+    if (Object.keys(order)[0] !== 'orderId') {
+      errors.push(new BadUserInputError({ message: 'Status cannot be changed' }));
+    }
+  });
 
   if (errors.length > 0) {
     throw errors;
   }
 
-  return deliveryData;
+  return orders;
 }
 
 export async function validateDeliveryFilters(
@@ -66,8 +61,11 @@ export async function validateDeliveryFilters(
     }
   }
 
-  if (filters.page && filters.page < 0) {
-    errors.push(new BadUserInputError({ message: 'Page is not valid' }));
+  if (filters.page) {
+    filters.page = parseInt(filters.page.toString() as string);
+    if (filters.page < 0 || typeof filters.page !== 'number' || isNaN(filters.page)) {
+      errors.push(new BadUserInputError({ message: 'Page is not valid' }));
+    }
   }
 
   if (errors.length > 0) {
