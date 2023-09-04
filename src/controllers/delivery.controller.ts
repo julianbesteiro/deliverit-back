@@ -97,13 +97,65 @@ class DeliveryController {
     },
   );
 
-  updateDelivery = asyncHandler(async () => {});
+  updateDelivery = asyncHandler(
+    async (req: RequestExpress | Request, res: Response<DataReponse>) => {
+      const { body } = req;
+      const { user } = req as RequestExpress;
 
-  deleteDelivery = asyncHandler(async () => {});
+      if (!validateObjectId(user.id)) {
+        throw new BadUserInputError({ id: 'Invalid id' });
+      }
+
+      const delivery: IDelivery = body;
+
+      const deliveryUpdated: IDelivery | null = await this.deliveryServices.updateDelivery(
+        delivery,
+      );
+
+      return res.status(200).json({
+        message: 'Delivery updated',
+        data: deliveryUpdated,
+        status: 200,
+      });
+    },
+  );
+
+  deleteDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
+    const { id } = req.params;
+
+    if (!validateObjectId(id)) {
+      throw new BadUserInputError({ id: 'Invalid id' });
+    }
+
+    await this.deliveryServices.deleteDelivery(id);
+
+    return res.status(204).json({
+      message: 'Delivery deleted',
+      data: null,
+      status: 204,
+    });
+  });
+
+  patchDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
+    const { id } = req.params;
+    const { body } = req;
+
+    if (!validateObjectId(id)) {
+      throw new BadUserInputError({ id: 'Invalid id' });
+    }
+
+    const delivery: IDelivery = body;
+
+    const deliveryPatched: IDelivery | null = await this.deliveryServices.patchDelivery(delivery);
+
+    return res.status(200).json({
+      message: 'Delivery patched',
+      data: deliveryPatched,
+      status: 200,
+    });
+  });
 
   getDeliveriesByUser = asyncHandler(async () => {});
-
-  patchDelivery = asyncHandler(async () => {});
 }
 
 export { DeliveryController };

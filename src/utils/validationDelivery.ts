@@ -61,8 +61,11 @@ export async function validateDeliveryFilters(
     }
   }
 
-  if (filters.page && filters.page < 0) {
-    errors.push(new BadUserInputError({ message: 'Page is not valid' }));
+  if (filters.page) {
+    filters.page = parseInt(filters.page.toString() as string);
+    if (filters.page < 0 || typeof filters.page !== 'number' || isNaN(filters.page)) {
+      errors.push(new BadUserInputError({ message: 'Page is not valid' }));
+    }
   }
 
   if (errors.length > 0) {

@@ -33,20 +33,21 @@ class DeliveryService implements IDeliveryService {
     return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
   }
 
-  //eslint-disable-next-line
-  async updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {
-    throw new Error('Method not implemented.');
+  async updateDelivery(delivery: IDelivery): Promise<IDelivery> {
+    const updatedDelivery = this.deliveryRepository.update(delivery);
+    return updatedDelivery;
   }
-  //eslint-disable-next-line
-  async deleteDelivery(id: String): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async deleteDelivery(id: string): Promise<void> {
+    const deletedDelivery = this.deliveryRepository.delete(id);
+    return deletedDelivery;
   }
   //eslint-disable-next-line
   async getDeliveriesByUser(filter: BaseFilters): Promise<IDelivery[]> {
     throw new Error('Method not implemented.');
   }
   //eslint-disable-next-line
-  async patchDelivery(filter: BaseFilters): Promise<IDelivery> {
+  async patchDelivery(delivery: IDelivery): Promise<IDelivery> {
     throw new Error('Method not implemented.');
   }
 }
