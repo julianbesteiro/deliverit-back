@@ -1,8 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.adminRoutes = void 0;
-const express_1 = require("express");
-const controllers_1 = require("../controllers");
+const express_1 = require('express');
+const controllers_1 = require('../controllers');
 const router = (0, express_1.Router)();
 exports.adminRoutes = router;
 router.get('/date/workers', controllers_1.AdminController.workerDataByDate);
