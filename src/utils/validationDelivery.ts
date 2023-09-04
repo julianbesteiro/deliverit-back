@@ -1,9 +1,13 @@
 import { DeliveryRepositoryFilters, IDelivery } from '@/interfaces';
-import { validateObjectId } from './validateObjectId';
+import { hasDuplicates, validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '@/errors/customErrors';
 
 export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDelivery[]> {
   const errors: Error[] = [];
+
+  if (hasDuplicates(orders, 'orderId')) {
+    errors.push(new BadUserInputError({ message: 'Duplicate order id' }));
+  }
 
   if (!Array.isArray(orders)) {
     throw new BadUserInputError({ message: 'The input is input is not an array' });

@@ -36,7 +36,6 @@ class DeliveryController {
 
       const orders: IDelivery[] = body;
 
-      //Validations
       const ordersValidate = await validateDeliveryInput(orders);
 
       const deliveries: IDelivery | IDelivery[] = await this.deliveryServices.createDelivery({
