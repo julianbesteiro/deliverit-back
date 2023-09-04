@@ -76,9 +76,13 @@ class DeliveryController {
 
       filters = await validateDeliveryFilters(filters);
 
-      const deliveries: PaginationData<IDelivery> = await this.deliveryServices.getDeliveries(
-        filters,
-      );
+      let deliveries: PaginationData<IDelivery>;
+
+      if (Object.keys(filters).length === 0) {
+        deliveries = await this.deliveryServices.getDeliveries();
+      } else {
+        deliveries = await this.deliveryServices.getDeliveries(filters);
+      }
 
       return res.status(200).json({
         message: 'Deliveries found',

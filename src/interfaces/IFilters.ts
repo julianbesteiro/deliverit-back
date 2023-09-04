@@ -9,4 +9,5 @@ export interface BaseFilters {
 
 export interface DeliveryRepositoryFilters extends BaseFilters {
   status?: ValidStatus;
+  userId?: string;
 }
