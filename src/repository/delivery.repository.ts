@@ -27,27 +27,31 @@ class DeliveryRepository implements IRepository<IDelivery> {
   ): Promise<{ data: IDelivery[]; page: number; totalPages: number; totalItems: number }> {
     const page = filters?.page || 1;
     const limit = filters?.limit || 10;
-
     const skip = (page - 1) * limit;
 
-    let query = this.deliveryModel.find();
-
-    if (filters) {
-      // Aplica los filtros solo si se proporcionan
-      query = query.find({ status: filters.status });
+    // Construir el filtro de búsqueda
+    const filter: DeliveryRepositoryFilters = {};
+    if (filters?.status) {
+      filter.status = filters.status;
+    }
+    if (filters?.userId) {
+      filter.userId = filters.userId;
     }
 
-    const totalItems = await (filters
-      ? this.deliveryModel.countDocuments(filters)
-      : this.deliveryModel.countDocuments());
+    // Contar el número total de elementos que coinciden con el filtro
+    const totalItems = await this.deliveryModel.countDocuments(filter);
 
+    // Calcular el número total de páginas
     const totalPages = Math.ceil(totalItems / limit);
 
-    query = query.skip(skip).limit(limit);
+    // Consulta con filtrado, paginación y selección
+    const query = this.deliveryModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .select('status _id orderId userId');
 
-    // Utiliza select para especificar los campos que deseas recuperar
-    query = query.select('status _id orderId');
-
+    // Ejecutar la consulta
     const deliveries = await query.exec();
 
     return {

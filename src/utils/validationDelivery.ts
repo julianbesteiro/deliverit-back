@@ -67,6 +67,11 @@ export async function validateDeliveryFilters(
       errors.push(new BadUserInputError({ message: 'Page is not valid' }));
     }
   }
+  if (filters.userId) {
+    if (!validateObjectId(filters.userId)) {
+      errors.push(new BadUserInputError({ message: 'User id is not valid' }));
+    }
+  }
 
   if (errors.length > 0) {
     throw errors;
