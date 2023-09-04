@@ -24,18 +24,18 @@ class AdminService {
     const valueCounts2: { [key: string]: number } = {};
 
     deliveriesByDate.forEach((value) => {
-      if (valueCounts[value.userId]) {
-        valueCounts[value.userId]++;
+      if (valueCounts[value.userId as string]) {
+        valueCounts[value.userId as string]++;
       } else {
-        valueCounts[value.userId] = 1;
+        valueCounts[value.userId as string] = 1;
       }
     });
 
     deliveriesByDate.forEach((value) => {
-      if (value.status == 'delivered' && valueCounts2[value.userId]) {
-        valueCounts2[value.userId]++;
+      if (value.status == 'delivered' && valueCounts2[value.userId as string]) {
+        valueCounts2[value.userId as string]++;
       } else if (value.status == 'delivered') {
-        valueCounts2[value.userId] = 1;
+        valueCounts2[value.userId as string] = 1;
       }
     });
 
@@ -110,7 +110,7 @@ class AdminService {
 
     const availableWorkers = await AdminRepository.availableWorkers(newDate);
 
-    const activeWorkers = deliveriesByDate.map((delivery) => delivery.userId.toString());
+    const activeWorkers = deliveriesByDate.map((delivery) => delivery.userId?.toString());
 
     const deliveredDeliveries = deliveriesByDate.filter(
       (delivery) => delivery.status === 'delivered',

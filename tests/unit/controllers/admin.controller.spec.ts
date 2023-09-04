@@ -65,7 +65,7 @@ describe('AdminController', () => {
       mockRequest.body = orderInput;
 
       const newOrderServiceMock = jest.spyOn(AdminService, 'newOrder');
-      newOrderServiceMock.mockResolvedValue(orderOutput);
+      newOrderServiceMock.mockResolvedValue(orderOutput as any);
 
       await expect(
         AdminController.newOrder(
