@@ -1,6 +1,7 @@
 export * from './Entities/IDelivery';
 export * from './Entities/IUser';
 export * from './Entities/IOrder';
+export * from './Entities/ISworn';
 export * from './IRepository';
 export * from './IFilters';
 export * from './IRepository';

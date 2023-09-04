@@ -11,5 +11,6 @@ router.use('/user', userRoutes);
 router.use('/order', orderRoutes);
 router.use('/admin', adminRoutes);
 router.use('/delivery', isAuth, deliveryRouter);
+router.use('/sworn', isAuth, deliveryRouter);
 
 export { router as allRoutes };
