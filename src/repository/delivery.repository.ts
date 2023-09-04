@@ -7,7 +7,12 @@ class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
 
   async create(delivery: IDelivery): Promise<IDelivery> {
-    const existingDelivery = await this.deliveryModel.findOne({ orderId: delivery.orderId });
+    const existingDelivery = await this.deliveryModel.findOne({
+      orderId: delivery.orderId,
+      status: {
+        $in: ['delivered', 'pending', 'on-course'],
+      },
+    });
 
     if (existingDelivery) {
       throw new BadUserInputError({ message: 'Delivery already exists' });
@@ -29,7 +34,6 @@ class DeliveryRepository implements IRepository<IDelivery> {
     const limit = filters?.limit || 10;
     const skip = (page - 1) * limit;
 
-    // Construir el filtro de búsqueda
     const filter: DeliveryRepositoryFilters = {};
     if (filters?.status) {
       filter.status = filters.status;
@@ -38,20 +42,16 @@ class DeliveryRepository implements IRepository<IDelivery> {
       filter.userId = filters.userId;
     }
 
-    // Contar el número total de elementos que coinciden con el filtro
     const totalItems = await this.deliveryModel.countDocuments(filter);
 
-    // Calcular el número total de páginas
     const totalPages = Math.ceil(totalItems / limit);
 
-    // Consulta con filtrado, paginación y selección
     const query = this.deliveryModel
       .find(filter)
       .skip(skip)
       .limit(limit)
       .select('status _id orderId userId');
 
-    // Ejecutar la consulta
     const deliveries = await query.exec();
 
     return {
