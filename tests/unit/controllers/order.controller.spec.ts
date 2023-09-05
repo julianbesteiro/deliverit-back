@@ -1,7 +1,7 @@
 import { OrderController } from '../../../src/controllers/order.controller';
 import { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
-import OrderService from '../../../src/services/order.service';
+import { OrderService } from '@/services/order.service';
 import { ValidStatuses } from '../../../src/interfaces/Entities/IOrder';
 import app from '../../../src/server';
 
