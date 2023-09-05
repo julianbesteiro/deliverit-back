@@ -1,5 +1,5 @@
 import { BadUserInputError } from '@/errors/customErrors';
-import { validateCalendarDate } from './validateDate';
+import { validateDate } from './validateDate';
 
 export interface IOrderInput {
   address: string;
@@ -17,43 +17,40 @@ export async function validateOrderInput(orderData: IOrderInput) {
   const errors: Error[] = [];
 
   if (!orderData || Object.keys(orderData).length === 0) {
-    errors.push(new BadUserInputError({ message: 'Order data is empty' }));
+    errors.push(new BadUserInputError({ message: 'Order data is not valid' }));
   }
 
-  if (!orderData.address) {
-    errors.push(new BadUserInputError({ message: 'Address is required' }));
+  if (!orderData.address || typeof orderData.address !== 'string') {
+    errors.push(new BadUserInputError({ message: 'Address is not valid' }));
   }
 
-  if (!orderData.coords?.lat || !orderData.coords?.lng) {
+  if (
+    !orderData.coords?.lat ||
+    !orderData.coords?.lng ||
+    typeof orderData.coords.lat !== 'number' ||
+    typeof orderData.coords.lng !== 'number'
+  ) {
     errors.push(new BadUserInputError({ message: 'Destination location is not valid' }));
   }
 
-  if (typeof orderData.coords.lat !== 'number' || typeof orderData.coords.lng !== 'number') {
-    errors.push(new BadUserInputError({ message: 'Destination location format is not valid' }));
+  if (!orderData.packagesQuantity || typeof orderData.packagesQuantity !== 'number') {
+    errors.push(new BadUserInputError({ message: 'Packages quantity is not valid' }));
   }
 
-  if (typeof orderData.address !== 'string') {
-    errors.push(new BadUserInputError({ message: 'Address format is not valid' }));
+  if (!orderData.weight || typeof orderData.weight !== 'number') {
+    errors.push(new BadUserInputError({ message: 'Weight is not valid' }));
   }
 
-  if (typeof orderData.packagesQuantity !== 'number') {
-    errors.push(new BadUserInputError({ message: 'Packages quantity format is not valid' }));
+  if (!orderData.recipient || typeof orderData.recipient !== 'string') {
+    errors.push(new BadUserInputError({ message: 'Recipient is not valid' }));
   }
 
-  if (typeof orderData.weight !== 'number') {
-    errors.push(new BadUserInputError({ message: 'Weight format is not valid' }));
-  }
-
-  if (typeof orderData.recipient !== 'string') {
-    errors.push(new BadUserInputError({ message: 'Recipient format is not valid' }));
-  }
-
-  if (typeof orderData.deliveryDate !== 'string') {
-    errors.push(new BadUserInputError({ message: 'Date format is not valid' }));
+  if (!orderData.deliveryDate || typeof orderData.deliveryDate !== 'string') {
+    errors.push(new BadUserInputError({ message: 'Delivery date is not valid' }));
   }
 
   if (typeof orderData.deliveryDate === 'string') {
-    validateCalendarDate(orderData.deliveryDate);
+    validateDate(orderData.deliveryDate);
   }
 
   if (errors.length > 0) {
