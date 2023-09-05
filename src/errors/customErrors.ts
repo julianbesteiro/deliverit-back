@@ -37,6 +37,12 @@ export class ValidationError extends CustomError {
   }
 }
 
+export class BadRequestError extends CustomError {
+  constructor(message: string) {
+    super(message, 'BAD REQUEST ERROR', 400);
+  }
+}
+
 export class InvalidTokenError extends CustomError {
   constructor(message = 'Authentication token is invalid.') {
     super(message, 'INVALID_TOKEN', 401);

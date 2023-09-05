@@ -1,47 +1,58 @@
-/* import { Request, Response } from 'express';
-import { updateOrderService } from '../services/order.service';
-
-export const updateOrder = async (req: Request, res: Response) => {
-  try {
-    await updateOrderService(req, res);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error al actualizar la orden' });
-  }
-}; */
-
 import Order from '../models/Order';
 import { db } from '../../config/db';
-import { IOrder } from '../interfaces';
+import { IOrder } from '../../src/interfaces/';
+import { log } from 'console';
+import { EntityNotFoundError } from '@/errors/customErrors';
 
 class OrderRepository {
-  static async orderRepositoryTest(maxOrders: number) {
-    try {
-      await db.connect();
-
-      const allOrders = await Order.find().limit(maxOrders);
-
-      db.disconnect();
-
-      console.log('test repository');
-      return allOrders;
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   static async createOrder(order: IOrder) {
-    try {
-      await db.connect();
-      const newOrder = await Order.create(order);
-      db.disconnect();
-
-      return newOrder;
-    } catch (error) {
-      console.log('ESTE ES EL ERROR DE LA DB---->', error);
-      throw error;
-    }
+    const newOrder = await Order.create(order);
+    return newOrder;
   }
+
+  
+  static async getOrders() {
+    const allOrders = await Order.find();
+      return allOrders;
+  }
+
+
+  static async getOrder(orderId: string) {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        const entityName = 'Order'; 
+        throw new EntityNotFoundError(entityName);
+       }
+      return order;
+  }
+
+  static async deleteOrder(orderId: string) {
+      const deletedOrder = await Order.findByIdAndDelete(orderId);
+      if (!deletedOrder) {
+       const entityName = 'Order'; 
+       throw new EntityNotFoundError(entityName);
+      }
+      return deletedOrder;
+  }
+
+  static async updateOrder(orderId: string, updatedOrder: IOrder) {
+      const options = { new: true }; // Devolver el documento actualizado
+      const updated = await Order.findByIdAndUpdate(orderId, updatedOrder, options);
+      if (!updated) {
+        const entityName = 'Order'; 
+        throw new EntityNotFoundError(entityName);
+       }
+      return updated;
+  }
+
+  static async patchOrder(orderId: string, updatedFields: Partial<IOrder>) {
+      const options = { new: true }; // Devolver el documento actualizado
+      const patched = await Order.findByIdAndUpdate(orderId, updatedFields, options);
+      return patched;
+  }
+
 }
 
 export { OrderRepository };
+
