@@ -1,6 +1,7 @@
 import { RequestExpress } from '@/interfaces/IRequestExpress';
 import { ISwornService } from '@/interfaces/ISwornService';
 import { asyncHandler } from '@/utils/asyncHandler';
+import { validateSwornInput } from '@/utils/validateSworn';
 import { Request, Response } from 'express';
 
 class SwornController {
@@ -10,19 +11,26 @@ class SwornController {
     const { body } = req;
     const { user } = req as RequestExpress;
 
+    const swornValidate = validateSwornInput(body);
+
     const newSworn = await this.swornService.createSworn({
-      ...body,
-      user: user.id,
+      ...swornValidate,
+      userId: user.id,
     });
 
+    const isAvailable =
+      newSworn.alcoholicBeverages && newSworn.psychoactiveMedication && newSworn.familyProblem;
+
     res.status(201).json({
-      success: true,
+      success: isAvailable,
       data: newSworn,
     });
   });
 
   deleteSworn = asyncHandler(async (req: RequestExpress | Request, res: Response) => {
     const { id } = req.params;
+
+    console.log(id);
 
     await this.swornService.deleteSworn(id);
 

@@ -1,7 +1,7 @@
 import mongoose, { Model } from 'mongoose';
-import { deliverySchema } from '../schemas';
+import { swornSchema } from '../schemas';
 import { ISworn } from '@/interfaces';
 
-const SwornModel: Model<ISworn> = mongoose.models.Sworn || mongoose.model('Sworn', deliverySchema);
+const SwornModel: Model<ISworn> = mongoose.models.Sworn || mongoose.model('Sworn', swornSchema);
 
 export default SwornModel;
