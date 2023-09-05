@@ -11,25 +11,6 @@ class AdminRepository {
     return orderCreated;
   }
 
-  // static async dataByDate(date: Date, nextDay: Date) {
-  //   const availableOrders = await OrderModel.find({ deliveryDate: date });
-
-  //   const deliveredOrders = await DeliveryModel.find({
-  //     $and: [{ _id: { $in: availableOrders.map((order) => order._id) } }, { deliveryDate: date }],
-  //   });
-
-  //   const availableWorkers = await UserModel.find({ createdDate: { $lte: nextDay } });
-
-  //   const activeWorkersOrders = await DeliveryModel.find({
-  //     $and: [
-  //       { userId: { $in: availableWorkers.map((worker) => worker._id) } },
-  //       { deliveryDate: date },
-  //     ],
-  //   });
-
-  //   return { availableOrders, deliveredOrders, availableWorkers, activeWorkersOrders };
-  // }
-
   static async availableOrdersByDate(day: number, month: number, year: number) {
     const availableOrders = await OrderModel.find({
       $expr: {
@@ -43,20 +24,6 @@ class AdminRepository {
 
     return availableOrders;
   }
-
-  // static async deliveriesByDate(day: number, month: number, year: number) {
-  //   const deliveredDeliveries = await DeliveryModel.find({
-  //     $expr: {
-  //       $and: [
-  //         { $eq: [{ $year: '$deliveryDate' }, year] },
-  //         { $eq: [{ $month: '$deliveryDate' }, month] },
-  //         { $eq: [{ $dayOfMonth: '$deliveryDate' }, day] },
-  //       ],
-  //     },
-  //   });
-
-  //   return deliveredDeliveries;
-  // }
 
   static async availableWorkers(nextDay: Date) {
     const availableWorkers = await UserModel.find({ createdAt: { $lte: nextDay } });
@@ -77,19 +44,6 @@ class AdminRepository {
 
     return deliveriesByDate;
   }
-
-  // static async workerDataByDate(date: Date, nextDay: Date) {
-  //   const availableWorkers = await UserModel.find({ createdDate: { $lte: nextDay } });
-
-  //   const activeWorkersOrders = await DeliveryModel.find({
-  //     $and: [
-  //       { userId: { $in: availableWorkers.map((worker) => worker._id) } },
-  //       { resolutionDate: date },
-  //     ],
-  //   });
-
-  //   return { availableWorkers, activeWorkersOrders };
-  // }
 
   static async workerStatus(id: ObjectId) {
     const workerData = await UserModel.findOne({ _id: id });
@@ -116,25 +70,6 @@ class AdminRepository {
       return false;
     }
   }
-
-  // static async workerDataById(id: ObjectId) {
-  //   const workerData = await UserModel.findOne({ _id: id });
-
-  //   const deliveredOrders = await DeliveryModel.find({
-  //     $and: [{ userId: id }, { status: 'delivered' }],
-  //   });
-
-  //   const pendingOrders = await DeliveryModel.find({
-  //     $and: [
-  //       { userId: id },
-  //       {
-  //         $or: [{ status: 'pending' }, { status: 'onCourse' }],
-  //       },
-  //     ],
-  //   });
-
-  //   return { workerData, deliveredOrders, pendingOrders };
-  // }
 
   static async deliveryDataById(id: ObjectId) {
     const workerData = await UserModel.findOne({ _id: id });

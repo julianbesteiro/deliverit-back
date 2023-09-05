@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 class AdminService {
   public static async workerDataByDate(date: Date) {
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Adding 1 because getMonth() returns 0-based month (0 = January, 1 = February, and so on)
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
     const newDate = new Date(date);
@@ -81,7 +81,7 @@ class AdminService {
 
   public static async orderDataByDate(date: Date) {
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Adding 1 because getMonth() returns 0-based month (0 = January, 1 = February, and so on)
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
     const orderDataByDate = await AdminRepository.availableOrdersByDate(day, month, year);
@@ -98,7 +98,7 @@ class AdminService {
 
   public static async dataByDate(date: Date) {
     const day = date.getDate();
-    const month = date.getMonth() + 1; // Adding 1 because getMonth() returns 0-based month (0 = January, 1 = February, and so on)
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
     const newDate = new Date(date);
@@ -112,19 +112,15 @@ class AdminService {
 
     const activeWorkers = deliveriesByDate.map((delivery) => delivery.userId?.toString());
 
-    const deliveredDeliveries = deliveriesByDate.filter(
-      (delivery) => delivery.status === 'delivered',
-    );
-
     const uniqueActiveWorkers = [...new Set(activeWorkers)];
 
+    const deliveredDeliveries = deliveriesByDate
+      .filter((delivery) => delivery.status === 'delivered')
+      .map((delivery) => delivery.orderId.toString());
+
     return {
-      deliveredOrders: availableOrders.reduce((acc, order) => {
-        deliveredDeliveries
-          .map((delivery) => delivery.orderId.toString())
-          .includes(order._id.toString())
-          ? acc++
-          : acc;
+      deliveredOrders: deliveredDeliveries.reduce((acc, delivery) => {
+        availableOrders.map((order) => order._id.toString()).includes(delivery) ? acc++ : acc;
         return acc;
       }, 0),
       availableOrders: availableOrders.length,
