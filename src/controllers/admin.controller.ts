@@ -10,9 +10,9 @@ class AdminController {
   public static workerDataByDate = asyncHandler(async (req: Request, res: Response) => {
     const { date } = req.params;
 
-    const convertedDate = await validateDate(date);
+    const { day, month, year, nextDay } = await validateDate(date);
 
-    const workerDataByDate = await AdminService.workerDataByDate(convertedDate);
+    const workerDataByDate = await AdminService.workerDataByDate(day, month, year, nextDay);
 
     return res.status(200).json({
       message: 'Successful data request',
@@ -42,9 +42,9 @@ class AdminController {
   public static orderDataByDate = asyncHandler(async (req: Request, res: Response) => {
     const { date } = req.params;
 
-    const convertedDate = await validateDate(date);
+    const { day, month, year } = await validateDate(date);
 
-    const orderDataByDate = await AdminService.orderDataByDate(convertedDate);
+    const orderDataByDate = await AdminService.orderDataByDate(day, month, year);
 
     return res.status(200).json({
       message: 'Successful data request',
@@ -56,9 +56,9 @@ class AdminController {
   public static dataByDate = asyncHandler(async (req: Request, res: Response) => {
     const { date } = req.params;
 
-    const convertedDate = await validateDate(date);
+    const { day, month, year, nextDay } = await validateDate(date);
 
-    const dataByDate = await AdminService.dataByDate(convertedDate);
+    const dataByDate = await AdminService.dataByDate(day, month, year, nextDay);
 
     return res.status(200).json({
       message: 'Successful data request',

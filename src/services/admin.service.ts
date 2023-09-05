@@ -5,15 +5,8 @@ import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
 class AdminService {
-  public static async workerDataByDate(date: Date) {
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1);
-
-    const availableWorkers = (await AdminRepository.availableWorkers(newDate)).map(
+  public static async workerDataByDate(day: number, month: number, year: number, nextDay: Date) {
+    const availableWorkers = (await AdminRepository.availableWorkers(nextDay)).map(
       (worker) => worker._id,
     );
 
@@ -79,11 +72,7 @@ class AdminService {
     };
   }
 
-  public static async orderDataByDate(date: Date) {
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
+  public static async orderDataByDate(day: number, month: number, year: number) {
     const orderDataByDate = await AdminRepository.availableOrdersByDate(day, month, year);
 
     const filteredOrderDataByDate = orderDataByDate.map((order) => {
@@ -96,19 +85,12 @@ class AdminService {
     return filteredOrderDataByDate;
   }
 
-  public static async dataByDate(date: Date) {
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1);
-
+  public static async dataByDate(day: number, month: number, year: number, nextDay: Date) {
     const deliveriesByDate = await AdminRepository.deliveriesByDate(day, month, year);
 
     const availableOrders = await AdminRepository.availableOrdersByDate(day, month, year);
 
-    const availableWorkers = await AdminRepository.availableWorkers(newDate);
+    const availableWorkers = await AdminRepository.availableWorkers(nextDay);
 
     const activeWorkers = deliveriesByDate.map((delivery) => delivery.userId?.toString());
 
