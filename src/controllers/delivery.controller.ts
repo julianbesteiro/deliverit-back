@@ -1,10 +1,5 @@
 import { BadUserInputError } from '@/errors/customErrors';
-import {
-  DeliveryRepositoryFilters,
-  IDelivery,
-  IDeliveryService,
-  PaginationData,
-} from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
+import { IDelivery, IDeliveryService, PaginationData } from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
 import { asyncHandler } from '@/utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '@/utils/validateObjectId';
@@ -71,9 +66,7 @@ class DeliveryController {
     async (req: Request, res: Response<PaginationDataResponse | DataReponse>) => {
       const { query } = req;
 
-      let filters: DeliveryRepositoryFilters = query;
-
-      filters = await validateDeliveryFilters(filters);
+      const filters = await validateDeliveryFilters(query);
 
       let deliveries: PaginationData<IDelivery>;
 
@@ -103,16 +96,17 @@ class DeliveryController {
   updateDelivery = asyncHandler(
     async (req: RequestExpress | Request, res: Response<DataReponse>) => {
       const { body } = req;
-      const { user } = req as RequestExpress;
+      const deliveryId = req.params.id;
 
-      if (!validateObjectId(user.id)) {
+      if (!validateObjectId(deliveryId)) {
         throw new BadUserInputError({ id: 'Invalid id' });
       }
 
-      const delivery: IDelivery = body;
+      const update: IDelivery = body;
 
       const deliveryUpdated: IDelivery | null = await this.deliveryServices.updateDelivery(
-        delivery,
+        deliveryId,
+        update,
       );
 
       return res.status(200).json({
@@ -132,33 +126,9 @@ class DeliveryController {
 
     await this.deliveryServices.deleteDelivery(id);
 
-    return res.status(204).json({
-      message: 'Delivery deleted',
-      data: null,
-      status: 204,
-    });
+    console.log('Delivery deleted');
+    return res.status(204);
   });
-
-  patchDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
-    const { id } = req.params;
-    const { body } = req;
-
-    if (!validateObjectId(id)) {
-      throw new BadUserInputError({ id: 'Invalid id' });
-    }
-
-    const delivery: IDelivery = body;
-
-    const deliveryPatched: IDelivery | null = await this.deliveryServices.patchDelivery(delivery);
-
-    return res.status(200).json({
-      message: 'Delivery patched',
-      data: deliveryPatched,
-      status: 200,
-    });
-  });
-
-  getDeliveriesByUser = asyncHandler(async () => {});
 }
 
 export { DeliveryController };

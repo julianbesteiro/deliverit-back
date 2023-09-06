@@ -79,11 +79,9 @@ class DeliveryRepository implements IRepository<IDelivery> {
     return delivery;
   }
 
-  async update(delivery: IDelivery): Promise<IDelivery> {
-    const { _id, ...updateData } = delivery; // Extraer _id y otros datos a actualizar
-    console.log(_id);
+  async update(id: string, updateData: IDelivery): Promise<IDelivery> {
     // Primero, busca el documento por su _id
-    const existingDelivery = await this.deliveryModel.findById(_id);
+    const existingDelivery = await this.deliveryModel.findById(id);
 
     if (!existingDelivery) {
       throw new DatabaseConnectionError('Delivery not found'); // Manejar si el documento no se encuentra

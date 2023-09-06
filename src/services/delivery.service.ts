@@ -13,7 +13,7 @@ class DeliveryService implements IDeliveryService {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  async getDeliveries(filters: BaseFilters): Promise<PaginationData<IDelivery>> {
+  async getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>> {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
@@ -33,22 +33,14 @@ class DeliveryService implements IDeliveryService {
     return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
   }
 
-  async updateDelivery(delivery: IDelivery): Promise<IDelivery> {
-    const updatedDelivery = this.deliveryRepository.update(delivery);
+  async updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {
+    const updatedDelivery = this.deliveryRepository.update(id, delivery);
     return updatedDelivery;
   }
 
   async deleteDelivery(id: string): Promise<void> {
     const deletedDelivery = this.deliveryRepository.delete(id);
     return deletedDelivery;
-  }
-  //eslint-disable-next-line
-  async getDeliveriesByUser(filter: BaseFilters): Promise<IDelivery[]> {
-    throw new Error('Method not implemented.');
-  }
-  //eslint-disable-next-line
-  async patchDelivery(delivery: IDelivery): Promise<IDelivery> {
-    throw new Error('Method not implemented.');
   }
 }
 

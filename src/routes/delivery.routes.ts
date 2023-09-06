@@ -12,10 +12,8 @@ const deliveryController = new DeliveryController(deliveryService);
 
 router.get('/all', deliveryController.getDeliveries);
 router.get('/:id', deliveryController.getDelivery);
-router.get('/user/:id', deliveryController.getDeliveriesByUser);
 router.post('/', deliveryController.createDelivery);
-router.put('/', deliveryController.updateDelivery);
+router.put('/:id', deliveryController.updateDelivery);
 router.delete('/:id', deliveryController.deleteDelivery);
-router.patch('/:id', deliveryController.patchDelivery);
 
 export { router as deliveryRouter };

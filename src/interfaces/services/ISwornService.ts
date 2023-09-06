@@ -1,4 +1,4 @@
-import { ISworn } from './Entities/ISworn';
+import { ISworn } from '../Entities/ISworn';
 
 export interface ISwornService {
   createSworn(sworn: ISworn): Promise<ISworn>;

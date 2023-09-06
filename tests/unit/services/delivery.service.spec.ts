@@ -1,127 +1,221 @@
+import { IDelivery, IRepository, PaginationData } from '@/interfaces';
 import DeliveryService from '@/services/delivery.service';
-import DeliveryRepository from '@/repository/delivery.repository';
-import { IDelivery, IDeliveryModel } from '@/interfaces';
 import { ObjectId } from 'mongodb';
 
-jest.mock('@/repository/delivery.repository');
+class MockRepository implements IRepository<IDelivery> {
+  create(item: IDelivery): Promise<IDelivery> {
+    const delivery: Promise<IDelivery> = new Promise((resolve) => {
+      resolve({
+        _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        status: 'pending',
+      });
+    });
+
+    return delivery;
+  }
+  update(id: string, item: IDelivery): Promise<IDelivery> {
+    const delivery: Promise<IDelivery> = new Promise((resolve) => {
+      resolve({
+        _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        status: 'delivered',
+      });
+    });
+
+    return delivery;
+  }
+  delete(id: string): Promise<void> {
+    const delivery: Promise<void> = new Promise((resolve) => {
+      resolve(undefined);
+    });
+
+    return delivery;
+  }
+  findAll(): Promise<PaginationData<IDelivery>> {
+    const deliveries: Promise<PaginationData<IDelivery>> = new Promise((resolve) => {
+      resolve({
+        data: [
+          {
+            _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+            orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+            userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+            status: 'pending',
+          },
+        ],
+        page: 1,
+        totalPages: 1,
+        totalItems: 1,
+      });
+    });
+    return deliveries;
+  }
+  findById(id: string): Promise<IDelivery> {
+    const delivery: Promise<IDelivery> = new Promise((resolve) => {
+      resolve({
+        _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        status: 'pending',
+      });
+    });
+    return delivery;
+  }
+}
 
 describe('DeliveryService', () => {
-  let mockRepository: jest.Mocked<DeliveryRepository>;
   let deliveryService: DeliveryService;
+  let mockRepository: MockRepository;
 
   beforeEach(() => {
-    mockRepository = new DeliveryRepository(
-      {} as IDeliveryModel,
-    ) as jest.Mocked<DeliveryRepository>;
+    mockRepository = new MockRepository();
     deliveryService = new DeliveryService(mockRepository);
   });
 
-  it('createDelivery ====>', async () => {
-    const mockDelivery: IDelivery = {
-      status: 'pending',
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
-
-    mockRepository.create.mockResolvedValue(mockDelivery);
-
-    const result = await deliveryService.createDelivery(mockDelivery);
-
-    expect(result).toMatchObject(mockDelivery);
-    expect(mockRepository.create).toHaveBeenCalledTimes(1);
-    expect(mockRepository.create).toHaveBeenCalledWith(mockDelivery);
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 
-  it('getDeliveries ====>', async () => {
-    const mockDelivery: IDelivery = {
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
+  describe('getDeliveries', () => {
+    it('should return an array of deliveries', async () => {
+      const filters = {
+        page: 2,
+        status: 'pending',
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+      };
 
-    mockRepository.findAll.mockResolvedValue([mockDelivery]);
+      const repositoryMock = jest.spyOn(mockRepository, 'findAll');
 
-    const result = await deliveryService.getDeliveries();
+      const deliveries = await deliveryService.getDeliveries(filters);
 
-    expect(result).toMatchObject([mockDelivery]);
-    expect(mockRepository.findAll).toHaveBeenCalledTimes(1);
+      expect(repositoryMock).toHaveBeenCalledTimes(1);
+      expect(repositoryMock).toHaveBeenCalledWith(filters);
+      expect(deliveries).toEqual({
+        data: [
+          {
+            _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+            orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+            userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+            status: 'pending',
+          },
+        ],
+        page: 1,
+        totalPages: 1,
+        totalItems: 1,
+      });
+    });
+
+    it('should return an array of deliveries without filters', async () => {
+      const repositoryMock = jest.spyOn(mockRepository, 'findAll');
+
+      const deliveries = await deliveryService.getDeliveries();
+
+      expect(repositoryMock).toHaveBeenCalledTimes(1);
+      expect(deliveries).toEqual({
+        data: [
+          {
+            _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+            orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+            userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+            status: 'pending',
+          },
+        ],
+        page: 1,
+        totalPages: 1,
+        totalItems: 1,
+      });
+    });
   });
 
-  it('getDeliveryById ====>', async () => {
-    const mockId = new ObjectId();
+  describe('createDelivery', () => {
+    it('should create a delivery', async () => {
+      const deliveryDTO = {
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        orders: [
+          {
+            orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+          },
+          {
+            orderId: new ObjectId('64f8d822832a4a979369bf66').toHexString(),
+          },
+        ],
+      };
 
-    const mockDelivery: IDelivery = {
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
+      const repositoryMock = jest.spyOn(mockRepository, 'create');
 
-    mockRepository.findById.mockResolvedValue(mockDelivery);
+      const delivery = await deliveryService.createDelivery(deliveryDTO);
 
-    const result = await deliveryService.getDelivery(mockId.toHexString());
-
-    expect(result).toMatchObject(mockDelivery);
-    expect(mockRepository.findById).toHaveBeenCalledTimes(1);
-    expect(mockRepository.findById).toHaveBeenCalledWith(mockId.toHexString());
+      expect(repositoryMock).toHaveBeenCalledTimes(2);
+      expect(repositoryMock).toHaveBeenCalledWith({
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+      });
+    });
   });
 
-  it('updateDelivery ====>', async () => {
-    const mockId = new ObjectId();
+  describe('getDelivery', () => {
+    it('should return a delivery', async () => {
+      const repositoryMock = jest.spyOn(mockRepository, 'findById');
 
-    const mockDelivery: IDelivery = {
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
+      const delivery = await deliveryService.getDelivery(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+      );
 
-    mockRepository.update.mockResolvedValue(mockDelivery);
-
-    const result = await deliveryService.updateDelivery(mockId.toHexString(), mockDelivery);
-
-    expect(result).toMatchObject(mockDelivery);
-    expect(mockRepository.update).toHaveBeenCalledTimes(1);
-    expect(mockRepository.update).toHaveBeenCalledWith(mockId.toHexString(), mockDelivery);
+      expect(repositoryMock).toHaveBeenCalledTimes(1);
+      expect(repositoryMock).toHaveBeenCalledWith(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+      );
+      expect(delivery).toEqual({
+        _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        status: 'pending',
+      });
+    });
   });
 
-  it('deleteDelivery ====>', async () => {
-    const mockId = new ObjectId();
+  describe('updateDelivery', () => {
+    it('should update a delivery', async () => {
+      const repositoryMock = jest.spyOn(mockRepository, 'update');
 
-    mockRepository.delete.mockResolvedValue();
+      const delivery = await deliveryService.updateDelivery(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        {
+          status: 'delivered',
+        },
+      );
 
-    await deliveryService.deleteDelivery(mockId.toHexString());
-
-    expect(mockRepository.delete).toHaveBeenCalledTimes(1);
-    expect(mockRepository.delete).toHaveBeenCalledWith(mockId.toHexString());
+      expect(repositoryMock).toHaveBeenCalledTimes(1);
+      expect(repositoryMock).toHaveBeenCalledWith(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        {
+          status: 'delivered',
+        },
+      );
+      expect(delivery).toEqual({
+        _id: new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+        orderId: new ObjectId('64f8d822832a4a979369bf65').toHexString(),
+        userId: new ObjectId('64f65996eca69a74e40cc077').toHexString(),
+        status: 'delivered',
+      });
+    });
   });
 
-  it('getDeliveriesByUser ====>', async () => {
-    const mockDelivery: IDelivery = {
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
+  describe('deleteDelivery', () => {
+    it('should delete a delivery', async () => {
+      const repositoryMock = jest.spyOn(mockRepository, 'delete');
 
-    const mockFilters = { userId: mockDelivery.userId.toHexString() };
+      const delivery = await deliveryService.deleteDelivery(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+      );
 
-    mockRepository.findAll.mockResolvedValue([mockDelivery]);
-
-    const result = await deliveryService.getDeliveriesByUser(mockFilters);
-
-    expect(result).toMatchObject([mockDelivery]);
-    expect(mockRepository.findAll).toHaveBeenCalledTimes(1);
-    expect(mockRepository.findAll).toHaveBeenCalledWith(mockFilters);
-  });
-
-  it('patchDelivery ====>', async () => {
-    const mockDelivery: IDelivery = {
-      orderId: new ObjectId(),
-      userId: new ObjectId(),
-    };
-
-    const mockFilters = { userId: mockDelivery.userId.toHexString() };
-
-    mockRepository.update.mockResolvedValue(mockDelivery);
-
-    const result = await deliveryService.patchDelivery(mockFilters);
-
-    expect(result).toMatchObject(mockDelivery);
-    expect(mockRepository.update).toHaveBeenCalledTimes(1);
-    expect(mockRepository.update).toHaveBeenCalledWith(mockFilters, mockDelivery);
+      expect(repositoryMock).toHaveBeenCalledTimes(1);
+      expect(repositoryMock).toHaveBeenCalledWith(
+        new ObjectId('64f792433c82f3350d9e164d').toHexString(),
+      );
+      expect(delivery).toBeUndefined();
+    });
   });
 });
