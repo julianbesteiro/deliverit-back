@@ -10,7 +10,7 @@ export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 export interface IDelivery {
   _id?: string;
   status?: ValidStatus;
-  orderId: string;
+  orderId?: string;
   userId?: string;
   startingLocation?: Cords;
   destinationLocation?: Cords;

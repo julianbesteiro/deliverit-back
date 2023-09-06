@@ -13,7 +13,7 @@ class DeliveryService implements IDeliveryService {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  async getDeliveries(filters: BaseFilters): Promise<PaginationData<IDelivery>> {
+  async getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>> {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
