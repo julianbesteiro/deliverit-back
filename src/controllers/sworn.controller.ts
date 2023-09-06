@@ -1,5 +1,5 @@
 import { RequestExpress } from '@/interfaces/IRequestExpress';
-import { ISwornService } from '@/interfaces/ISwornService';
+import { ISwornService } from '@/interfaces/services/ISwornService';
 import { asyncHandler } from '@/utils/asyncHandler';
 import { validateSwornInput } from '@/utils/validateSworn';
 import { Request, Response } from 'express';
@@ -29,8 +29,6 @@ class SwornController {
 
   deleteSworn = asyncHandler(async (req: RequestExpress | Request, res: Response) => {
     const { id } = req.params;
-
-    console.log(id);
 
     await this.swornService.deleteSworn(id);
 

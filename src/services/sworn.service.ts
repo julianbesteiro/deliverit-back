@@ -1,5 +1,5 @@
 import { IRepository, ISworn } from '@/interfaces';
-import { ISwornService } from '@/interfaces/ISwornService';
+import { ISwornService } from '@/interfaces/services/ISwornService';
 
 class SwornService implements ISwornService {
   constructor(private readonly signwornRepository: IRepository<ISworn>) {}

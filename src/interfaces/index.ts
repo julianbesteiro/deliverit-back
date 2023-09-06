@@ -5,5 +5,5 @@ export * from './Entities/ISworn';
 export * from './IRepository';
 export * from './IFilters';
 export * from './IRepository';
-export * from './IDeliveryService';
+export * from './services/IDeliveryService';
 export * from './IOrderService';

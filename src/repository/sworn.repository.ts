@@ -32,7 +32,7 @@ class SwornRepository implements IRepository<ISworn> {
     };
   }
   //eslint-disable-next-line
-  async update(item: ISworn): Promise<ISworn> {
+  async update(id: string, item: ISworn): Promise<ISworn> {
     return {
       alcoholicBeverages: false,
       psychoactiveMedication: false,
