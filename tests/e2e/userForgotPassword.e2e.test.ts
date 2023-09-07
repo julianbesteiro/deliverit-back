@@ -4,11 +4,17 @@ import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
 import { UserController } from '../../src/controllers';
 
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn().mockResolvedValue(true),
+  }),
+}));
+
 const app = express();
 app.use(express.json());
-app.post('/user/forgot-password', UserController.forgotPassword);
+app.post('/user/request-password-reset', UserController.requestPasswordReset);
 
-describe('POST /user/forgot-password', () => {
+describe('POST /user/request-password-reset', () => {
   beforeAll(async () => {
     await connect();
     await User.create({
@@ -25,22 +31,22 @@ describe('POST /user/forgot-password', () => {
     await disconnect();
   }, 10000);
 
-  it("should send a code to the user's email", async () => {
-    const response = await request(app).post('/user/forgot-password').send({
+  it('should send a reset email and return a success message', async () => {
+    const response = await request(app).post('/user/request-password-reset').send({
       email: 'rafaella@example.com',
     });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message');
-    expect(response.body.message).toBe('Code sent to email');
+    expect(response.text).toMatch(/Email sent/);
   });
 
   it("shouldn't send a code to a non-existing email", async () => {
-    const response = await request(app).post('/user/forgot-password').send({
+    const response = await request(app).post('/user/request-password-reset').send({
       email: 'non-existent@example.com',
     });
 
-    expect(response.status).toBe(400);
-    expect(response.text).toMatch(/Email not found/);
+    expect(response.status).toBe(401);
+    expect(response.text).toMatch(/User not found/);
   });
 });

@@ -2,9 +2,13 @@ import request from 'supertest';
 import express from 'express';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
+import { UserController } from '@/controllers';
 
 const app = express();
 app.use(express.json());
+app.post('/user/login', UserController.loginUser);
+app.post('/user/logout', UserController.logoutUser);
+app.get('/user/me', UserController.getUserData);
 
 let token: string;
 
@@ -21,7 +25,7 @@ describe('POST /user/logout', () => {
       email: 'rafaella@example.com',
       password: '0303456lalala',
     });
-    token = res.body.token;
+    token = res.headers['authorization'].split(' ')[1];
   });
 
   afterAll(async () => {
@@ -37,13 +41,13 @@ describe('POST /user/logout', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message');
-    expect(response.body.message).toBe('User logged out successfully');
+    expect(response.body.message).toBe('Logout Successful');
   });
 
   it("shouldn't access protected routes after logout", async () => {
     const response = await request(app)
       //REPLACE FOR ANY PROTECTED ROUTE
-      .get('/secret')
+      .get('/user/me')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(401);
