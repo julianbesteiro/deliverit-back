@@ -8,7 +8,7 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  console.error('function', error);
+  // console.error('function', error);
 
   if (error instanceof UnauthorizedError) {
     return res.status(401).send({ message: error.message });
