@@ -8,6 +8,9 @@ router.get('/me', isAuth, UserController.getUserData);
 router.get('/', UserController.userControllerTest);
 router.post('/signup', UserController.createUser);
 router.post('/login', UserController.loginUser);
-router.post('/forgot-password', UserController.forgotPassword);
+router.post('/logout', UserController.logoutUser);
+router.post('/request-password-reset', UserController.requestPasswordReset);
+router.post('/verify-reset-token', UserController.verifyResetToken);
+router.post('/reset-password', UserController.resetPassword);
 
 export { router as userRoutes };

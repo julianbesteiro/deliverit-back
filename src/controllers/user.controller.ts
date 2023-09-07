@@ -35,10 +35,31 @@ class UserController {
     return res.status(200).send({ message: 'Login Successful' });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static forgotPassword = asyncHandler(async (req: Request, res: Response) => {
-    //TODO: Implement this
-    throw new Error('Not implemented yet');
+  static logoutUser = asyncHandler(async (req: Request, res: Response) => {
+    res.setHeader('Authorization', '');
+    return res.status(200).send({ message: 'Logout Successful' });
+  });
+
+  static requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    if (email === undefined) throw new ValidationError('Missing fields');
+    await UserService.forgotPassword(email);
+    return res.status(200).send({ message: 'Email sent' });
+  });
+
+  static verifyResetToken = asyncHandler(async (req: Request, res: Response) => {
+    const { email, token } = req.body;
+    if (email === undefined || token === undefined) throw new ValidationError('Missing fields');
+    const isValid = await UserService.verifyResetToken(email, token);
+    return res.status(200).send({ isValid });
+  });
+
+  static resetPassword = asyncHandler(async (req: Request, res: Response) => {
+    const { email, token, newPassword } = req.body;
+    if (email === undefined || token === undefined || newPassword === undefined)
+      throw new ValidationError('Missing fields');
+    await UserService.resetPassword(email, token, newPassword);
+    return res.status(200).send({ message: 'Password reset successfully' });
   });
 }
 
