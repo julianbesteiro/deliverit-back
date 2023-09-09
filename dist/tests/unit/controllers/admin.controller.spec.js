@@ -13,606 +13,389 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const admin_controller_1 = require("@/controllers/admin.controller");
-const mongodb_1 = require("mongodb");
 const admin_service_1 = __importDefault(require("@/services/admin.service"));
-//utils
-const ordersCheck = (orders) => {
-    expect(Array.isArray(orders)).toEqual(true);
-    if (orders.length > 0) {
-        orders.forEach((order) => {
-            expect(Object.keys(order).length).toEqual(2);
-            expect(order).toEqual({
-                orderId: expect.any(Number),
-                address: expect.any(String),
-            });
-        });
-    }
-    const orderIdsArray = Object.values(orders.map((order) => order.orderId));
-    const uniqueOrderIdsArray = [...new Set(orderIdsArray)];
-    expect(orderIdsArray).toEqual(uniqueOrderIdsArray);
-};
+const services_1 = require("@/services");
+const validateDate_1 = require("@/utils/validateDate");
 //TESTS
 describe('AdminController', () => {
     let mockRequest;
     let mockResponse;
     let mockNext;
-    beforeAll(() => {
-        jest.mock('@/services/admin.service');
-    });
-    afterAll(() => {
-        jest.clearAllMocks();
-    });
     describe('createOrder', () => {
         beforeEach(() => {
-            mockRequest = { body: {} };
+            jest.mock('@/services/admin.service');
+            jest.mock('@/services/order.service');
+            mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn(),
             };
             mockNext = jest.fn();
         });
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
         it('should create an order', () => __awaiter(void 0, void 0, void 0, function* () {
-            mockRequest.body = {
+            const orderInput = {
                 address: 'casa 1312, CABA',
                 coords: { lat: -34.603722, lng: -58.381592 },
                 packagesQuantity: 3,
                 weight: 2,
                 recipient: 'Juan Perez',
+                deliveryDate: '2023-09-01',
             };
+            const orderOutput = {
+                address: 'casa 13, CABA',
+                coords: {
+                    lat: -34.603722,
+                    lng: -58.381592,
+                },
+                packagesQuantity: 3,
+                weight: 2,
+                recipient: 'Juan Perez',
+                status: 'unassigned',
+                deliveryDate: '2023-09-01',
+            };
+            mockRequest.body = orderInput;
+            const newOrderServiceMock = jest.spyOn(services_1.OrderService, 'createOrder');
+            newOrderServiceMock.mockResolvedValue(orderOutput);
             yield expect(admin_controller_1.AdminController.newOrder(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(newOrderServiceMock).toHaveBeenCalledWith(orderInput);
             expect(mockResponse.status).toHaveBeenCalledWith(201);
             expect(mockResponse.json).toHaveBeenCalledWith({
                 message: 'Order created',
-                data: mockRequest.body,
+                data: orderOutput,
                 status: 201,
             });
-            expect(admin_service_1.default.newOrder).toHaveBeenCalledWith(mockRequest.body);
             expect.assertions(4);
         }));
         it('should throw an error if the request body is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-            mockRequest.body = {
+            const orderInput = {
                 address: 231,
                 coords: 123123,
                 packagesQuantity: 'test',
                 weight: 'test',
                 recipient: 1231,
+                date: 656,
             };
+            mockRequest.body = orderInput;
+            const newOrderServiceMock = jest.spyOn(services_1.OrderService, 'createOrder');
             yield expect(admin_controller_1.AdminController.newOrder(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-            expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(admin_service_1.default.newOrder).not.toHaveBeenCalled();
-            expect(mockResponse.json).toHaveBeenCalledWith({
-                message: 'Request body types are invalid',
-                data: mockRequest.body,
-                status: 400,
-            });
-            let responseJsonDataNewOrder;
-            if (mockResponse.json) {
-                const jsonMockCalls = mockResponse.json.mock.calls;
-                [responseJsonDataNewOrder] = jsonMockCalls[0];
-            }
-            expect(responseJsonDataNewOrder.data).toEqual({
-                address: expect.any(String),
-                coords: expect.any(Number),
-                packagesQuantity: expect.any(Object),
-                weight: expect.any(Number),
-                recipient: expect.any(String),
-            });
-            expect(responseJsonDataNewOrder.data.packagesQuantity).toEqual(expect.objectContaining({ lat: expect.any(Number), lng: expect.any(Number) }));
-            expect(Object.keys(responseJsonDataNewOrder.data).length).toEqual(5);
-            expect(typeof responseJsonDataNewOrder.data).toEqual('object');
-            expect.assertions(8);
+            expect(newOrderServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
         }));
-        const testCases = [
-            {
-                description: 'should throw an error if the request body is empty',
-                requestBody: {},
-                expectedStatus: 400,
-                expectedMessage: 'Request body is empty',
-            },
-            {
-                description: 'should throw an error if the request body is null',
-                requestBody: null,
-                expectedStatus: 400,
-                expectedMessage: 'Request body is empty',
-            },
-            {
-                description: 'should throw an error if the request body is undefined',
-                requestBody: undefined,
-                expectedStatus: 400,
-                expectedMessage: 'Request body is empty',
-            },
-        ];
-        testCases.forEach(({ description, requestBody, expectedStatus, expectedMessage }) => {
-            it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.body = requestBody;
-                yield expect(admin_controller_1.AdminController.newOrder(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                expect(admin_service_1.default.newOrder).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: expectedMessage,
-                    data: mockRequest.body,
-                    status: expectedStatus,
-                });
-                expect.assertions(3);
-            }));
-        });
     });
     describe('getDataByDate', () => {
         beforeEach(() => {
-            mockRequest = { params: {} };
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn(),
             };
             mockNext = jest.fn();
         });
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
         it('should get analytics based on a specific date', () => __awaiter(void 0, void 0, void 0, function* () {
-            mockRequest.params = { date: Date };
-            const mockDataByDate = {
-                availableWorkers: 4,
-                activeWorkers: 2,
-                availableOrders: 6,
-                deliveredOrders: 5,
+            mockRequest.params = { date: '2023-09-01' };
+            const { day, month, year, nextDay } = yield (0, validateDate_1.validateDate)(mockRequest.params.date);
+            const dataByDateOutput = {
+                availableWorkers: 2,
+                activeWorkers: 0,
+                availableOrders: 0,
+                deliveredOrders: 0,
             };
+            const dataByDateServiceMock = jest.spyOn(admin_service_1.default, 'dataByDate');
+            dataByDateServiceMock.mockResolvedValue(dataByDateOutput);
             yield expect(admin_controller_1.AdminController.dataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(dataByDateServiceMock).toHaveBeenCalledWith(day, month, year, nextDay);
             expect(mockResponse.status).toHaveBeenCalledWith(200);
-            expect(admin_service_1.default.dataByDate).toHaveBeenCalledWith(mockRequest.params.date);
-            expect(mockResponse.json).toHaveBeenCalledWith({
-                message: 'Data found',
-                data: mockDataByDate,
-                status: 200,
-            });
-            let responseJsonDataByDate;
-            if (mockResponse.json) {
-                const jsonMockCalls = mockResponse.json.mock.calls;
-                [responseJsonDataByDate] = jsonMockCalls[0];
-            }
-            expect(responseJsonDataByDate.data).toEqual({
-                availableWorkers: expect.any(Number),
-                activeWorkers: expect.any(Number),
-                availableOrders: expect.any(Number),
-                deliveredOrders: expect.any(Number),
-            });
-            expect(responseJsonDataByDate.data.activeWorkers).toBeLessThanOrEqual(responseJsonDataByDate.data.availableWorkers);
-            expect(responseJsonDataByDate.data.deliveredOrders).toBeLessThanOrEqual(responseJsonDataByDate.data.availableOrders);
-            expect(Object.keys(responseJsonDataByDate.data).length).toEqual(4);
-            expect(typeof responseJsonDataByDate.data).toEqual('object');
-            expect.assertions(9);
         }));
         it('should throw an error if the date is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-            mockRequest.params = { date: 34234 };
+            mockRequest.params = { date: '!!' };
+            const dataByDateServiceMock = jest.spyOn(admin_service_1.default, 'dataByDate');
             yield expect(admin_controller_1.AdminController.dataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-            expect(mockResponse.status).toHaveBeenCalledWith(400);
-            expect(admin_service_1.default.dataByDate).not.toHaveBeenCalled();
-            expect(mockResponse.json).toHaveBeenCalledWith({
-                message: 'Invalid Date',
-                data: mockRequest.params.date,
-                status: 400,
-            });
+            expect(dataByDateServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
             expect.assertions(4);
         }));
-        const testCases = [
-            {
-                description: 'should throw an error if the date is empty',
-                date: '',
-                expectedStatus: 400,
-                expectedMessage: 'Invalid Date',
-            },
-            {
-                description: 'should throw an error if the date is null',
-                date: null,
-                expectedStatus: 400,
-                expectedMessage: 'Invalid Date',
-            },
-            {
-                description: 'should throw an error if the date is undefined',
-                date: undefined,
-                expectedStatus: 400,
-                expectedMessage: 'Invalid Date',
-            },
-        ];
-        testCases.forEach(({ description, date, expectedStatus, expectedMessage }) => {
-            it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { date: date };
-                yield expect(admin_controller_1.AdminController.dataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                expect(admin_service_1.default.dataByDate).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: expectedMessage,
-                    data: mockRequest.params.date,
-                    status: expectedStatus,
-                });
-                expect.assertions(4);
-            }));
+    });
+    describe('getWorkerDataByDate', () => {
+        beforeEach(() => {
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
+            mockResponse = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            mockNext = jest.fn();
         });
-        describe('getWorkerDataByDate', () => {
-            beforeEach(() => {
-                mockRequest = { params: {} };
-                mockResponse = {
-                    status: jest.fn().mockReturnThis(),
-                    json: jest.fn(),
-                };
-                mockNext = jest.fn();
-            });
-            it('should get worker data based on a specific date', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { date: new Date() };
-                const mockWorkerData = [
-                    { workerId: 12312, status: 'active', percentage: 100 },
-                    { workerId: 12313, status: 'active', percentage: 91 },
-                    { workerId: 12314, status: 'inactive', percentage: 0 },
-                ];
-                yield admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                expect(admin_service_1.default.workerDataByDate).toHaveBeenCalledWith(mockRequest.params);
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Worker data found',
-                    data: mockWorkerData,
-                    status: 200,
-                });
-                let responseJsonDataWorkerByDate;
-                if (mockResponse.json) {
-                    const jsonMockCalls = mockResponse.json.mock.calls;
-                    [responseJsonDataWorkerByDate] = jsonMockCalls[0];
-                }
-                expect(Array.isArray(responseJsonDataWorkerByDate.data)).toEqual(true);
-                if (responseJsonDataWorkerByDate.length > 0) {
-                    responseJsonDataWorkerByDate.forEach((worker) => {
-                        expect(Object.keys(worker).length).toEqual(3);
-                        expect(worker).toEqual({
-                            workerId: expect.any(Number),
-                            status: expect.any(String),
-                            percentage: expect.any(Number),
-                        });
-                        expect(worker.status).toMatch(/^(active|inactive)$/);
-                        expect(worker.percentage).toBeLessThanOrEqual(100);
-                        if (worker.status === 'inactive') {
-                            expect(worker.percentage).toEqual(0);
-                        }
-                    });
-                }
-                const workerIdsArray = Object.values(responseJsonDataWorkerByDate.map((worker) => worker.workerId));
-                const uniqueWorkerIdsArray = [...new Set(workerIdsArray)];
-                expect(workerIdsArray).toEqual(uniqueWorkerIdsArray);
-            }));
-            it('should throw an error if the params are invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = {
-                    date: 'bad data',
-                };
-                yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_service_1.default.workerDataByDate).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Date in params is invalid',
-                    data: mockRequest.params,
-                    status: 400,
-                });
-                expect.assertions(4);
-            }));
-            const testCases = [
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+        it('should get worker data based on a specific date', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { date: '2023-09-01' };
+            const { day, month, year, nextDay } = yield (0, validateDate_1.validateDate)(mockRequest.params.date);
+            const mockWorkerData = [
                 {
-                    description: 'should throw an error if the params are empty',
-                    params: {},
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
+                    workerId: '64f227c58748a162bc8519d0',
+                    status: 'active',
+                    percentage: 50,
                 },
                 {
-                    description: 'should throw an error if the params are null',
-                    params: null,
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
+                    workerId: '64f227fd8748a162bc8519d1',
+                    status: 'active',
+                    percentage: 50,
                 },
                 {
-                    description: 'should throw an error if the params are undefined',
-                    params: undefined,
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
+                    workerId: '64f25fc78748a162bc851a00',
+                    status: 'inactive',
+                    percentage: 0,
                 },
             ];
-            testCases.forEach(({ description, params, expectedStatus, expectedMessage }) => {
-                it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                    mockRequest.params = params;
-                    yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                    expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                    expect(admin_service_1.default.workerDataByDate).not.toHaveBeenCalled();
-                    expect(mockResponse.json).toHaveBeenCalledWith({
-                        message: expectedMessage,
-                        data: mockRequest.params,
-                        status: expectedStatus,
-                    });
-                    expect.assertions(3);
-                }));
-            });
+            const workerDataByDateServiceMock = jest.spyOn(admin_service_1.default, 'workerDataByDate');
+            workerDataByDateServiceMock.mockResolvedValue(mockWorkerData);
+            yield admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(workerDataByDateServiceMock).toHaveBeenCalledWith(day, month, year, nextDay);
+        }));
+        it('should throw an error if the params are invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = {
+                date: 'bad data',
+            };
+            const workerDataByDateServiceMock = jest.spyOn(admin_service_1.default, 'workerDataByDate');
+            yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(workerDataByDateServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
+        }));
+    });
+    describe('editWorkerStatus', () => {
+        beforeEach(() => {
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
+            mockResponse = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            mockNext = jest.fn();
         });
-        describe('editWorkerStatus', () => {
-            beforeEach(() => {
-                mockRequest = { params: {} };
-                mockResponse = {
-                    status: jest.fn().mockReturnThis(),
-                    json: jest.fn(),
-                };
-                mockNext = jest.fn();
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+        it('should update a worker status', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: '64f227c58748a162bc8519d0' };
+            const editWorkerStatusServiceMock = jest.spyOn(admin_service_1.default, 'workerStatus');
+            editWorkerStatusServiceMock.mockResolvedValue('Worker status updated to active');
+            yield admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext);
+            expect(editWorkerStatusServiceMock).toHaveBeenCalledWith(mockRequest.params.id);
+            expect(mockResponse.status).toHaveBeenCalledWith(201);
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                message: 'Worker status updated',
+                data: 'Worker status updated to active',
+                status: 201,
             });
-            it('should update a worker status', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: new mongodb_1.ObjectId() };
-                yield admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                const mockWorkerStatus = 'active' || 'inactive';
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Worker status updated',
-                    data: { id: mockRequest.params, mockWorkerStatus },
-                    status: 200,
-                });
-            }));
-            it('should throw an error if the id is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: 'invalid id' };
-                yield expect(admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_service_1.default.workerStatus).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Invalid id',
-                    data: mockRequest.params.id,
-                    status: 400,
-                });
-                expect.assertions(4);
-            }));
-            const testCases = [
-                {
-                    description: 'should throw an error if the params is empty',
-                    params: '',
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid ObjectId',
+        }));
+        it('should throw an error if the id is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: 'invalid id' };
+            const editWorkerStatusServiceMock = jest.spyOn(admin_service_1.default, 'workerStatus');
+            yield expect(admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(editWorkerStatusServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
+        }));
+    });
+    describe('deleteOrder', () => {
+        beforeEach(() => {
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
+            mockResponse = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            mockNext = jest.fn();
+        });
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+        it('should delete an order', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: '64f227c58748a162bc8519d0' };
+            const date = new Date('2023-09-01');
+            const deleteOrderServiceMock = jest.spyOn(services_1.OrderService, 'deleteOrder');
+            deleteOrderServiceMock.mockResolvedValue({
+                address: 'casa 13, CABA',
+                coords: {
+                    lat: -34.603722,
+                    lng: -58.381592,
                 },
+                packagesQuantity: 3,
+                weight: 2,
+                recipient: 'Juan Perez',
+                status: 'unassigned',
+                deliveryDate: '2023-09-01',
+            });
+            yield admin_controller_1.AdminController.orderToRemove(mockRequest, mockResponse, mockNext);
+            expect(deleteOrderServiceMock).toHaveBeenCalledWith(mockRequest.params.id);
+            expect(mockResponse.status).toHaveBeenCalledWith(201);
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                message: 'Order request processed',
+                data: 'Order deleted',
+                status: 201,
+            });
+        }));
+        it('should throw an error if the id is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: 'invalid id' };
+            const deleteOrderServiceMock = jest.spyOn(services_1.OrderService, 'deleteOrder');
+            yield expect(admin_controller_1.AdminController.orderToRemove(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(deleteOrderServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
+        }));
+    });
+    describe('getWorkerDataById', () => {
+        beforeEach(() => {
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
+            mockResponse = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            mockNext = jest.fn();
+        });
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+        it('should get data by worker id', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: '64f227c58748a162bc8519d0' };
+            const mockWorkerDataById = [
                 {
-                    description: 'should throw an error if the params is null',
-                    params: null,
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid ObjectId',
-                },
-                {
-                    description: 'should throw an error if the params is undefined',
-                    params: undefined,
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid ObjectId',
+                    workerId: '64f227c58748a162bc8519d0',
+                    status: 'active',
+                    deliveredOrders: [
+                        {
+                            orderId: '64f2292d8748a162bc8519db',
+                            address: {
+                                lat: 40.7128,
+                                lng: -74.006,
+                            },
+                        },
+                    ],
+                    pendingOrders: [
+                        {
+                            orderId: '64f228f48748a162bc8519da',
+                            address: {
+                                lat: 40.7128,
+                                lng: -74.006,
+                            },
+                        },
+                    ],
                 },
             ];
-            testCases.forEach(({ description, params, expectedStatus, expectedMessage }) => {
-                it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                    mockRequest.params = params;
-                    yield expect(admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                    expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                    expect(admin_controller_1.AdminController.workerStatus).not.toHaveBeenCalled();
-                    expect(mockResponse.json).toHaveBeenCalledWith({
-                        message: expectedMessage,
-                        data: mockRequest.params,
-                        status: expectedStatus,
-                    });
-                    expect.assertions(4);
-                }));
+            const workerDataByIdServiceMock = jest.spyOn(admin_service_1.default, 'workerDataById');
+            workerDataByIdServiceMock.mockResolvedValue(mockWorkerDataById);
+            yield admin_controller_1.AdminController.workerDataById(mockRequest, mockResponse, mockNext);
+            expect(workerDataByIdServiceMock).toHaveBeenCalledWith(mockRequest.params.id);
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                message: 'Successful data request',
+                data: mockWorkerDataById,
+                status: 200,
             });
-            it('should throw an error if the userId is an invalid ObjectId of mongodb', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = {
-                    userId: 'invalid id',
-                };
-                yield expect(admin_controller_1.AdminController.workerStatus(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_controller_1.AdminController.workerStatus).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Invalid ObjectId',
-                    id: mockRequest.params,
-                    status: 400,
-                });
-                expect.assertions(4);
-            }));
+        }));
+        it('should throw an error if the date is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { id: 'invalid id' };
+            const workerDataByIdServiceMock = jest.spyOn(admin_service_1.default, 'workerDataById');
+            yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(workerDataByIdServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
+        }));
+    });
+    describe('getOrderDataByDate', () => {
+        beforeEach(() => {
+            jest.mock('@/services/admin.service');
+            mockRequest = {};
+            mockResponse = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            };
+            mockNext = jest.fn();
         });
-        describe('deleteOrder', () => {
-            beforeEach(() => {
-                mockRequest = { params: {} };
-                mockResponse = {
-                    status: jest.fn().mockReturnThis(),
-                    json: jest.fn(),
-                };
-                mockNext = jest.fn();
-            });
-            it('should delete an order', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: new mongodb_1.ObjectId() };
-                yield admin_controller_1.AdminController.orderToRemove(mockRequest, mockResponse, mockNext);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Order deleted',
-                    data: Object.assign({}, mockRequest.params),
-                    status: 200,
-                });
-            }));
-            it('should throw an error if the id is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: 'invalid id' };
-                yield expect(admin_controller_1.AdminController.orderToRemove(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_controller_1.AdminController.orderToRemove).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Invalid ObjectId',
-                    data: mockRequest.params.id,
-                    status: 400,
-                });
-                expect.assertions(4);
-            }));
+        afterEach(() => {
+            jest.clearAllMocks();
         });
-        describe('getWorkerDataById', () => {
-            beforeEach(() => {
-                mockRequest = { params: {} };
-                mockResponse = {
-                    status: jest.fn().mockReturnThis(),
-                    json: jest.fn(),
-                };
-                mockNext = jest.fn();
-            });
-            it('should get data by worker id', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: new mongodb_1.ObjectId() };
-                const mockWorkerDataById = [
-                    {
-                        workerId: 21312,
-                        status: 'active',
-                        pendingOrders: [
-                            { orderId: 2112, address: 'casa 1312, CABA' },
-                            { orderId: 2113, address: 'casa 1313, CABA' },
-                            { orderId: 2114, address: 'casa 1314, CABA' },
-                        ],
-                        deliveredOrders: [
-                            { orderId: 2115, address: 'casa 1315, CABA' },
-                            { orderId: 2116, address: 'casa 1316, CABA' },
-                        ],
-                    },
-                ];
-                yield admin_controller_1.AdminController.workerDataById(mockRequest, mockResponse, mockNext);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                expect(admin_controller_1.AdminController.workerDataByDate).toHaveBeenCalledWith(Object.assign({}, mockRequest.params));
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Workers data found',
-                    data: mockWorkerDataById,
-                    status: 200,
-                });
-            }));
-            it('should throw an error if the date is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { id: 'invalid id' };
-                yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_controller_1.AdminController.workerDataByDate).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Invalid id',
-                    data: mockRequest.params.id,
-                    status: 400,
-                });
-                expect.assertions(4);
-                let responseJsonDataWorkerById;
-                if (mockResponse.json) {
-                    const jsonMockCalls = mockResponse.json.mock.calls;
-                    [responseJsonDataWorkerById] = jsonMockCalls[0];
-                }
-                expect(typeof responseJsonDataWorkerById.data).toEqual('object');
-                expect(Object.keys(responseJsonDataWorkerById.data).length).toEqual(4);
-                expect(responseJsonDataWorkerById.data).toEqual({
-                    workerId: expect.any(Number),
-                    status: expect.any(String),
-                    pendingOrders: expect.any(Array),
-                    deliveredOrders: expect.any(Array),
-                });
-                expect(responseJsonDataWorkerById.data.status).toMatch(/^(active|inactive)$/);
-                ordersCheck(responseJsonDataWorkerById.data.pendingOrders);
-                ordersCheck(responseJsonDataWorkerById.data.deliveredOrders);
-            }));
-            const testCases = [
+        it('should get order data based on a specific date', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = { date: '2023-09-01' };
+            const { day, month, year } = yield (0, validateDate_1.validateDate)(mockRequest.params.date);
+            const mockOrderData = [
                 {
-                    description: 'should throw an error if the id is empty',
-                    id: '',
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid date',
+                    id: '64f1f64d767929ccaeb66875',
+                    address: 'casa 1312, CABA',
                 },
                 {
-                    description: 'should throw an error if the id is null',
-                    id: null,
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid date',
+                    id: '64f1fa06767929ccaeb66877',
+                    address: 'casa 13, CABA',
                 },
                 {
-                    description: 'should throw an error if the id is undefined',
-                    id: undefined,
-                    expectedStatus: 400,
-                    expectedMessage: 'Invalid date',
+                    id: '64f5c55e80ba31a238ab5894',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5c57f74cafe7c05473bca',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5c63b74cafe7c05473bcc',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5c642e6e61be2295da5bd',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5c674d844219dbf5ffb48',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5c69107c2302c5ff1ed52',
+                    address: 'casa 13, CABA',
+                },
+                {
+                    id: '64f5f9f5aa46383212acbc5c',
+                    address: 'casa 13, CABA',
                 },
             ];
-            testCases.forEach(({ description, id, expectedStatus, expectedMessage }) => {
-                it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                    mockRequest.params = { id: id };
-                    yield expect(admin_controller_1.AdminController.workerDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                    expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                    expect(admin_controller_1.AdminController.workerDataByDate).not.toHaveBeenCalled();
-                    expect(mockResponse.json).toHaveBeenCalledWith({
-                        message: expectedMessage,
-                        date: mockRequest.params.id,
-                        status: expectedStatus,
-                    });
-                    expect.assertions(4);
-                }));
+            const orderDataByDateServiceMock = jest.spyOn(admin_service_1.default, 'orderDataByDate');
+            orderDataByDateServiceMock.mockResolvedValue(mockOrderData);
+            yield admin_controller_1.AdminController.orderDataByDate(mockRequest, mockResponse, mockNext);
+            expect(orderDataByDateServiceMock).toHaveBeenCalledWith(day, month, year);
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                message: 'Successful data request',
+                data: mockOrderData,
+                status: 200,
             });
-        });
-        describe('getOrderDataByDate', () => {
-            beforeEach(() => {
-                mockRequest = { params: {} };
-                mockResponse = {
-                    status: jest.fn().mockReturnThis(),
-                    json: jest.fn(),
-                };
-                mockNext = jest.fn();
-            });
-            it('should get order data based on a specific date', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = { date: new Date() };
-                const mockOrderData = [
-                    { orderId: 2112, address: 'casa 1312, CABA' },
-                    { orderId: 2113, address: 'casa 1313, CABA' },
-                    { orderId: 2114, address: 'casa 1314, CABA' },
-                ];
-                yield admin_controller_1.AdminController.orderDataByDate(mockRequest, mockResponse, mockNext);
-                expect(mockResponse.status).toHaveBeenCalledWith(200);
-                expect(admin_service_1.default.orderDataByDate).toHaveBeenCalledWith(mockRequest.query);
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Order data found',
-                    data: mockOrderData,
-                    status: 200,
-                });
-                expect.assertions(3);
-                let responseJsonDatabyDate;
-                if (mockResponse.json) {
-                    const jsonMockCalls = mockResponse.json.mock.calls;
-                    [responseJsonDatabyDate] = jsonMockCalls[0];
-                }
-                ordersCheck(responseJsonDatabyDate.data);
-            }));
-            it('should throw an error if the query params are invalid', () => __awaiter(void 0, void 0, void 0, function* () {
-                mockRequest.params = {
-                    date: 'bad data',
-                };
-                yield expect(admin_controller_1.AdminController.orderDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                expect(mockResponse.status).toHaveBeenCalledWith(400);
-                expect(admin_service_1.default.orderDataByDate).not.toHaveBeenCalled();
-                expect(mockResponse.json).toHaveBeenCalledWith({
-                    message: 'Date in params is invalid',
-                    data: mockRequest.params,
-                    status: 400,
-                });
-            }));
-            const testCases = [
-                {
-                    description: 'should throw an error if the params are empty',
-                    params: {},
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
-                },
-                {
-                    description: 'should throw an error if the params are null',
-                    params: null,
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
-                },
-                {
-                    description: 'should throw an error if the params are undefined',
-                    params: undefined,
-                    expectedStatus: 400,
-                    expectedMessage: 'Params are empty',
-                },
-            ];
-            testCases.forEach(({ description, params, expectedStatus, expectedMessage }) => {
-                it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-                    mockRequest.params = params;
-                    yield expect(admin_controller_1.AdminController.orderDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
-                    expect(mockResponse.status).toHaveBeenCalledWith(expectedStatus);
-                    expect(admin_service_1.default.orderDataByDate).not.toHaveBeenCalled();
-                    expect(mockResponse.json).toHaveBeenCalledWith({
-                        message: expectedMessage,
-                        data: mockRequest.params,
-                        status: expectedStatus,
-                    });
-                    expect.assertions(3);
-                }));
-            });
-        });
+            expect.assertions(3);
+        }));
+        it('should throw an error if the query params are invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+            mockRequest.params = {
+                date: 'bad data',
+            };
+            const orderDataByDateServiceMock = jest.spyOn(admin_service_1.default, 'orderDataByDate');
+            yield expect(admin_controller_1.AdminController.orderDataByDate(mockRequest, mockResponse, mockNext)).resolves.toBeUndefined();
+            expect(orderDataByDateServiceMock).not.toHaveBeenCalled();
+            expect(mockResponse.status).not.toHaveBeenCalledWith();
+            expect(mockResponse.json).not.toHaveBeenCalledWith();
+            expect.assertions(4);
+        }));
     });
 });

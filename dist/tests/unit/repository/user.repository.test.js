@@ -8,15 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../config/db/db");
-const customErrors_1 = require("../../../src/errors/customErrors");
+const User_1 = __importDefault(require("../../../src/models/User"));
 const repository_1 = require("../../../src/repository");
 describe('UserRepository', () => {
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, db_1.connect)();
     }));
     afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield User_1.default.deleteOne({ email: 'rafaella@example.com' });
         yield (0, db_1.disconnect)();
     }));
     describe('createUser', () => {
@@ -36,24 +40,6 @@ describe('UserRepository', () => {
             expect(createdUser === null || createdUser === void 0 ? void 0 : createdUser.enabled).toBe(true);
             expect(createdUser === null || createdUser === void 0 ? void 0 : createdUser.lastSeenAt).toBeDefined();
             expect(createdUser === null || createdUser === void 0 ? void 0 : createdUser.urlImage).toBe(user.urlImage);
-        }));
-        it("should throw ConflictError if the user's email already exists", () => __awaiter(void 0, void 0, void 0, function* () {
-            const user = {
-                name: 'Rafaella',
-                lastName: 'Carra',
-                email: 'rafaella@example.com',
-                password: '0303456lalala',
-                urlImage: 'http://example.com',
-            };
-            yield repository_1.UserRepository.createUser(user);
-            yield expect(repository_1.UserRepository.createUser(user)).rejects.toThrow(customErrors_1.ConflictError);
-        }));
-        it('should throw ValidationError on invalid data', () => __awaiter(void 0, void 0, void 0, function* () {
-            const invalidUser = {
-                name: 'Rafaella',
-                lastName: 'Carra',
-            };
-            yield expect(repository_1.UserRepository.createUser(invalidUser)).rejects.toThrow(customErrors_1.ValidationError);
         }));
     });
 });

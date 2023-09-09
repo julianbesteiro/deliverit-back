@@ -15,10 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const db_1 = require("../../config/db");
-const customErrors_1 = require("../errors/customErrors");
-function isCustomError(error) {
-    return error.name !== undefined || error.code !== undefined;
-}
 class UserRepository {
     static userRepositoryTest(maxUsers) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,29 +30,20 @@ class UserRepository {
             }
         });
     }
+    static findUserById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User_1.default.findById(id);
+        });
+    }
     static createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield db_1.db.connect();
-                const newUser = yield User_1.default.create(user);
-                db_1.db.disconnect();
-                return newUser;
-            }
-            catch (error) {
-                // console.log('ESTE ES EL ERROR DE LA DB---->', error);
-                if (isCustomError(error)) {
-                    if (error.name === 'ValidationError') {
-                        throw new customErrors_1.ValidationError(error.message);
-                    }
-                    else if (error.code === 11000) {
-                        throw new customErrors_1.ConflictError(error.message);
-                    }
-                }
-                else {
-                    console.log('Caught something that is not an Error', error);
-                    throw new customErrors_1.DatabaseConnectionError('An unexpected error occurred.');
-                }
-            }
+            const newUser = yield User_1.default.create(user);
+            return newUser;
+        });
+    }
+    static findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User_1.default.findOne({ email });
         });
     }
 }

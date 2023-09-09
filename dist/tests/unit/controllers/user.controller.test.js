@@ -34,50 +34,45 @@ describe('UserController', () => {
         };
         const req = (0, mocks_1.mockRequest)({ body: mockUserData });
         const res = (0, mocks_1.mockResponse)();
-        it('should create a user and return it', () => __awaiter(void 0, void 0, void 0, function* () {
+        it('should create a user and return `Created Successfully`', () => __awaiter(void 0, void 0, void 0, function* () {
             user_service_1.UserService.createUser.mockResolvedValue(mockUserData);
             yield user_controller_1.UserController.createUser(req, res, mockNext);
             expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.send).toHaveBeenCalledWith(mockUserData);
+            expect(res.send).toHaveBeenCalledWith('Created Successfully');
         }));
-        it('should handle conflict error when creating a user with an existing email', () => __awaiter(void 0, void 0, void 0, function* () {
+        it('should propagate conflict error when creating a user with an existing email', () => __awaiter(void 0, void 0, void 0, function* () {
             const conflictError = new customErrors_1.ConflictError('Email already exists');
             user_service_1.UserService.createUser.mockRejectedValue(conflictError);
             yield user_controller_1.UserController.createUser(req, res, mockNext);
-            expect(res.status).toHaveBeenCalledWith(409);
-            expect(res.send).toHaveBeenCalledWith({ message: conflictError.message });
-        }));
-        it('should handle unexpected errors when creating a user', () => __awaiter(void 0, void 0, void 0, function* () {
-            const unexpectedError = new Error('Unexpected error');
-            user_service_1.UserService.createUser.mockRejectedValue(unexpectedError);
-            yield user_controller_1.UserController.createUser(req, res, mockNext);
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.send).toHaveBeenCalledWith({ message: 'Unexpected error while creating user' });
+            expect(mockNext).toHaveBeenCalledWith(conflictError);
         }));
     });
     describe('loginUser', () => {
         it('should login a user and return a token', () => __awaiter(void 0, void 0, void 0, function* () {
             const mockUserData = {
                 email: 'rafaella@example.com',
+                password: '0303456lalala',
                 token: 'sampleToken',
             };
             const req = (0, mocks_1.mockRequest)({ body: mockUserData });
             const res = (0, mocks_1.mockResponse)();
             user_service_1.UserService.loginUser.mockResolvedValue(mockUserData.token);
             yield user_controller_1.UserController.loginUser(req, res, mockNext);
+            expect(res.setHeader).toHaveBeenCalledWith('Authorization', `Bearer ${mockUserData.token}`);
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({ token: mockUserData.token });
+            expect(res.send).toHaveBeenCalledWith({ message: 'Login Successful' });
         }));
         it("shouldn't login a user with incorrect credentials", () => __awaiter(void 0, void 0, void 0, function* () {
             const mockUserData = {
                 email: 'rafaella@example.com',
+                password: 'wrongPassword',
             };
             const req = (0, mocks_1.mockRequest)({ body: mockUserData });
             const res = (0, mocks_1.mockResponse)();
-            user_service_1.UserService.loginUser.mockRejectedValue(new Error('Invalid credentials'));
+            const authError = new Error('Invalid credentials');
+            user_service_1.UserService.loginUser.mockRejectedValue(authError);
             yield user_controller_1.UserController.loginUser(req, res, mockNext);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Invalid credentials');
+            expect(mockNext).toHaveBeenCalledWith(authError);
         }));
     });
     describe('forgotPassword', () => {

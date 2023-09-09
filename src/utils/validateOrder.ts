@@ -1,19 +1,8 @@
 import { BadUserInputError } from '@/errors/customErrors';
 import { validateDate } from './validateDate';
+import { IOrder } from '@/interfaces';
 
-export interface IOrderInput {
-  address: string;
-  coords: {
-    lat: number;
-    lng: number;
-  };
-  packagesQuantity: number;
-  weight: number;
-  recipient: string;
-  deliveryDate: string;
-}
-
-export async function validateOrderInput(orderData: IOrderInput) {
+export async function validateOrderInput(orderData: IOrder) {
   const errors: Error[] = [];
 
   if (!orderData || Object.keys(orderData).length === 0) {

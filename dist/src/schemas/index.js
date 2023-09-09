@@ -17,3 +17,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./delivery.schema"), exports);
 __exportStar(require("./order.schema"), exports);
 __exportStar(require("./user.schema"), exports);
+__exportStar(require("./sworn.schema"), exports);

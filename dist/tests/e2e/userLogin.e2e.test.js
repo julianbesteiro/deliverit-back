@@ -52,7 +52,7 @@ describe('POST /user/login', () => {
             password: '0303456lalala',
         });
         expect(response.status).toBe(401);
-        expect(response.text).toMatch(/Invalid credentials/);
+        expect(response.text).toMatch('User not found');
     }));
     it("shouldn't login with invalid credentials", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post('/user/login').send({
@@ -60,13 +60,13 @@ describe('POST /user/login', () => {
             password: '0303456lalala-lala-lala',
         });
         expect(response.status).toBe(401);
-        expect(response.text).toMatch(/Invalid credentials/);
+        expect(response.text).toMatch('Invalid password');
     }));
     it("shouldn't login with missing fields", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post('/user/login').send({
             email: 'rafaella@example.com',
         });
         expect(response.status).toBe(400);
-        expect(response.text).toMatch(/password/);
+        expect(response.text).toMatch('Missing fields');
     }));
 });

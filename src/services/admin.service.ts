@@ -1,6 +1,4 @@
-import { IOrder } from '@/interfaces';
 import AdminRepository from '@/repository/admin.repository';
-import { IOrderInput } from '@/utils/validateOrder';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
@@ -54,14 +52,14 @@ class AdminService {
 
     const deliveredOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status === 'delivered')
-      .map((order) => {
-        return { orderId: order._id, address: order.destinationLocation };
+      .map((delivery) => {
+        return { orderId: delivery.orderId, address: delivery.destinationLocation };
       });
 
     const pendingOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status !== 'delivered')
-      .map((order) => {
-        return { orderId: order._id, address: order.destinationLocation };
+      .map((delivery) => {
+        return { orderId: delivery.orderId, address: delivery.destinationLocation };
       });
 
     return {
@@ -77,7 +75,7 @@ class AdminService {
 
     const filteredOrderDataByDate = orderDataByDate.map((order) => {
       return {
-        id: order._id,
+        orderId: order._id,
         address: order.address,
       };
     });
@@ -92,7 +90,9 @@ class AdminService {
 
     const availableWorkers = await AdminRepository.availableWorkers(nextDay);
 
-    const activeWorkers = deliveriesByDate.map((delivery) => delivery.userId?.toString());
+    const activeWorkers = deliveriesByDate
+      .filter((delivery) => delivery.status === 'delivered')
+      .map((delivery) => delivery.userId?.toString());
 
     const uniqueActiveWorkers = [...new Set(activeWorkers)];
 
@@ -109,33 +109,6 @@ class AdminService {
       availableWorkers: availableWorkers.length,
       activeWorkers: uniqueActiveWorkers.length,
     };
-  }
-
-  public static async newOrder(order: IOrderInput) {
-    const date = new Date(order.deliveryDate);
-
-    const newOrderInput: IOrder = { ...order, deliveryDate: date };
-
-    const newOrder = await AdminRepository.newOrder(newOrderInput as IOrder);
-
-    const returnedOrder = {
-      address: newOrder.address,
-      coords: newOrder.coords,
-      packagesQuantity: newOrder.packagesQuantity,
-      weight: newOrder.weight,
-      recipient: newOrder.recipient,
-      status: newOrder.status,
-      deliveryDate: newOrder.deliveryDate,
-    };
-    return returnedOrder;
-  }
-
-  public static async orderToRemove(id: string) {
-    const objectId = new mongoose.Types.ObjectId(id);
-
-    const deletionStatus = await AdminRepository.orderToRemove(objectId);
-
-    return deletionStatus ? 'Order deleted' : 'Order not found';
   }
 
   public static async workerStatus(id: string) {

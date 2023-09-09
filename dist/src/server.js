@@ -19,9 +19,10 @@ const logger_1 = __importDefault(require("./logger"));
 const cors_1 = __importDefault(require("cors"));
 const db_1 = require("../config/db");
 const routes_1 = require("./routes");
-const errorHandler_1 = __importDefault(require("./middlewares/errorHandler"));
+const morgan_1 = __importDefault(require("morgan"));
 const config_1 = __importDefault(require("../config/config"));
 const isAuth_1 = __importDefault(require("./middlewares/isAuth"));
+const middlewares_1 = require("./middlewares");
 const dev = config_1.default.node_env !== 'production';
 const port = config_1.default.server.port || 8000;
 // Connect to MongoDB
@@ -44,6 +45,7 @@ app.use((0, cors_1.default)({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
+app.use((0, morgan_1.default)('combined'));
 // Middleware
 app.get('/secret', isAuth_1.default, (_req, res) => {
     res.json({
@@ -58,7 +60,7 @@ app.get('/', (req, res) => {
 });
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', routes_1.allRoutes);
-app.use(errorHandler_1.default);
+app.use(middlewares_1.errorHandler);
 app.listen(port, () => {
     logger_1.default.debug('debug right before info');
     logger_1.default.info(`> Ready on ${dev ? config_1.default.server.local_url : config_1.default.server.producction_url}`);

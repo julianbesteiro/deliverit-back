@@ -7,25 +7,19 @@ import { IWorker } from '@/interfaces';
 import { mock } from 'node:test';
 import { db } from '../../../config/db';
 import * as validateOrder from '@/utils/validateOrder';
-
-//TESTS
+import { OrderService } from '@/services';
+import { validateDate } from '@/utils/validateDate';
+import { m } from 'framer-motion';
 
 describe('AdminController', () => {
   let mockRequest: Partial<express.Request>;
   let mockResponse: Partial<express.Response>;
   let mockNext: express.NextFunction;
 
-  // beforeAll(async () => {
-  //   jest.mock('@/services/admin.service');
-  // });
-
-  // afterAll(async () => {
-  //   jest.clearAllMocks();
-  // });
-
   describe('createOrder', () => {
     beforeEach(() => {
       jest.mock('@/services/admin.service');
+      jest.mock('@/services/order.service');
 
       mockRequest = {};
       mockResponse = {
@@ -64,7 +58,7 @@ describe('AdminController', () => {
 
       mockRequest.body = orderInput;
 
-      const newOrderServiceMock = jest.spyOn(AdminService, 'newOrder');
+      const newOrderServiceMock = jest.spyOn(OrderService, 'createOrder');
       newOrderServiceMock.mockResolvedValue(orderOutput as any);
 
       await expect(
@@ -97,7 +91,7 @@ describe('AdminController', () => {
 
       mockRequest.body = orderInput;
 
-      const newOrderServiceMock = jest.spyOn(AdminService, 'newOrder');
+      const newOrderServiceMock = jest.spyOn(OrderService, 'createOrder');
 
       await expect(
         AdminController.newOrder(
@@ -134,8 +128,9 @@ describe('AdminController', () => {
     });
 
     it('should get analytics based on a specific date', async () => {
-      mockRequest.params = { date: '1693593600' };
-      const convertedDate = new Date(Number(mockRequest.params.date) * 1000);
+      mockRequest.params = { date: '2023-09-01' };
+
+      const { day, month, year, nextDay } = await validateDate(mockRequest.params.date);
 
       const dataByDateOutput = {
         availableWorkers: 2,
@@ -155,7 +150,7 @@ describe('AdminController', () => {
         ),
       ).resolves.toBeUndefined();
 
-      expect(dataByDateServiceMock).toHaveBeenCalledWith(convertedDate);
+      expect(dataByDateServiceMock).toHaveBeenCalledWith(day, month, year, nextDay);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
     });
 
@@ -196,8 +191,8 @@ describe('AdminController', () => {
     });
 
     it('should get worker data based on a specific date', async () => {
-      mockRequest.params = { date: '1693593600' };
-      const convertedDate = new Date(Number(mockRequest.params.date) * 1000);
+      mockRequest.params = { date: '2023-09-01' };
+      const { day, month, year, nextDay } = await validateDate(mockRequest.params.date);
 
       const mockWorkerData = [
         {
@@ -227,7 +222,7 @@ describe('AdminController', () => {
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(workerDataByDateServiceMock).toHaveBeenCalledWith(convertedDate);
+      expect(workerDataByDateServiceMock).toHaveBeenCalledWith(day, month, year, nextDay);
     });
 
     it('should throw an error if the params are invalid', async () => {
@@ -328,9 +323,21 @@ describe('AdminController', () => {
 
     it('should delete an order', async () => {
       mockRequest.params = { id: '64f227c58748a162bc8519d0' };
+      const date = new Date('2023-09-01');
 
-      const deleteOrderServiceMock = jest.spyOn(AdminService, 'orderToRemove');
-      deleteOrderServiceMock.mockResolvedValue('Order deleted');
+      const deleteOrderServiceMock = jest.spyOn(OrderService, 'deleteOrder');
+      deleteOrderServiceMock.mockResolvedValue({
+        address: 'casa 13, CABA',
+        coords: {
+          lat: -34.603722,
+          lng: -58.381592,
+        },
+        packagesQuantity: 3,
+        weight: 2,
+        recipient: 'Juan Perez',
+        status: 'unassigned',
+        deliveryDate: '2023-09-01',
+      } as any);
 
       await AdminController.orderToRemove(
         mockRequest as express.Request,
@@ -349,7 +356,7 @@ describe('AdminController', () => {
     it('should throw an error if the id is invalid', async () => {
       mockRequest.params = { id: 'invalid id' };
 
-      const deleteOrderServiceMock = jest.spyOn(AdminService, 'orderToRemove');
+      const deleteOrderServiceMock = jest.spyOn(OrderService, 'deleteOrder');
 
       await expect(
         AdminController.orderToRemove(
@@ -464,9 +471,8 @@ describe('AdminController', () => {
     });
 
     it('should get order data based on a specific date', async () => {
-      mockRequest.params = { date: '1693593600' };
-
-      const convertedDate = new Date(Number(mockRequest.params.date) * 1000);
+      mockRequest.params = { date: '2023-09-01' };
+      const { day, month, year } = await validateDate(mockRequest.params.date);
 
       const mockOrderData = [
         {
@@ -516,7 +522,7 @@ describe('AdminController', () => {
         mockNext as express.NextFunction,
       );
 
-      expect(orderDataByDateServiceMock).toHaveBeenCalledWith(convertedDate);
+      expect(orderDataByDateServiceMock).toHaveBeenCalledWith(day, month, year);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: 'Successful data request',

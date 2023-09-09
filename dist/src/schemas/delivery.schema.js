@@ -6,7 +6,6 @@ const mongoose_1 = require("mongoose");
 exports.deliverySchema = new mongoose_1.Schema({
     destinationLocation: {
         type: Object,
-        required: true,
     },
     orderId: {
         type: mongodb_1.ObjectId,
@@ -23,6 +22,6 @@ exports.deliverySchema = new mongoose_1.Schema({
     startingLocation: {
         type: Object,
     },
-    startingDate: { type: Date, default: null },
-    resolutionDate: { type: Date, default: null },
-}, { timestamps: true });
+    startingDeliveryDate: { type: Date, default: null },
+    resolutionDeliveryDate: { type: Date, default: null },
+}, { timestamps: true, strict: 'throw' });
