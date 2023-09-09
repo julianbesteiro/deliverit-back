@@ -558,13 +558,13 @@ describe('Admin Integration Tests:', () => {
         status: 'active',
         deliveredOrders: [
           {
-            orderId: deliveryCreatedGetWorkerDataById.orderId.toString(),
+            orderId: deliveryCreatedGetWorkerDataById.orderId?.toString(),
             address: deliveryCreatedGetWorkerDataById.destinationLocation,
           },
         ],
         pendingOrders: [
           {
-            orderId: deliveryCreated2GetWorkerDataById.orderId.toString(),
+            orderId: deliveryCreated2GetWorkerDataById.orderId?.toString(),
             address: deliveryCreated2GetWorkerDataById.destinationLocation,
           },
         ],
