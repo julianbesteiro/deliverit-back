@@ -3,7 +3,7 @@ import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { sendMail } from '@/utils/sendEmail';
 
 class UserService {
   static async userServiceTest(id: number) {
@@ -63,7 +63,14 @@ class UserService {
       throw new UnauthorizedError('User not found');
     }
 
-    const resetToken = crypto.randomBytes(20).toString('hex');
+    //This is to create a 6 digit code. If number is less than 6 digits, it will add 0s to the left
+    const maxSixDigitNumber = 999999;
+    const resetToken = (
+      (parseInt(crypto.randomBytes(3).toString('hex'), 16) % maxSixDigitNumber) +
+      1
+    )
+      .toString()
+      .padStart(6, '0');
     const expiration = new Date();
     expiration.setMinutes(expiration.getMinutes() + 60);
 
@@ -74,24 +81,7 @@ class UserService {
 
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'deliveritplataforma@gmail.com',
-        pass: 'DeliveritP5',
-      },
-    });
-
-    const mailOptions = {
-      from: 'deliveritplataforma@gmail.com',
-      to: user.email,
-      subject: 'Reset Password',
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-        Your token is ${resetToken}.\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-    };
-
-    transporter.sendMail(mailOptions);
+    sendMail(email, resetToken);
   }
 
   static async verifyResetToken(email: string, token: string): Promise<boolean> {
