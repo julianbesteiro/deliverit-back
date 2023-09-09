@@ -98,11 +98,17 @@ class AdminService {
 
     const deliveredDeliveries = deliveriesByDate
       .filter((delivery) => delivery.status === 'delivered')
-      .map((delivery) => delivery.orderId.toString());
+      .map((delivery) => delivery.orderId?.toString());
 
     return {
       deliveredOrders: deliveredDeliveries.reduce((acc, delivery) => {
-        availableOrders.map((order) => order._id.toString()).includes(delivery) ? acc++ : acc;
+        availableOrders
+          .map((order) => {
+            if (delivery) return order._id.toString();
+          })
+          .includes(delivery)
+          ? acc++
+          : acc;
         return acc;
       }, 0),
       availableOrders: availableOrders.length,
