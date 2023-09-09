@@ -7,10 +7,9 @@ const http_status_1 = __importDefault(require("http-status"));
 const jsonwebtoken_1 = require("jsonwebtoken");
 const tokens_1 = require("../utils/tokens");
 const isAuth = (req, res, next) => {
-    var _a;
     // token looks like 'Bearer vnjaknvijdaknvikbnvreiudfnvriengviewjkdsbnvierj'
     try {
-        const authHeader = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization;
+        const authHeader = req.headers['authorization'];
         if (!authHeader || !(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer '))) {
             return res.sendStatus(http_status_1.default.UNAUTHORIZED);
         }
@@ -20,6 +19,7 @@ const isAuth = (req, res, next) => {
         const payload = (0, tokens_1.validateToken)(token);
         if (!payload || typeof payload === 'string')
             return res.sendStatus(http_status_1.default.UNAUTHORIZED);
+        req.user = payload.user;
         next();
     }
     catch (err) {

@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const services_1 = require("../services");
 const asyncHandler_1 = require("../utils/asyncHandler");
+const customErrors_1 = require("../errors/customErrors");
 class UserController {
 }
 exports.UserController = UserController;
@@ -25,12 +26,27 @@ UserController.userControllerTest = (0, asyncHandler_1.asyncHandler)((req, res) 
         users: userServiceData,
     });
 }));
+UserController.getUserData = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { user } = req;
+    if (!user)
+        throw new customErrors_1.UnauthorizedError('Unauthorized');
+    const userData = yield services_1.UserService.getUserData(user.id);
+    return res.status(200).send(userData);
+}));
 UserController.createUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield services_1.UserService.createUser(req.body);
-    return res.status(201).send(user);
+    yield services_1.UserService.createUser(req.body);
+    return res.status(201).send('Created Successfully');
+}));
+UserController.loginUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    if (email === undefined || password === undefined)
+        throw new customErrors_1.ValidationError('Missing fields');
+    const token = yield services_1.UserService.loginUser(email, password);
+    res.setHeader('Authorization', `Bearer ${token}`);
+    return res.status(200).send({ message: 'Login Successful' });
 }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-UserController.loginUser = (0, asyncHandler_1.asyncHandler)((req, res) => {
-    // TODO: Implement this
+UserController.forgotPassword = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //TODO: Implement this
     throw new Error('Not implemented yet');
-});
+}));

@@ -1,15 +1,4 @@
 "use strict";
-/* import { Request, Response } from 'express';
-import { updateOrderService } from '../services/order.service';
-
-export const updateOrder = async (req: Request, res: Response) => {
-  try {
-    await updateOrderService(req, res);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error al actualizar la orden' });
-  }
-}; */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -25,34 +14,56 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderRepository = void 0;
 const Order_1 = __importDefault(require("../models/Order"));
-const db_1 = require("../../config/db");
+const customErrors_1 = require("@/errors/customErrors");
 class OrderRepository {
-    static orderRepositoryTest(maxOrders) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield db_1.db.connect();
-                const allOrders = yield Order_1.default.find().limit(maxOrders);
-                db_1.db.disconnect();
-                console.log('test repository');
-                return allOrders;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        });
-    }
     static createOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield db_1.db.connect();
-                const newOrder = yield Order_1.default.create(order);
-                db_1.db.disconnect();
-                return newOrder;
+            const newOrder = yield Order_1.default.create(order);
+            return newOrder;
+        });
+    }
+    static getOrders() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const allOrders = yield Order_1.default.find();
+            return allOrders;
+        });
+    }
+    static getOrder(orderId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const order = yield Order_1.default.findById(orderId);
+            if (!order) {
+                const entityName = 'Order';
+                throw new customErrors_1.EntityNotFoundError(entityName);
             }
-            catch (error) {
-                console.log('ESTE ES EL ERROR DE LA DB---->', error);
-                throw error;
+            return order;
+        });
+    }
+    static deleteOrder(orderId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const deletedOrder = yield Order_1.default.findByIdAndDelete(orderId);
+            if (!deletedOrder) {
+                const entityName = 'Order';
+                throw new customErrors_1.EntityNotFoundError(entityName);
             }
+            return deletedOrder;
+        });
+    }
+    static updateOrder(orderId, updatedOrder) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const options = { new: true }; // Devolver el documento actualizado
+            const updated = yield Order_1.default.findByIdAndUpdate(orderId, updatedOrder, options);
+            if (!updated) {
+                const entityName = 'Order';
+                throw new customErrors_1.EntityNotFoundError(entityName);
+            }
+            return updated;
+        });
+    }
+    static patchOrder(orderId, updatedFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const options = { new: true }; // Devolver el documento actualizado
+            const patched = yield Order_1.default.findByIdAndUpdate(orderId, updatedFields, options);
+            return patched;
         });
     }
 }

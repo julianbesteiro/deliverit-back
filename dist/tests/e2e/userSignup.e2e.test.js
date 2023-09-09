@@ -17,9 +17,11 @@ const express_1 = __importDefault(require("express"));
 const controllers_1 = require("../../src/controllers");
 const db_1 = require("../../config/db/db");
 const User_1 = __importDefault(require("../../src/models/User"));
+const middlewares_1 = require("@/middlewares");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.post('/user/signup', controllers_1.UserController.createUser);
+app.use(middlewares_1.errorHandler);
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.connect)();
 }));
@@ -38,12 +40,12 @@ describe('POST /user/signup', () => {
     it('should create a user', () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post('/user/signup').send(userData);
         expect(response.status).toBe(201);
-        expect(response.body.name).toBe(userData.name);
+        expect(response.text).toBe('Created Successfully');
     }));
     it("shouldn't create a user with an existing email", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post('/user/signup').send(userData);
         expect(response.status).toBe(409);
-        expect(response.text).toMatch(/E11000 duplicate key error/);
+        expect(response.text).toMatch('E11000 duplicate key error');
     }));
     it("shouldn't create a user with invalid data", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post('/user/signup').send({
@@ -71,7 +73,6 @@ describe('POST /user/signup', () => {
             email: 'rafaella.example',
             password: '0303456lalala',
         });
-        console.log('THIS IS REPSONSE.TEXT--->', response.text);
         expect(response.status).toBe(400);
         expect(response.text).toMatch(/Path `email` is invalid/);
     }));

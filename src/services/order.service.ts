@@ -2,12 +2,11 @@ import { IOrder } from '../../src/interfaces/';
 import { OrderRepository } from '../repository';
 
 class OrderService {
-  
   static async createOrder(order: IOrder) {
     return await OrderRepository.createOrder(order);
   }
 
-  static async getOrders(): Promise<IOrder[]>  {
+  static async getOrders(): Promise<IOrder[]> {
     return await OrderRepository.getOrders();
   }
 
@@ -27,8 +26,7 @@ class OrderService {
     return await OrderRepository.patchOrder(orderId, updatedFields);
   }
 
-
-/*   //eslint-disable-next-line
+  /*   //eslint-disable-next-line
   getOrder(id: String): Promise<IOrder> {
     throw new Error('Method not implemented.');
   }*/

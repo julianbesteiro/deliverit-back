@@ -1,16 +1,10 @@
-import { BadUserInputError } from '@/errors/customErrors';
-import { IOrder } from '@/interfaces';
+import { ValidationError } from '@/errors/customErrors';
 import DeliveryModel from '@/models/Delivery';
 import OrderModel from '@/models/Order';
 import UserModel from '@/models/User';
 import { ObjectId } from 'mongodb';
 
 class AdminRepository {
-  static async newOrder(order: IOrder) {
-    const orderCreated = await OrderModel.create(order);
-    return orderCreated;
-  }
-
   static async availableOrdersByDate(day: number, month: number, year: number) {
     const availableOrders = await OrderModel.find({
       $expr: {
@@ -35,9 +29,9 @@ class AdminRepository {
     const deliveriesByDate = await DeliveryModel.find({
       $expr: {
         $and: [
-          { $eq: [{ $year: '$resolutionDate' }, year] },
-          { $eq: [{ $month: '$resolutionDate' }, month] },
-          { $eq: [{ $dayOfMonth: '$resolutionDate' }, day] },
+          { $eq: [{ $year: '$resolutionDeliveryDate' }, year] },
+          { $eq: [{ $month: '$resolutionDeliveryDate' }, month] },
+          { $eq: [{ $dayOfMonth: '$resolutionDeliveryDate' }, day] },
         ],
       },
     });
@@ -49,7 +43,7 @@ class AdminRepository {
     const workerData = await UserModel.findOne({ _id: id });
 
     if (!workerData) {
-      throw new BadUserInputError({ id: 'Invalid id' });
+      throw new ValidationError('Invalid id');
     }
 
     const newStatus = !workerData.enabled;
@@ -61,21 +55,11 @@ class AdminRepository {
     return updatedUser;
   }
 
-  static async orderToRemove(id: ObjectId) {
-    const deletionResult = await OrderModel.deleteOne({ _id: id });
-
-    if (deletionResult.deletedCount === 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   static async deliveryDataById(id: ObjectId) {
     const workerData = await UserModel.findOne({ _id: id });
 
     if (!workerData) {
-      throw new BadUserInputError({ id: 'Invalid id' });
+      throw new ValidationError('Invalid id');
     }
 
     const workerOrders = await DeliveryModel.find({

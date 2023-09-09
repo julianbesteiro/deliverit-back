@@ -12,23 +12,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const repository_1 = require("../repository");
 class OrderService {
-    static orderServiceTest(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                //logica random
-                const maxOrders = id + 100;
-                const orderRepositoryData = yield repository_1.OrderRepository.orderRepositoryTest(maxOrders);
-                console.log('test service');
-                return orderRepositoryData;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        });
-    }
     static createOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.OrderRepository.createOrder(order);
+        });
+    }
+    static getOrders() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.getOrders();
+        });
+    }
+    static getOrder(orderId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.getOrder(orderId);
+        });
+    }
+    static deleteOrder(orderId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.deleteOrder(orderId);
+        });
+    }
+    static updateOrder(orderId, updatedOrder) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.updateOrder(orderId, updatedOrder);
+        });
+    }
+    static patchOrder(orderId, updatedFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.patchOrder(orderId, updatedFields);
         });
     }
 }

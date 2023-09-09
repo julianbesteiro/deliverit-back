@@ -13,39 +13,54 @@ class DeliveryService {
     constructor(deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
     }
-    static getDelivery() {
+    getDelivery(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'getDelivery';
+            const delivery = this.deliveryRepository.findById(id);
+            return delivery;
         });
     }
-    static getDeliveries() {
+    getDeliveries(filters) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'getDeliveries';
+            const deliveries = this.deliveryRepository.findAll(filters);
+            return deliveries;
         });
     }
-    static createDelivery() {
+    createDelivery(deliveryDTO) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'createDelivery';
+            const { orders } = deliveryDTO;
+            const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
+                const deliveryCreated = yield this.deliveryRepository.create({
+                    orderId: order.orderId,
+                    userId: deliveryDTO.userId,
+                });
+                return deliveryCreated;
+            }));
+            const deliveriesCreated = yield Promise.all(createPromises);
+            return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
         });
     }
-    static updateDelivery() {
+    updateDelivery(delivery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'updateDelivery';
+            const updatedDelivery = this.deliveryRepository.update(delivery);
+            return updatedDelivery;
         });
     }
-    static deleteDelivery() {
+    deleteDelivery(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'deleteDelivery';
+            const deletedDelivery = this.deliveryRepository.delete(id);
+            return deletedDelivery;
         });
     }
-    static getDeliveriesByUser() {
+    //eslint-disable-next-line
+    getDeliveriesByUser(filter) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'getDeliveriesByUser';
+            throw new Error('Method not implemented.');
         });
     }
-    static patchDelivery() {
+    //eslint-disable-next-line
+    patchDelivery(delivery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return 'patchDelivery';
+            throw new Error('Method not implemented.');
         });
     }
 }

@@ -1,58 +1,51 @@
 import Order from '../models/Order';
-import { db } from '../../config/db';
 import { IOrder } from '../../src/interfaces/';
-import { log } from 'console';
 import { EntityNotFoundError } from '@/errors/customErrors';
 
 class OrderRepository {
-
   static async createOrder(order: IOrder) {
     const newOrder = await Order.create(order);
     return newOrder;
   }
 
-  
   static async getOrders() {
     const allOrders = await Order.find();
-      return allOrders;
+    return allOrders;
   }
 
-
   static async getOrder(orderId: string) {
-      const order = await Order.findById(orderId);
-      if (!order) {
-        const entityName = 'Order'; 
-        throw new EntityNotFoundError(entityName);
-       }
-      return order;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const entityName = 'Order';
+      throw new EntityNotFoundError(entityName);
+    }
+    return order;
   }
 
   static async deleteOrder(orderId: string) {
-      const deletedOrder = await Order.findByIdAndDelete(orderId);
-      if (!deletedOrder) {
-       const entityName = 'Order'; 
-       throw new EntityNotFoundError(entityName);
-      }
-      return deletedOrder;
+    const deletedOrder = await Order.findByIdAndDelete(orderId);
+    if (!deletedOrder) {
+      const entityName = 'Order';
+      throw new EntityNotFoundError(entityName);
+    }
+    return deletedOrder;
   }
 
   static async updateOrder(orderId: string, updatedOrder: IOrder) {
-      const options = { new: true }; // Devolver el documento actualizado
-      const updated = await Order.findByIdAndUpdate(orderId, updatedOrder, options);
-      if (!updated) {
-        const entityName = 'Order'; 
-        throw new EntityNotFoundError(entityName);
-       }
-      return updated;
+    const options = { new: true }; // Devolver el documento actualizado
+    const updated = await Order.findByIdAndUpdate(orderId, updatedOrder, options);
+    if (!updated) {
+      const entityName = 'Order';
+      throw new EntityNotFoundError(entityName);
+    }
+    return updated;
   }
 
   static async patchOrder(orderId: string, updatedFields: Partial<IOrder>) {
-      const options = { new: true }; // Devolver el documento actualizado
-      const patched = await Order.findByIdAndUpdate(orderId, updatedFields, options);
-      return patched;
+    const options = { new: true }; // Devolver el documento actualizado
+    const patched = await Order.findByIdAndUpdate(orderId, updatedFields, options);
+    return patched;
   }
-
 }
 
 export { OrderRepository };
-

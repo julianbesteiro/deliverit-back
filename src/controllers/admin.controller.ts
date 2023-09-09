@@ -3,8 +3,9 @@ import { asyncHandler } from '@/utils/asyncHandler';
 import { Request, Response } from 'express';
 import { validateOrderInput } from '@/utils/validateOrder';
 import { validateDate } from '@/utils/validateDate';
-import { BadUserInputError } from '@/errors/customErrors';
+import { ValidationError } from '@/errors/customErrors';
 import { validateObjectId } from '@/utils/validateObjectId';
+import { OrderService } from '@/services';
 
 class AdminController {
   public static workerDataByDate = asyncHandler(async (req: Request, res: Response) => {
@@ -27,7 +28,7 @@ class AdminController {
     const objectIdValidation = validateObjectId(id);
 
     if (objectIdValidation === false) {
-      throw new BadUserInputError({ id: 'Invalid id' });
+      throw new ValidationError('Invalid id');
     }
 
     const workerDataById = await AdminService.workerDataById(id);
@@ -72,11 +73,19 @@ class AdminController {
 
     const validatedData = await validateOrderInput(body);
 
-    const newOrder = await AdminService.newOrder(validatedData);
+    const newOrder = await OrderService.createOrder(validatedData);
 
     return res.status(201).json({
       message: 'Order created',
-      data: newOrder,
+      data: {
+        address: newOrder.address,
+        coords: newOrder.coords,
+        packagesQuantity: newOrder.packagesQuantity,
+        weight: newOrder.weight,
+        recipient: newOrder.recipient,
+        status: newOrder.status,
+        deliveryDate: newOrder.deliveryDate,
+      },
       status: 201,
     });
   });
@@ -87,14 +96,14 @@ class AdminController {
     const objectIdValidation = validateObjectId(id);
 
     if (objectIdValidation === false) {
-      throw new BadUserInputError({ id: 'Invalid id' });
+      throw new ValidationError('Invalid id');
     }
 
-    const deletionStatus = await AdminService.orderToRemove(id);
+    const deletedOrder = await OrderService.deleteOrder(id);
 
     return res.status(201).json({
       message: 'Order request processed',
-      data: deletionStatus,
+      data: deletedOrder ? 'Order deleted' : 'Order not found',
       status: 201,
     });
   });
@@ -105,7 +114,7 @@ class AdminController {
     const objectIdValidation = validateObjectId(id);
 
     if (objectIdValidation === false) {
-      throw new BadUserInputError({ id: 'Invalid id' });
+      throw new ValidationError('Invalid id');
     }
 
     const updateResult = await AdminService.workerStatus(id);

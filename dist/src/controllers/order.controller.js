@@ -8,54 +8,52 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
+const asyncHandler_1 = require("../../src/utils/asyncHandler");
 const services_1 = require("../services");
-function isCustomError(error) {
-    return error.name !== undefined || error.code !== undefined;
-}
 class OrderController {
-    static orderControllerTest(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const orderServiceData = yield services_1.OrderService.orderServiceTest(1);
-                return res.status(200).send({
-                    status: 200,
-                    message: 'Test Controller OK',
-                    order: orderServiceData,
-                });
-            }
-            catch (error) {
-                console.log(error);
-            }
-        });
-    }
-    static createOrder(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const order = yield services_1.OrderService.createOrder(req.body);
-                return res.status(201).send(order);
-            }
-            catch (error) {
-                let statusCode = 500;
-                let message = 'An unexpected error occurred.';
-                if (isCustomError(error)) {
-                    if (error.name === 'ValidationError') {
-                        statusCode = 400;
-                        message = error.message;
-                    }
-                    else if (error.code === 11000) {
-                        statusCode = 409;
-                        message = 'Order already exists.';
-                    }
-                }
-                else {
-                    console.log(error);
-                }
-                res.status(statusCode).send({ message, error });
-                next(error);
-            }
-        });
-    }
 }
 exports.OrderController = OrderController;
+_a = OrderController;
+OrderController.createOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const order = yield services_1.OrderService.createOrder(req.body);
+    return res.status(201).json({
+        message: 'Order created',
+        data: order,
+        status: 201,
+    });
+}));
+OrderController.getOrders = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orders = yield services_1.OrderService.getOrders();
+    return res.status(200).send(orders);
+}));
+OrderController.getOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orderId = req.params.id;
+    const order = yield services_1.OrderService.getOrder(orderId);
+    return res.status(200).send(order);
+}));
+OrderController.deleteOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orderId = req.params.id;
+    const deletedOrder = yield services_1.OrderService.deleteOrder(orderId);
+    return res.status(200).json({
+        message: 'Order deleted',
+        data: deletedOrder,
+        status: 200,
+    });
+}));
+OrderController.updateOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orderId = req.params.id;
+    const updatedOrder = yield services_1.OrderService.updateOrder(orderId, req.body);
+    return res.status(200).send(updatedOrder);
+}));
+OrderController.patchOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orderId = req.params.id;
+    const updatedFields = req.body;
+    const patchedOrder = yield services_1.OrderService.patchOrder(orderId, updatedFields);
+    if (!patchedOrder) {
+        return res.status(404).send({ message: 'Orden no encontrada' });
+    }
+    return res.status(200).send(patchedOrder);
+}));
