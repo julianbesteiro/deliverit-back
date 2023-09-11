@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services';
 import { asyncHandler } from '../utils/asyncHandler';
 import { UnauthorizedError, ValidationError } from '../errors/customErrors';
-import { RequestExpress } from '@/interfaces/IRequestExpress';
+import { RequestExpress } from '../interfaces/IRequestExpress';
 
 class UserController {
   public static userControllerTest = asyncHandler(async (req: Request, res: Response) => {

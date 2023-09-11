@@ -1,6 +1,6 @@
-import { DeliveryRepositoryFilters, IDelivery } from '@/interfaces';
+import { DeliveryRepositoryFilters, IDelivery } from '../interfaces';
 import { hasDuplicates, validateObjectId } from './validateObjectId';
-import { BadUserInputError } from '@/errors/customErrors';
+import { BadUserInputError } from '../errors/customErrors';
 
 export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDelivery[]> {
   const errors: Error[] = [];

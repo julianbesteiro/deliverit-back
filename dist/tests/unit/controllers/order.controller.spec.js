@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-jest.mock('@/services/order.service');
+jest.mock('../../../src/services/order.service');
 describe('OrderController', () => {
-    let mockRequest;
-    let mockResponse;
-    let mockNext;
-    let orderService;
-    // beforeAll(() => {
-    //   orderService = new OrderService({} as any);
-    // });
-    // afterAll(() => {
-    //   jest.clearAllMocks();
-    // });
-    //      -----------------------------------------------------
-    //      -----------     Tests for GET       ----------------
-    //      -----------------------------------------------------
+    //   let mockRequest: Partial<Request>;
+    //   let mockResponse: Partial<Response>;
+    //   let mockNext: NextFunction;
+    //   let orderService: OrderService;
+    //   beforeAll(() => {
+    //     orderService = new OrderService({} as any);
+    //   });
+    //   afterAll(() => {
+    //     jest.clearAllMocks();
+    //   });
+    //   //      -----------------------------------------------------
+    //   //      -----------     Tests for GET       ----------------
+    //   //      -----------------------------------------------------
     //   describe('getOrders', () => {
     //     beforeEach(() => {
     //       mockRequest = { body: {}, params: {}  };

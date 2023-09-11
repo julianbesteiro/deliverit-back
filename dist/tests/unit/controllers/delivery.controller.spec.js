@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
-const delivery_controller_1 = require("@/controllers/delivery.controller");
+const delivery_controller_1 = require("../../../src/controllers/delivery.controller");
 let mockUserId = new mongodb_1.ObjectId().toHexString();
 let mockOrderId = new mongodb_1.ObjectId().toHexString();
 describe('DeliveryController', () => {

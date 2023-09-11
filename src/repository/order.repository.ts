@@ -1,6 +1,6 @@
 import Order from '../models/Order';
 import { IOrder } from '../../src/interfaces/';
-import { EntityNotFoundError } from '@/errors/customErrors';
+import { EntityNotFoundError } from '../errors/customErrors';
 
 class OrderRepository {
   static async createOrder(order: IOrder) {

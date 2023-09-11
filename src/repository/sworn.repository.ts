@@ -1,6 +1,6 @@
-import { BaseFilters, ISworn, ISwornModel } from '@/interfaces';
+import { BaseFilters, ISworn, ISwornModel } from '../interfaces';
 import { IRepository, PaginationData } from '../interfaces/IRepository';
-import { BadUserInputError } from '@/errors/customErrors';
+import { BadUserInputError } from '../errors/customErrors';
 
 class SwornRepository implements IRepository<ISworn> {
   constructor(private readonly swornModel: ISwornModel) {}

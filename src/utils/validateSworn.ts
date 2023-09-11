@@ -1,5 +1,5 @@
-import { BadUserInputError } from '@/errors/customErrors';
-import { ISworn } from '@/interfaces';
+import { BadUserInputError } from '../errors/customErrors';
+import { ISworn } from '../interfaces';
 
 export function validateSwornInput(sworn: ISworn): ISworn {
   const errors = [];

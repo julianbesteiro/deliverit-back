@@ -3,7 +3,7 @@ import request from 'supertest';
 import { UserController } from '../../src/controllers';
 import { connect, disconnect } from '../../config/db/db';
 import User from '../../src/models/User';
-import { errorHandler } from '@/middlewares';
+import { errorHandler } from '../../src/middlewares/errorHandler';
 
 jest.mock('nodemailer', () => ({
   createTransport: jest.fn().mockReturnValue({

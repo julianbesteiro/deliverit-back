@@ -1,7 +1,7 @@
-import { DeliveryController } from '@/controllers/delivery.controller';
-import DeliveryModel from '@/models/Delivery';
-import DeliveryRepository from '@/repository/delivery.repository';
-import DeliveryService from '@/services/delivery.service';
+import { DeliveryController } from '../controllers/delivery.controller';
+import DeliveryModel from '../models/Delivery';
+import DeliveryRepository from '../repository/delivery.repository';
+import DeliveryService from '../services/delivery.service';
 import { Router } from 'express';
 
 const router = Router();

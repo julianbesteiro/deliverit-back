@@ -1,6 +1,6 @@
-import { BadUserInputError } from '@/errors/customErrors';
+import { BadUserInputError } from '../errors/customErrors';
 import { validateDate } from './validateDate';
-import { IOrder } from '@/interfaces';
+import { IOrder } from '../interfaces';
 
 export async function validateOrderInput(orderData: IOrder) {
   const errors: Error[] = [];
