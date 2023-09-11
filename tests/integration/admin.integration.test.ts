@@ -585,31 +585,31 @@ describe('Admin Integration Tests:', () => {
 
       //ordersCheck(response.body.data.pendingOrders);
     });
-  });
 
-  const testCases = [
-    {
-      description: 'should throw an error if the id is invalid',
-      id: 'sdfsdf',
-      expectedStatus: 400,
-    },
-    {
-      description: 'should throw an error if the id is null',
-      id: null,
-      expectedStatus: 400,
-    },
-    {
-      description: 'should throw an error if the id is undefined',
-      id: undefined,
-      expectedStatus: 400,
-    },
-  ];
+    const testCases = [
+      {
+        description: 'should throw an error if the id is invalid',
+        id: 'sdfsdf',
+        expectedStatus: 400,
+      },
+      {
+        description: 'should throw an error if the id is null',
+        id: null,
+        expectedStatus: 400,
+      },
+      {
+        description: 'should throw an error if the id is undefined',
+        id: undefined,
+        expectedStatus: 400,
+      },
+    ];
 
-  testCases.forEach(({ description, id, expectedStatus }) => {
-    it(description, async () => {
-      const response = await request(app).get(`/workers/${id}`);
+    testCases.forEach(({ description, id, expectedStatus }) => {
+      it(description, async () => {
+        const response = await request(app).get(`/workers/${id}`);
 
-      expect(response.status).toBe(expectedStatus);
+        expect(response.status).toBe(expectedStatus);
+      });
     });
   });
 
