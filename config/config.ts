@@ -17,11 +17,6 @@ const envSchema = Joi.object().keys({
   DATABASE_LOCAL_URL: Joi.string().required(),
   DATABASE_URL: Joi.string().required(),
   DATABASE_URL_TEST: Joi.string().required(),
-  SMTP_HOST: Joi.string().required(),
-  SMTP_PORT: Joi.string().default('587'),
-  SMTP_USERNAME: Joi.string().required(),
-  SMTP_PASSWORD: Joi.string().required(),
-  EMAIL_FROM: Joi.string().email().required(),
 });
 
 const { value: validatedEnv, error } = envSchema
@@ -61,17 +56,6 @@ const config = {
       expire: validatedEnv.REFRESH_TOKEN_EXPIRE,
       cookie_name: validatedEnv.REFRESH_TOKEN_COOKIE_NAME,
     },
-  },
-  email: {
-    smtp: {
-      host: validatedEnv.SMTP_HOST,
-      port: validatedEnv.SMTP_PORT,
-      auth: {
-        username: validatedEnv.SMTP_USERNAME,
-        password: validatedEnv.SMTP_PASSWORD,
-      },
-    },
-    from: validatedEnv.EMAIL_FROM,
   },
 } as const;
 

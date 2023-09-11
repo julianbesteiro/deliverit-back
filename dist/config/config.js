@@ -43,11 +43,6 @@ const envSchema = joi_1.default.object().keys({
     DATABASE_LOCAL_URL: joi_1.default.string().required(),
     DATABASE_URL: joi_1.default.string().required(),
     DATABASE_URL_TEST: joi_1.default.string().required(),
-    SMTP_HOST: joi_1.default.string().required(),
-    SMTP_PORT: joi_1.default.string().default('587'),
-    SMTP_USERNAME: joi_1.default.string().required(),
-    SMTP_PASSWORD: joi_1.default.string().required(),
-    EMAIL_FROM: joi_1.default.string().email().required(),
 });
 const { value: validatedEnv, error } = envSchema
     .prefs({ errors: { label: 'key' } })
@@ -82,17 +77,6 @@ const config = {
             expire: validatedEnv.REFRESH_TOKEN_EXPIRE,
             cookie_name: validatedEnv.REFRESH_TOKEN_COOKIE_NAME,
         },
-    },
-    email: {
-        smtp: {
-            host: validatedEnv.SMTP_HOST,
-            port: validatedEnv.SMTP_PORT,
-            auth: {
-                username: validatedEnv.SMTP_USERNAME,
-                password: validatedEnv.SMTP_PASSWORD,
-            },
-        },
-        from: validatedEnv.EMAIL_FROM,
     },
 };
 exports.default = config;
