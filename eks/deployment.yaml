@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deliverit-api-deployment
+  labels:
+    app: deliverit-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deliverit-api
+  template:
+    metadata:
+      labels:
+        app: deliverit-api
+    spec:
+      containers:
+      - name: deliverit-api
+        image: 913891584254.dkr.ecr.sa-east-1.amazonaws.com/deliverit-back:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
