@@ -21,7 +21,7 @@ export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDeliv
   }
 
   orders.forEach((order) => {
-    if (!validateObjectId(order.orderId)) {
+    if (!validateObjectId(order.orderId!)) {
       errors.push(new BadUserInputError({ message: `Invalid order id : ${order.orderId}` }));
     }
     if (Object.keys(order).length > 1 || Object.keys(order).length === 0) {

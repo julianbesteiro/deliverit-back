@@ -6,10 +6,13 @@ import cors from 'cors';
 import { db } from '../config/db';
 import { allRoutes } from './routes';
 import morgan from 'morgan';
-
 import config from '../config/config';
 import isAuth from './middlewares/isAuth';
 import { errorHandler } from './middlewares';
+
+import swaggerUI from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import { swaggerOptions } from 'config/swaggerOptions';
 
 const dev = config.node_env !== 'production';
 const port = config.server.port || 8000;
@@ -28,15 +31,20 @@ const port = config.server.port || 8000;
 
 // Create Express server
 const app = express();
+app.use(express.json({ limit: '50mb' }));
 
 // Express configuration
 app.use(
   cors({
     origin: dev ? config.cors.cors_origin : config.cors.cors_origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   }),
 );
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use(morgan('combined'));
 
@@ -47,7 +55,6 @@ app.get('/secret', isAuth, (_req, res) => {
   });
 });
 
-app.use(express.json({ limit: '50mb' }));
 app.use(helmet());
 
 // Your router
