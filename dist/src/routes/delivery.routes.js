@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deliveryRouter = void 0;
+const delivery_controller_1 = require("@/controllers/delivery.controller");
+const Delivery_1 = __importDefault(require("@/models/Delivery"));
+const delivery_repository_1 = __importDefault(require("@/repository/delivery.repository"));
+const delivery_service_1 = __importDefault(require("@/services/delivery.service"));
+const express_1 = require("express");
+const router = (0, express_1.Router)();
+exports.deliveryRouter = router;
+const deliveryRepository = new delivery_repository_1.default(Delivery_1.default);
+const deliveryService = new delivery_service_1.default(deliveryRepository);
+const deliveryController = new delivery_controller_1.DeliveryController(deliveryService);
+router.get('/all', deliveryController.getDeliveries);
+router.get('/:id', deliveryController.getDelivery);
+router.post('/', deliveryController.createDelivery);
+router.put('/:id', deliveryController.updateDelivery);
+router.delete('/:id', deliveryController.deleteDelivery);

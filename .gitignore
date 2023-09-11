@@ -1,8 +1,5 @@
 .env
-dist
-dist-ssr
-dist/
-dist-ssr/
+
 
 # Ignora las dependencias de Node.js
 /node_modules/
