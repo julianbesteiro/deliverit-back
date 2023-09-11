@@ -1,7 +1,7 @@
-import { IRepository } from '@/interfaces/IRepository';
+import { IRepository } from '../interfaces/IRepository';
 
 import { BaseFilters, DeliveryRepositoryFilters, IDelivery, IDeliveryModel } from '../interfaces';
-import { BadUserInputError, DatabaseConnectionError } from '@/errors/customErrors';
+import { BadUserInputError, DatabaseConnectionError } from '../errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}

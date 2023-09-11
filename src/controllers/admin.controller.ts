@@ -1,11 +1,11 @@
-import AdminService from '@/services/admin.service';
-import { asyncHandler } from '@/utils/asyncHandler';
+import AdminService from '../services/admin.service';
+import { asyncHandler } from '../utils/asyncHandler';
 import { Request, Response } from 'express';
-import { validateOrderInput } from '@/utils/validateOrder';
-import { validateDate } from '@/utils/validateDate';
-import { ValidationError } from '@/errors/customErrors';
-import { validateObjectId } from '@/utils/validateObjectId';
-import { OrderService } from '@/services';
+import { validateOrderInput } from '../utils/validateOrder';
+import { validateDate } from '../utils/validateDate';
+import { ValidationError } from '../errors/customErrors';
+import { validateObjectId } from '../utils/validateObjectId';
+import { OrderService } from '../services';
 
 class AdminController {
   public static workerDataByDate = asyncHandler(async (req: Request, res: Response) => {

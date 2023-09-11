@@ -3,7 +3,7 @@ import { IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
-import { sendMail } from '@/utils/sendEmail';
+import { sendMail } from '../utils/sendEmail';
 
 class UserService {
   static async userServiceTest(id: number) {

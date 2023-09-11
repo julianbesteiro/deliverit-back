@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const customErrors_1 = require("../errors/customErrors");
-const Delivery_1 = __importDefault(require("@/models/Delivery"));
-const Order_1 = __importDefault(require("@/models/Order"));
-const User_1 = __importDefault(require("@/models/User"));
+const Delivery_1 = __importDefault(require("../models/Delivery"));
+const Order_1 = __importDefault(require("../models/Order"));
+const User_1 = __importDefault(require("../models/User"));
 class AdminRepository {
     static availableOrdersByDate(day, month, year) {
         return __awaiter(this, void 0, void 0, function* () {

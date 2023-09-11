@@ -4,7 +4,7 @@ import { adminRoutes } from './admin.routes';
 import { allRoutes as orderRoutes } from './order.routes';
 import { deliveryRouter } from './delivery.routes';
 import { swornRouter } from './sworn.routes';
-import isAuth from '@/middlewares/isAuth';
+import isAuth from '../middlewares/isAuth';
 
 const router = Router();
 

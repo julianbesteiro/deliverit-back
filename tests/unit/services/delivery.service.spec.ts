@@ -1,5 +1,5 @@
-import { IDelivery, IRepository, PaginationData } from '@/interfaces';
-import DeliveryService from '@/services/delivery.service';
+import { IDelivery, IRepository, PaginationData } from '../../../src/interfaces';
+import DeliveryService from '../../../src/services/delivery.service';
 import { ObjectId } from 'mongodb';
 
 class MockRepository implements IRepository<IDelivery> {

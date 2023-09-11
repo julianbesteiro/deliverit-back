@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminController = void 0;
-const admin_service_1 = __importDefault(require("@/services/admin.service"));
-const asyncHandler_1 = require("@/utils/asyncHandler");
-const validateOrder_1 = require("@/utils/validateOrder");
-const validateDate_1 = require("@/utils/validateDate");
+const admin_service_1 = __importDefault(require("../services/admin.service"));
+const asyncHandler_1 = require("../utils/asyncHandler");
+const validateOrder_1 = require("../utils/validateOrder");
+const validateDate_1 = require("../utils/validateDate");
 const customErrors_1 = require("../errors/customErrors");
-const validateObjectId_1 = require("@/utils/validateObjectId");
-const services_1 = require("@/services");
+const validateObjectId_1 = require("../utils/validateObjectId");
+const services_1 = require("../services");
 class AdminController {
 }
 exports.AdminController = AdminController;

@@ -1,4 +1,4 @@
-import AdminRepository from '@/repository/admin.repository';
+import AdminRepository from '../repository/admin.repository';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 

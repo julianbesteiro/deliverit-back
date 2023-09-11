@@ -23,6 +23,9 @@ const morgan_1 = __importDefault(require("morgan"));
 const config_1 = __importDefault(require("../config/config"));
 const isAuth_1 = __importDefault(require("./middlewares/isAuth"));
 const middlewares_1 = require("./middlewares");
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swaggerOptions_1 = require("../config/swaggerOptions");
 const dev = config_1.default.node_env !== 'production';
 const port = config_1.default.server.port || 8000;
 // Connect to MongoDB
@@ -39,12 +42,16 @@ const port = config_1.default.server.port || 8000;
 }))();
 // Create Express server
 const app = (0, express_1.default)();
+app.use(express_1.default.json({ limit: '50mb' }));
 // Express configuration
 app.use((0, cors_1.default)({
     origin: dev ? config_1.default.cors.cors_origin : config_1.default.cors.cors_origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
+const specs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
+app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));
 app.use((0, morgan_1.default)('combined'));
 // Middleware
 app.get('/secret', isAuth_1.default, (_req, res) => {
@@ -52,7 +59,6 @@ app.get('/secret', isAuth_1.default, (_req, res) => {
         message: 'Hello World !',
     });
 });
-app.use(express_1.default.json({ limit: '50mb' }));
 app.use((0, helmet_1.default)());
 // Your router
 app.get('/', (req, res) => {

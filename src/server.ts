@@ -12,7 +12,7 @@ import { errorHandler } from './middlewares';
 
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-import { swaggerOptions } from 'config/swaggerOptions';
+import { swaggerOptions } from '../config/swaggerOptions';
 
 const dev = config.node_env !== 'production';
 const port = config.server.port || 8000;

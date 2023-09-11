@@ -17,7 +17,7 @@ const tokens_1 = require("../utils/tokens");
 const repository_1 = require("../repository");
 const customErrors_1 = require("../errors/customErrors");
 const crypto_1 = __importDefault(require("crypto"));
-const sendEmail_1 = require("@/utils/sendEmail");
+const sendEmail_1 = require("../utils/sendEmail");
 class UserService {
     static userServiceTest(id) {
         return __awaiter(this, void 0, void 0, function* () {

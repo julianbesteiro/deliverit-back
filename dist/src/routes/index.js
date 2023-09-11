@@ -10,7 +10,7 @@ const admin_routes_1 = require("./admin.routes");
 const order_routes_1 = require("./order.routes");
 const delivery_routes_1 = require("./delivery.routes");
 const sworn_routes_1 = require("./sworn.routes");
-const isAuth_1 = __importDefault(require("@/middlewares/isAuth"));
+const isAuth_1 = __importDefault(require("../middlewares/isAuth"));
 const router = (0, express_1.Router)();
 exports.allRoutes = router;
 router.use('/user', user_routes_1.userRoutes);

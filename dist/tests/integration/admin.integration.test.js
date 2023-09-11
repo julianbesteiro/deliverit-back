@@ -14,12 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const express_1 = __importDefault(require("express"));
-const controllers_1 = require("@/controllers");
-const middlewares_1 = require("@/middlewares");
+const controllers_1 = require("../../src/controllers");
+const middlewares_1 = require("../../src/middlewares");
 const db_1 = require("../../config/db/db");
-const User_1 = __importDefault(require("@/models/User"));
-const Order_1 = __importDefault(require("@/models/Order"));
-const Delivery_1 = __importDefault(require("@/models/Delivery"));
+const User_1 = __importDefault(require("../../src/models/User"));
+const Order_1 = __importDefault(require("../../src/models/Order"));
+const Delivery_1 = __importDefault(require("../../src/models/Delivery"));
 const ordersCheck_1 = require("../utils/ordersCheck");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -513,29 +513,29 @@ describe('Admin Integration Tests:', () => {
             expect(response.body.data.status).toMatch(/^(active|inactive)$/);
             //ordersCheck(response.body.data.pendingOrders);
         }));
-    });
-    const testCases = [
-        {
-            description: 'should throw an error if the id is invalid',
-            id: 'sdfsdf',
-            expectedStatus: 400,
-        },
-        {
-            description: 'should throw an error if the id is null',
-            id: null,
-            expectedStatus: 400,
-        },
-        {
-            description: 'should throw an error if the id is undefined',
-            id: undefined,
-            expectedStatus: 400,
-        },
-    ];
-    testCases.forEach(({ description, id, expectedStatus }) => {
-        it(description, () => __awaiter(void 0, void 0, void 0, function* () {
-            const response = yield (0, supertest_1.default)(app).get(`/workers/${id}`);
-            expect(response.status).toBe(expectedStatus);
-        }));
+        const testCases = [
+            {
+                description: 'should throw an error if the id is invalid',
+                id: 'sdfsdf',
+                expectedStatus: 400,
+            },
+            {
+                description: 'should throw an error if the id is null',
+                id: null,
+                expectedStatus: 400,
+            },
+            {
+                description: 'should throw an error if the id is undefined',
+                id: undefined,
+                expectedStatus: 400,
+            },
+        ];
+        testCases.forEach(({ description, id, expectedStatus }) => {
+            it(description, () => __awaiter(void 0, void 0, void 0, function* () {
+                const response = yield (0, supertest_1.default)(app).get(`/workers/${id}`);
+                expect(response.status).toBe(expectedStatus);
+            }));
+        });
     });
     describe('Admin Get Order Data by Date', () => {
         it('should retrieve worker data by date', () => __awaiter(void 0, void 0, void 0, function* () {

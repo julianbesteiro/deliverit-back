@@ -1,7 +1,7 @@
-import { SwornController } from '@/controllers/sworn.controller';
-import SwornModel from '@/models/Sworn';
-import SwornRepository from '@/repository/sworn.repository';
-import SwornService from '@/services/sworn.service';
+import { SwornController } from '../controllers/sworn.controller';
+import SwornModel from '../models/Sworn';
+import SwornRepository from '../repository/sworn.repository';
+import SwornService from '../services/sworn.service';
 import { Router } from 'express';
 
 const router = Router();
