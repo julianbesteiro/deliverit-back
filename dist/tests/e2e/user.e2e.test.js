@@ -17,7 +17,7 @@ const supertest_1 = __importDefault(require("supertest"));
 const controllers_1 = require("../../src/controllers");
 const db_1 = require("../../config/db/db");
 const User_1 = __importDefault(require("../../src/models/User"));
-const middlewares_1 = require("@/middlewares");
+const errorHandler_1 = require("../../src/middlewares/errorHandler");
 jest.mock('nodemailer', () => ({
     createTransport: jest.fn().mockReturnValue({
         sendMail: jest.fn().mockResolvedValue(true),
@@ -30,7 +30,7 @@ app.post('/user/login', controllers_1.UserController.loginUser);
 app.post('/user/logout', controllers_1.UserController.logoutUser);
 app.get('/user/me', controllers_1.UserController.getUserData);
 app.post('/user/signup', controllers_1.UserController.createUser);
-app.use(middlewares_1.errorHandler);
+app.use(errorHandler_1.errorHandler);
 let token;
 describe('User Endpoints', () => {
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {

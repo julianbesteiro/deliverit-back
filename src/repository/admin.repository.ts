@@ -1,7 +1,7 @@
-import { ValidationError } from '@/errors/customErrors';
-import DeliveryModel from '@/models/Delivery';
-import OrderModel from '@/models/Order';
-import UserModel from '@/models/User';
+import { ValidationError } from '../errors/customErrors';
+import DeliveryModel from '../models/Delivery';
+import OrderModel from '../models/Order';
+import UserModel from '../models/User';
 import { ObjectId } from 'mongodb';
 
 class AdminRepository {

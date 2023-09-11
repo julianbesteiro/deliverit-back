@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deliveryRouter = void 0;
-const delivery_controller_1 = require("@/controllers/delivery.controller");
-const Delivery_1 = __importDefault(require("@/models/Delivery"));
-const delivery_repository_1 = __importDefault(require("@/repository/delivery.repository"));
-const delivery_service_1 = __importDefault(require("@/services/delivery.service"));
+const delivery_controller_1 = require("../controllers/delivery.controller");
+const Delivery_1 = __importDefault(require("../models/Delivery"));
+const delivery_repository_1 = __importDefault(require("../repository/delivery.repository"));
+const delivery_service_1 = __importDefault(require("../services/delivery.service"));
 const express_1 = require("express");
 const router = (0, express_1.Router)();
 exports.deliveryRouter = router;

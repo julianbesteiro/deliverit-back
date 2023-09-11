@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const delivery_service_1 = __importDefault(require("@/services/delivery.service"));
+const delivery_service_1 = __importDefault(require("../../../src/services/delivery.service"));
 const mongodb_1 = require("mongodb");
 class MockRepository {
     create(item) {

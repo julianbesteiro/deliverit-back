@@ -5,7 +5,7 @@ import {
   IDeliveryService,
   IRepository,
   PaginationData,
-} from '@/interfaces';
+} from '../interfaces';
 
 class DeliveryService implements IDeliveryService {
   constructor(private readonly deliveryRepository: IRepository<IDelivery>) {}

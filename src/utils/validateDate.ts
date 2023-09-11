@@ -1,4 +1,4 @@
-import { BadUserInputError } from '@/errors/customErrors';
+import { BadUserInputError } from '../errors/customErrors';
 
 export async function validateDate(date: string) {
   const iso8601Pattern = /^\d{4}-\d{2}-\d{2}$/;

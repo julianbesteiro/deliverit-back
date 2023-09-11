@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DeliveryController = void 0;
 const customErrors_1 = require("../errors/customErrors");
-const asyncHandler_1 = require("@/utils/asyncHandler"); // Ajusta la ruta según la estructura de carpetas
-const validateObjectId_1 = require("@/utils/validateObjectId");
-const validationDelivery_1 = require("@/utils/validationDelivery");
+const asyncHandler_1 = require("../utils/asyncHandler"); // Ajusta la ruta según la estructura de carpetas
+const validateObjectId_1 = require("../utils/validateObjectId");
+const validationDelivery_1 = require("../utils/validationDelivery");
 class DeliveryController {
     constructor(deliveryServices) {
         this.deliveryServices = deliveryServices;

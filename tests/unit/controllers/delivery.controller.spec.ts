@@ -5,11 +5,11 @@ import {
   IDeliveryDTO,
   IDeliveryService,
   PaginationData,
-} from '@/interfaces';
+} from '../../../src/interfaces';
 
 import { ObjectId } from 'mongodb';
-import { DeliveryController } from '@/controllers/delivery.controller';
-import { RequestExpress } from '@/interfaces/IRequestExpress';
+import { DeliveryController } from '../../../src/controllers/delivery.controller';
+import { RequestExpress } from '../../../src/interfaces/IRequestExpress';
 
 let mockUserId = new ObjectId().toHexString();
 let mockOrderId = new ObjectId().toHexString();

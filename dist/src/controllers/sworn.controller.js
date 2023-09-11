@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SwornController = void 0;
-const asyncHandler_1 = require("@/utils/asyncHandler");
-const validateSworn_1 = require("@/utils/validateSworn");
+const asyncHandler_1 = require("../utils/asyncHandler");
+const validateSworn_1 = require("../utils/validateSworn");
 class SwornController {
     constructor(swornService) {
         this.swornService = swornService;

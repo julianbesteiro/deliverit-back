@@ -12,18 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const admin_controller_1 = require("@/controllers/admin.controller");
-const admin_service_1 = __importDefault(require("@/services/admin.service"));
-const services_1 = require("@/services");
-const validateDate_1 = require("@/utils/validateDate");
+const admin_controller_1 = require("../../../src/controllers/admin.controller");
+const admin_service_1 = __importDefault(require("../../../src/services/admin.service"));
+const services_1 = require("../../../src/services");
+const validateDate_1 = require("../../../src/utils/validateDate");
 describe('AdminController', () => {
     let mockRequest;
     let mockResponse;
     let mockNext;
     describe('createOrder', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
-            jest.mock('@/services/order.service');
+            jest.mock('../../../src/services/admin.service');
+            jest.mock('../../../src/services/order.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -88,7 +88,7 @@ describe('AdminController', () => {
     });
     describe('getDataByDate', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -126,7 +126,7 @@ describe('AdminController', () => {
     });
     describe('getWorkerDataByDate', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -177,7 +177,7 @@ describe('AdminController', () => {
     });
     describe('editWorkerStatus', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -213,7 +213,7 @@ describe('AdminController', () => {
     });
     describe('deleteOrder', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -261,7 +261,7 @@ describe('AdminController', () => {
     });
     describe('getWorkerDataById', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),
@@ -321,7 +321,7 @@ describe('AdminController', () => {
     });
     describe('getOrderDataByDate', () => {
         beforeEach(() => {
-            jest.mock('@/services/admin.service');
+            jest.mock('../../../src/services/admin.service');
             mockRequest = {};
             mockResponse = {
                 status: jest.fn().mockReturnThis(),

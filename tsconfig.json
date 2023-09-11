@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "jest.config.ts"],

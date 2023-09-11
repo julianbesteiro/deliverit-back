@@ -4,7 +4,7 @@ import {
   CustomError,
   UnauthorizedError,
   ValidationError,
-} from '@/errors/customErrors';
+} from '../errors/customErrors';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {

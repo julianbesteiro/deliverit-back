@@ -1,4 +1,4 @@
-import { IDeliveryForTesting } from '@/interfaces';
+import { IDeliveryForTesting } from '../../src/interfaces';
 
 export const ordersCheck = (orders: Array<IDeliveryForTesting>) => {
   expect(Array.isArray(orders)).toEqual(true);

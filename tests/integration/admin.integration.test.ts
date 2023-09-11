@@ -1,14 +1,14 @@
 import request from 'supertest';
 import express from 'express';
-import { AdminController, UserController } from '@/controllers';
-import AdminService from '@/services/admin.service';
-import { errorHandler } from '@/middlewares';
+import { AdminController, UserController } from '../../src/controllers';
+import AdminService from '../../src/services/admin.service';
+import { errorHandler } from '../../src/middlewares';
 import { connect, disconnect } from '../../config/db/db';
-import UserModel from '@/models/User';
-import OrderModel from '@/models/Order';
-import DeliveryModel from '@/models/Delivery';
-import { OrderService } from '@/services';
-import { IWorker } from '@/interfaces';
+import UserModel from '../../src/models/User';
+import OrderModel from '../../src/models/Order';
+import DeliveryModel from '../../src/models/Delivery';
+import { OrderService } from '../../src/services';
+import { IWorker } from '../../src/interfaces';
 import { ordersCheck } from '../utils/ordersCheck';
 
 const app = express();

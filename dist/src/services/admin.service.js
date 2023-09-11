@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const admin_repository_1 = __importDefault(require("@/repository/admin.repository"));
+const admin_repository_1 = __importDefault(require("../repository/admin.repository"));
 const mongoose_1 = __importDefault(require("mongoose"));
 class AdminService {
     static workerDataByDate(day, month, year, nextDay) {

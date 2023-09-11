@@ -10,6 +10,7 @@ const isAuth = (req, res, next) => {
     // token looks like 'Bearer vnjaknvijdaknvikbnvreiudfnvriengviewjkdsbnvierj'
     try {
         const authHeader = req.headers['authorization'];
+        console.log('THIS IS AUTH HEADER', req.headers);
         if (!authHeader || !(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer '))) {
             return res.sendStatus(http_status_1.default.UNAUTHORIZED);
         }

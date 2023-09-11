@@ -1,14 +1,14 @@
-import { AdminController } from '@/controllers/admin.controller';
+import { AdminController } from '../../../src/controllers/admin.controller';
 import express from 'express';
 import { ObjectId } from 'mongodb';
-import AdminService from '@/services/admin.service';
-import { IDeliveryForTesting } from '@/interfaces';
-import { IWorker } from '@/interfaces';
+import AdminService from '../../../src/services/admin.service';
+import { IDeliveryForTesting } from '../../../src/interfaces';
+import { IWorker } from '../../../src/interfaces';
 import { mock } from 'node:test';
 import { db } from '../../../config/db';
-import * as validateOrder from '@/utils/validateOrder';
-import { OrderService } from '@/services';
-import { validateDate } from '@/utils/validateDate';
+import * as validateOrder from '../../../src/utils/validateOrder';
+import { OrderService } from '../../../src/services';
+import { validateDate } from '../../../src/utils/validateDate';
 import { m } from 'framer-motion';
 
 describe('AdminController', () => {
@@ -18,8 +18,8 @@ describe('AdminController', () => {
 
   describe('createOrder', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
-      jest.mock('@/services/order.service');
+      jest.mock('../../../src/services/admin.service');
+      jest.mock('../../../src/services/order.service');
 
       mockRequest = {};
       mockResponse = {
@@ -113,7 +113,7 @@ describe('AdminController', () => {
 
   describe('getDataByDate', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
@@ -176,7 +176,7 @@ describe('AdminController', () => {
 
   describe('getWorkerDataByDate', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
@@ -249,7 +249,7 @@ describe('AdminController', () => {
 
   describe('editWorkerStatus', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
@@ -307,7 +307,7 @@ describe('AdminController', () => {
 
   describe('deleteOrder', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
@@ -374,7 +374,7 @@ describe('AdminController', () => {
   });
   describe('getWorkerDataById', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
@@ -456,7 +456,7 @@ describe('AdminController', () => {
 
   describe('getOrderDataByDate', () => {
     beforeEach(() => {
-      jest.mock('@/services/admin.service');
+      jest.mock('../../../src/services/admin.service');
 
       mockRequest = {};
       mockResponse = {
