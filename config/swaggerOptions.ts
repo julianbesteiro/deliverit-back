@@ -22,5 +22,5 @@ export const swaggerOptions = {
       },
     },
   },
-  apis: ['./src/docs/user/*.yaml'],
+  apis: ['./src/docs/user/*.yaml', './src/docs/admin/*.yaml'],
 };
