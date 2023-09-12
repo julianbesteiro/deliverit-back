@@ -1,0 +1,178 @@
+/admin/{date}/workers:
+  get:
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: date
+        required: true
+        description: Date in YYYY-MM-DD format required
+        schema:
+          type: string
+    description: Get worker data based on the provided date in the params in YYYY-MM-DD format. For example, 2023-09-01.
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Successful data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workerDataByDateResponse'
+      400:
+        description: Date format is not valid
+
+/admin/{date}:
+  get:
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: date
+        required: true
+        description: Date in YYYY-MM-DD format required
+        schema:
+          type: string
+    description: Get day data based on the provided date in the params in YYYY-MM-DD format. For example, 2023-09-01.
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Successful data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dataByDateResponse'
+      400:
+        description: Date format is not valid
+
+/admin/workers/{id}:
+  get:
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: Object Id of the worker
+        schema:
+          type: string
+    description: Get worker data based on the provided id in the params. For example, 64ed619085e10c102851dc3v.
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Successful data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workerDataByIdResponse'
+      400:
+        description: Invalid id
+
+/admin/{date}/orders:
+  get:
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: date
+        required: true
+        description: Date in YYYY-MM-DD format required
+        schema:
+          type: string
+    description: Get order data based on the provided date in the params in YYYY-MM-DD format. For example, 2023-09-01.
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Successful data request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/orderDataByDateResponse'
+      400:
+        description: Date format is not valid
+
+/admin/edit-status/{id}:
+  put:
+    tags:
+      - Admin
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: Object Id of the worker
+        schema:
+          type: string
+    description: Edit worker status based on the provided id in the params. For example, 64ed619085e10c102851dc3v.
+    produces:
+      - application/json
+    responses:
+      201:
+        description: Worker status updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/editWorkerStatusResponse'
+      400:
+        description: Invalid id
+
+components:
+  schemas:
+    workerDataByDateResponse:
+      type: array
+      example:
+        - workerId: '64ed619085e10c102851dc3e'
+          status: 'active'
+          percentage: 100
+
+    dataByDateResponse:
+      type: object
+      properties:
+        deliveredOrders:
+          type: integer
+          example: 3
+        availableOrders:
+          type: integer
+          example: 4
+        availableWorkers:
+          type: integer
+          example: 4
+        activeWorkers:
+          type: integer
+          example: 3
+
+    workerDataByIdResponse:
+      type: object
+      properties:
+        workerId:
+          type: string
+          example: '64ed619085e10c102851dc3e'
+        status:
+          type: string
+          example: 'active'
+        pendingOrders:
+          type: array
+          example:
+            - orderId: '64f1f64d767929ccaeb66872'
+              address:
+                lat: 40.7128
+                lng: -74.006
+        deliveredOrders:
+          type: array
+          example:
+            - orderId: '64f1f64d767929ccaeb66873'
+              address:
+                lat: 40.7128
+                lng: -74.006
+
+    orderDataByDateResponse:
+      type: array
+      example:
+        - orderId: '64f1f64d934759ccaeb66873'
+          address: 'casa 1312, CABA'
+
+    editWorkerStatusResponse:
+      type: string
+      example: 'Worker status updated to active'
