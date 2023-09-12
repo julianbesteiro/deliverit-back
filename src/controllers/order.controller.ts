@@ -1,13 +1,16 @@
 import { asyncHandler } from '../../src/utils/asyncHandler';
 import { Request, Response } from 'express';
 import { OrderService } from '../services';
-
-
+import { validateOrderInput } from '../utils/validateOrder';
+import { validateObjectId } from '../utils/validateObjectId';
+import { ValidationError } from '../errors/customErrors';
 
 class OrderController {
-
   public static createOrder = asyncHandler(async (req: Request, res: Response) => {
-    const order = await OrderService.createOrder(req.body);
+    const { body } = req;
+    const validatedData = await validateOrderInput(body);
+
+    const order = await OrderService.createOrder(validatedData);
     return res.status(201).json({
       message: 'Order created',
       data: order,
@@ -28,14 +31,19 @@ class OrderController {
 
 
   public static deleteOrder = asyncHandler(async (req: Request, res: Response) => {
-    const orderId = req.params.id; 
-    const deletedOrder = await OrderService.deleteOrder(orderId);
-    return res.status(200).json({
-      message: 'Order deleted',
-      data: deletedOrder,
-      status: 200,
-    });
+    const { id } = req.params;
+    const objectIdValidation = validateObjectId(id);
 
+    if (objectIdValidation === false) {
+      throw new ValidationError('Invalid id');
+    }
+    
+    const deletedOrder = await OrderService.deleteOrder(id);
+    return res.status(201).json({
+      message: 'Order request processed',
+      data: deletedOrder ? 'Order deleted' : 'Order not found',
+      status: 201,
+    });
   });
 
 
