@@ -45,12 +45,12 @@ class UserService {
   static async loginUser(email: string, password: string): Promise<string> {
     const user = await UserRepository.findUserByEmail(email);
     if (!user) {
-      throw new UnauthorizedError('User not found');
+      throw new UnauthorizedError('Invalid credentials');
     }
 
     const isMatch = await user.checkPassword(password);
     if (!isMatch) {
-      throw new UnauthorizedError('Invalid password');
+      throw new UnauthorizedError('Invalid credentials');
     }
 
     const token = generateToken({ id: user._id });
