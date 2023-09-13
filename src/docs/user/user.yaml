@@ -188,6 +188,192 @@
             example:
               message: 'Internal Server Error'
 
+/user/request-password-reset:
+  post:
+    tags:
+      - User
+    description: Request a password reset for a user. If the email exists, an email will be sent with a reset token.
+    requestBody:
+      description: Email of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+    responses:
+      200:
+        description: Email sent (even if the email doesn't exist in the system, for security reasons).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Email sent'
+      401:
+        description: Unauthorized (user not found).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'User not found'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/verify-reset-token:
+  post:
+    tags:
+      - User
+    description: Verify if the provided reset token for the given email is valid.
+    requestBody:
+      description: Email and reset token of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - token
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+              token:
+                type: string
+                example: '123456'
+    responses:
+      200:
+        description: Token verification result
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isValid:
+                  type: boolean
+            example:
+              isValid: true
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Missing fields'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/reset-password:
+  post:
+    tags:
+      - User
+    description: Reset the password of a user. If the email exists and the token is valid, the password will be updated.
+    requestBody:
+      description: Email, reset token and new password of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - token
+              - newPassword
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+              token:
+                type: string
+                example: '123456'
+              newPassword:
+                type: string
+                format: password
+                example: '0303456lalala-lala-lala'
+    responses:
+      200:
+        description: Password reset successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Password reset successful'
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Missing fields'
+      401:
+        description: Unauthorized (user not found or invalid token).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'User not found'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+              example:
+                message: 'Internal Server Error'
+
 components:
   securitySchemes:
     bearerAuth:
