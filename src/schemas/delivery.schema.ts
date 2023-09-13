@@ -9,6 +9,7 @@ export const deliverySchema: Schema = new Schema(
     orderId: {
       type: ObjectId,
       required: true,
+      ref: 'Order',
     },
     userId: {
       type: ObjectId,

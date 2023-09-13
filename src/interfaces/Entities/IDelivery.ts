@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import { IOrder } from './IOrder';
 
 export type Cords = {
   lat: number;
@@ -18,6 +19,7 @@ export interface IDelivery {
   resolutionDeliveryDate?: Date | string | null;
   createdAt?: string;
   updatedAt?: string;
+  order?: IOrder;
 }
 
 export interface IDeliveryForTesting {
