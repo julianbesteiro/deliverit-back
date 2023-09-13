@@ -59,7 +59,7 @@ class UserController {
     if (email === undefined || token === undefined || newPassword === undefined)
       throw new ValidationError('Missing fields');
     await UserService.resetPassword(email, token, newPassword);
-    return res.status(200).send({ message: 'Password reset successfully' });
+    return res.status(200).send({ message: 'Password reset successful' });
   });
 }
 
