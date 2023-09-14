@@ -53,13 +53,13 @@ class AdminService {
     const deliveredOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status === 'delivered')
       .map((delivery) => {
-        return { orderId: delivery.orderId, address: delivery.destinationLocation };
+        return { orderId: delivery.orderId?._id, address: delivery.orderId?.address };
       });
 
     const pendingOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status !== 'delivered')
       .map((delivery) => {
-        return { orderId: delivery.orderId, address: delivery.destinationLocation };
+        return { orderId: delivery.orderId?._id, address: delivery.orderId?.address };
       });
 
     return {

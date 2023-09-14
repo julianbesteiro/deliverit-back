@@ -60,11 +60,11 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield repository_1.UserRepository.findUserByEmail(email);
             if (!user) {
-                throw new customErrors_1.UnauthorizedError('User not found');
+                throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
             const isMatch = yield user.checkPassword(password);
             if (!isMatch) {
-                throw new customErrors_1.UnauthorizedError('Invalid password');
+                throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
             const token = (0, tokens_1.generateToken)({ id: user._id });
             return token;
