@@ -14,11 +14,10 @@ class UserController {
     });
   });
 
-  static getUserData = asyncHandler(async (req: Request | RequestExpress, res: Response) => {
+  static sendUserData = asyncHandler(async (req: Request | RequestExpress, res: Response) => {
     const { user } = req as RequestExpress;
     if (!user) throw new UnauthorizedError('Unauthorized');
-    const userData = await UserService.getUserData(user.id);
-    return res.status(200).send(userData);
+    return res.status(200).send(user);
   });
 
   static createUser = asyncHandler(async (req: Request, res: Response) => {

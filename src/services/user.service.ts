@@ -21,23 +21,6 @@ class UserService {
     }
   }
 
-  static async getUserData(id: string) {
-    const user = await UserRepository.findUserById(id);
-    if (!user) {
-      throw new UnauthorizedError('User not found');
-    }
-    return {
-      id: user._id,
-      name: user.name,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      enabled: user.enabled,
-      lastSeenAt: user.lastSeenAt,
-      urlImage: user.urlImage,
-    };
-  }
-
   static async createUser(user: IUserInput) {
     return await UserRepository.createUser(user);
   }
@@ -53,7 +36,16 @@ class UserService {
       throw new UnauthorizedError('Invalid credentials');
     }
 
-    const token = generateToken({ id: user._id });
+    const token = generateToken({
+      id: user._id,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      enabled: user.enabled,
+      lastSeenAt: user.lastSeenAt,
+      urlImage: user.urlImage,
+    });
     return token;
   }
 

@@ -64,7 +64,7 @@
                 message:
                   type: string
             example:
-              message: 'E11000 duplicate key error collection: deliverit.users index: email_1 dup key: { email: "rafaella@example.com'
+              message: rafaella@example.com is already registered
       500:
         description: Internal Server Error
         content:
