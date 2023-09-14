@@ -13,12 +13,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const asyncHandler_1 = require("../../src/utils/asyncHandler");
 const services_1 = require("../services");
+const validateOrder_1 = require("../utils/validateOrder");
+const validateObjectId_1 = require("../utils/validateObjectId");
+const customErrors_1 = require("../errors/customErrors");
 class OrderController {
 }
 exports.OrderController = OrderController;
 _a = OrderController;
 OrderController.createOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const order = yield services_1.OrderService.createOrder(req.body);
+    const { body } = req;
+    const validatedData = yield (0, validateOrder_1.validateOrderInput)(body);
+    const order = yield services_1.OrderService.createOrder(validatedData);
     return res.status(201).json({
         message: 'Order created',
         data: order,
@@ -35,12 +40,16 @@ OrderController.getOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awai
     return res.status(200).send(order);
 }));
 OrderController.deleteOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const orderId = req.params.id;
-    const deletedOrder = yield services_1.OrderService.deleteOrder(orderId);
-    return res.status(200).json({
-        message: 'Order deleted',
-        data: deletedOrder,
-        status: 200,
+    const { id } = req.params;
+    const objectIdValidation = (0, validateObjectId_1.validateObjectId)(id);
+    if (objectIdValidation === false) {
+        throw new customErrors_1.ValidationError('Invalid id');
+    }
+    const deletedOrder = yield services_1.OrderService.deleteOrder(id);
+    return res.status(201).json({
+        message: 'Order request processed',
+        data: deletedOrder ? 'Order deleted' : 'Order not found',
+        status: 201,
     });
 }));
 OrderController.updateOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

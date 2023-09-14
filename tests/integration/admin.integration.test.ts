@@ -8,7 +8,7 @@ import UserModel from '../../src/models/User';
 import OrderModel from '../../src/models/Order';
 import DeliveryModel from '../../src/models/Delivery';
 import { OrderService } from '../../src/services';
-import { IWorker } from '../../src/interfaces';
+import { IDeliveryForOrderPopulation, IWorker } from '../../src/interfaces';
 import { ordersCheck } from '../utils/ordersCheck';
 
 const app = express();
@@ -559,13 +559,13 @@ describe('Admin Integration Tests:', () => {
         deliveredOrders: [
           {
             orderId: deliveryCreatedGetWorkerDataById.orderId?.toString(),
-            address: deliveryCreatedGetWorkerDataById.destinationLocation,
+            address: 'casa 16, CABA',
           },
         ],
         pendingOrders: [
           {
             orderId: deliveryCreated2GetWorkerDataById.orderId?.toString(),
-            address: deliveryCreated2GetWorkerDataById.destinationLocation,
+            address: 'casa 17, CABA',
           },
         ],
       });
@@ -583,7 +583,7 @@ describe('Admin Integration Tests:', () => {
 
       expect(response.body.data.status).toMatch(/^(active|inactive)$/);
 
-      //ordersCheck(response.body.data.pendingOrders);
+      ordersCheck(response.body.data.pendingOrders);
     });
 
     const testCases = [

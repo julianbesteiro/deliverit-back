@@ -21,6 +21,21 @@ export interface IOrder {
   deliveryDate: Date;
 }
 
+export interface IOrderForDeliverySchema {
+  _id: string | undefined;
+  status?: ValidStatuses;
+  address: string;
+  coords: {
+    lat: number;
+    lng: number;
+  };
+  packagesQuantity: number;
+  weight: number;
+  recipient: string;
+  deliveryDate: Date;
+  __v: number;
+}
+
 export interface IOrderDocument extends IOrder, Document {}
 
 export interface IOrderModel extends Model<IOrder> {}
