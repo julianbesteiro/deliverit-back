@@ -13,7 +13,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error instanceof UnauthorizedError) {
     return res.status(401).send({ message: error.message });
   } else if (error instanceof ConflictError || error.code === 11000) {
-    return res.status(409).send({ message: error.message });
+    const message = `'${error.keyValue.email}' is already registered`;
+    return res.status(409).send({ message: message });
   } else if (error instanceof ValidationError || error.name === 'ValidationError') {
     return res.status(400).send({ message: error.message });
   }

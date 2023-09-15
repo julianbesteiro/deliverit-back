@@ -21,12 +21,22 @@ class UserService {
     }
   }
 
-  static async getUserData(id: string) {
-    const user = await UserRepository.findUserById(id);
+  static async createUser(user: IUserInput) {
+    return await UserRepository.createUser(user);
+  }
+
+  static async loginUser(email: string, password: string): Promise<string> {
+    const user = await UserRepository.findUserByEmail(email);
     if (!user) {
-      throw new UnauthorizedError('User not found');
+      throw new UnauthorizedError('Invalid credentials');
     }
-    return {
+
+    const isMatch = await user.checkPassword(password);
+    if (!isMatch) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+
+    const token = generateToken({
       id: user._id,
       name: user.name,
       lastName: user.lastName,
@@ -35,25 +45,7 @@ class UserService {
       enabled: user.enabled,
       lastSeenAt: user.lastSeenAt,
       urlImage: user.urlImage,
-    };
-  }
-
-  static async createUser(user: IUserInput) {
-    return await UserRepository.createUser(user);
-  }
-
-  static async loginUser(email: string, password: string): Promise<string> {
-    const user = await UserRepository.findUserByEmail(email);
-    if (!user) {
-      throw new UnauthorizedError('User not found');
-    }
-
-    const isMatch = await user.checkPassword(password);
-    if (!isMatch) {
-      throw new UnauthorizedError('Invalid password');
-    }
-
-    const token = generateToken({ id: user._id });
+    });
     return token;
   }
 

@@ -1,0 +1,483 @@
+/user/me:
+  get:
+    tags:
+      - User
+    security:
+      - bearerAuth: []
+    description: Get user data based on the provided token in the header. Should authenticate the user first by providing token in the header.
+    produces:
+      - application/json
+    parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        type: string
+    responses:
+      200:
+        description: User data retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserResponse'
+      401:
+        description: Unauthorized
+
+/user/signup:
+  post:
+    tags:
+      - User
+    description: Create a new user
+    requestBody:
+      description: User object that needs to be added
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateUserRequest'
+    responses:
+      201:
+        description: User created successfully
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 'Created Successfully'
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'User validation failed: name: Path `name` is required.'
+      409:
+        description: Conflict (email already exists)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: rafaella@example.com is already registered
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/login:
+  post:
+    tags:
+      - User
+    description: Authenticate a user and return a token
+    requestBody:
+      description: User object that needs to be authenticated
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+              password:
+                type: string
+                format: password
+                example: '0303456lalala'
+    responses:
+      200:
+        description: Login successful
+        headers:
+          Authorization:
+            description: Bearer token for authentication
+            schema:
+              type: string
+              example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Login successful'
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Missing fields'
+      401:
+        description: Unauthorized (invalid credentials)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Invalid credentials'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/logout:
+  post:
+    tags:
+      - User
+    description: Logout a user and clears the token
+    responses:
+      200:
+        description: Logout successful
+        headers:
+          Authorization:
+            description: Cleared bearer token.
+            schema:
+              type: string
+              default: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Logout successful'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/request-password-reset:
+  post:
+    tags:
+      - User
+    description: Request a password reset for a user. If the email exists, an email will be sent with a reset token.
+    requestBody:
+      description: Email of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+    responses:
+      200:
+        description: Email sent (even if the email doesn't exist in the system, for security reasons).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Email sent'
+      401:
+        description: Unauthorized (user not found).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'User not found'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/verify-reset-token:
+  post:
+    tags:
+      - User
+    description: Verify if the provided reset token for the given email is valid.
+    requestBody:
+      description: Email and reset token of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - token
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+              token:
+                type: string
+                example: '123456'
+    responses:
+      200:
+        description: Token verification result
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isValid:
+                  type: boolean
+            example:
+              isValid: true
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Missing fields'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Internal Server Error'
+
+/user/reset-password:
+  post:
+    tags:
+      - User
+    description: Reset the password of a user. If the email exists and the token is valid, the password will be updated.
+    requestBody:
+      description: Email, reset token and new password of the user requesting the password reset
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - token
+              - newPassword
+            properties:
+              email:
+                type: string
+                format: email
+                example: 'rafaella@example.com'
+              token:
+                type: string
+                example: '123456'
+              newPassword:
+                type: string
+                format: password
+                example: '0303456lalala-lala-lala'
+    responses:
+      200:
+        description: Password reset successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Password reset successful'
+      400:
+        description: Bad request (missing fields or invalid data)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'Missing fields'
+      401:
+        description: Unauthorized (user not found or invalid token).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: 'User not found'
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+              example:
+                message: 'Internal Server Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - lastName
+        - email
+        - password
+      properties:
+        id:
+          type: string
+          example: '64ed619085e10c102851dc3e'
+        name:
+          type: string
+          example: Rafaella
+        lastName:
+          type: string
+          example: Carra
+        email:
+          type: string
+          format: email
+          example: 'rafaella@example.com'
+        role:
+          type: string
+          example: 'user'
+        enabled:
+          type: boolean
+          example: true
+        lastSeenAt:
+          type: date
+          example: '2020-10-10T00:00:00.000Z'
+        urlImage:
+          type: string
+          example: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Raffaella_Carr%C3%A0_2_%28cropped%29.jpg/800px-Raffaella_Carr%C3%A0_2_%28cropped%29.jpg'
+        password:
+          type: string
+          format: password
+          example: '0303456lalala'
+        passwordReset:
+          type: object
+          properties:
+            token:
+              type: string
+              example: '123456'
+            expiration:
+              type: date
+              example: '2020-10-10T00:00:00.000Z'
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '64ed619085e10c102851dc3e'
+        name:
+          type: string
+          example: Rafaella
+        lastName:
+          type: string
+          example: Carra
+        email:
+          type: string
+          format: email
+          example: 'rafaella@example.com'
+        role:
+          type: string
+          example: 'user'
+        enabled:
+          type: boolean
+          example: true
+        lastSeenAt:
+          type: date
+          example: '2020-10-10T00:00:00.000Z'
+        urlImage:
+          type: string
+          example: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Raffaella_Carr%C3%A0_2_%28cropped%29.jpg/800px-Raffaella_Carr%C3%A0_2_%28cropped%29.jpg'
+
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - lastName
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Rafaella
+        lastName:
+          type: string
+          example: Carra
+        email:
+          type: string
+          format: email
+          example: 'rafaella@example.com'
+        password:
+          type: string
+          format: password
+          example: '0303456lalala'
+        urlImage:
+          type: string
+          example: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Raffaella_Carr%C3%A0_2_%28cropped%29.jpg/800px-Raffaella_Carr%C3%A0_2_%28cropped%29.jpg'

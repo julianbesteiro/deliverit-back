@@ -10,7 +10,6 @@ const isAuth = (req: Request | RequestExpress, res: Response, next: NextFunction
   // token looks like 'Bearer vnjaknvijdaknvikbnvreiudfnvriengviewjkdsbnvierj'
   try {
     const authHeader = req.headers['authorization'];
-    console.log('THIS IS AUTH HEADER', req.headers);
 
     if (!authHeader || !authHeader?.startsWith('Bearer ')) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);

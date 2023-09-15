@@ -14,11 +14,10 @@ class UserController {
     });
   });
 
-  static getUserData = asyncHandler(async (req: Request | RequestExpress, res: Response) => {
+  static sendUserData = asyncHandler(async (req: Request | RequestExpress, res: Response) => {
     const { user } = req as RequestExpress;
     if (!user) throw new UnauthorizedError('Unauthorized');
-    const userData = await UserService.getUserData(user.id);
-    return res.status(200).send(userData);
+    return res.status(200).send(user);
   });
 
   static createUser = asyncHandler(async (req: Request, res: Response) => {
@@ -59,7 +58,7 @@ class UserController {
     if (email === undefined || token === undefined || newPassword === undefined)
       throw new ValidationError('Missing fields');
     await UserService.resetPassword(email, token, newPassword);
-    return res.status(200).send({ message: 'Password reset successfully' });
+    return res.status(200).send({ message: 'Password reset successful' });
   });
 }
 
