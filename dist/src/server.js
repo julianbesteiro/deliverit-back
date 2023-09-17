@@ -48,6 +48,7 @@ app.use((0, cors_1.default)({
     origin: dev ? config_1.default.cors.cors_origin : config_1.default.cors.cors_origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
     credentials: true,
 }));
 const specs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
