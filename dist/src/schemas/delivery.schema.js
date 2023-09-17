@@ -10,6 +10,7 @@ exports.deliverySchema = new mongoose_1.Schema({
     orderId: {
         type: mongodb_1.ObjectId,
         required: true,
+        ref: 'Order',
     },
     userId: {
         type: mongodb_1.ObjectId,

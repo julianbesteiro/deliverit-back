@@ -64,6 +64,7 @@ class UserService {
     static forgotPassword(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield repository_1.UserRepository.findUserByEmail(email);
+            //TODO define if it is secure to show that the user does not exist
             if (!user) {
                 throw new customErrors_1.UnauthorizedError('User not found');
             }
