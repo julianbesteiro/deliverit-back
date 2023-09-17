@@ -33,24 +33,6 @@ class UserService {
             }
         });
     }
-    static getUserData(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = yield repository_1.UserRepository.findUserById(id);
-            if (!user) {
-                throw new customErrors_1.UnauthorizedError('User not found');
-            }
-            return {
-                id: user._id,
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email,
-                role: user.role,
-                enabled: user.enabled,
-                lastSeenAt: user.lastSeenAt,
-                urlImage: user.urlImage,
-            };
-        });
-    }
     static createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.UserRepository.createUser(user);
@@ -66,7 +48,16 @@ class UserService {
             if (!isMatch) {
                 throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
-            const token = (0, tokens_1.generateToken)({ id: user._id });
+            const token = (0, tokens_1.generateToken)({
+                id: user._id,
+                name: user.name,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                enabled: user.enabled,
+                lastSeenAt: user.lastSeenAt,
+                urlImage: user.urlImage,
+            });
             return token;
         });
     }

@@ -39,6 +39,7 @@ app.use(
     origin: dev ? config.cors.cors_origin : config.cors.cors_origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
     credentials: true,
   }),
 );

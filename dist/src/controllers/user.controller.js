@@ -26,12 +26,11 @@ UserController.userControllerTest = (0, asyncHandler_1.asyncHandler)((req, res) 
         users: userServiceData,
     });
 }));
-UserController.getUserData = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+UserController.sendUserData = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user } = req;
     if (!user)
         throw new customErrors_1.UnauthorizedError('Unauthorized');
-    const userData = yield services_1.UserService.getUserData(user.id);
-    return res.status(200).send(userData);
+    return res.status(200).send(user);
 }));
 UserController.createUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield services_1.UserService.createUser(req.body);
@@ -68,5 +67,5 @@ UserController.resetPassword = (0, asyncHandler_1.asyncHandler)((req, res) => __
     if (email === undefined || token === undefined || newPassword === undefined)
         throw new customErrors_1.ValidationError('Missing fields');
     yield services_1.UserService.resetPassword(email, token, newPassword);
-    return res.status(200).send({ message: 'Password reset successfully' });
+    return res.status(200).send({ message: 'Password reset successful' });
 }));
