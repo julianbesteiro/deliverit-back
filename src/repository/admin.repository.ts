@@ -1,3 +1,4 @@
+import { IDeliveryForOrderPopulation } from '@/interfaces';
 import { ValidationError } from '../errors/customErrors';
 import DeliveryModel from '../models/Delivery';
 import OrderModel from '../models/Order';
@@ -62,9 +63,10 @@ class AdminRepository {
       throw new ValidationError('Invalid id');
     }
 
-    const workerOrders = await DeliveryModel.find({
-      userId: id,
-    });
+    const workerOrders: IDeliveryForOrderPopulation | IDeliveryForOrderPopulation[] =
+      await DeliveryModel.find({
+        userId: id,
+      }).populate('orderId');
 
     return { workerOrders, workerData };
   }

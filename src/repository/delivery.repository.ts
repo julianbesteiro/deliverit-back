@@ -50,7 +50,15 @@ class DeliveryRepository implements IRepository<IDelivery> {
       .find(filter)
       .skip(skip)
       .limit(limit)
-      .select('status _id orderId userId');
+      .select('status _id orderId userId')
+      .populate({
+        path: 'orderId',
+        select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+        model: 'Order', // Reemplaza con el nombre de tu modelo de orden
+        options: {
+          fields: 'order', // Cambia el nombre del campo en el JSON de salida
+        },
+      });
 
     const deliveries = await query.exec();
 
@@ -64,13 +72,27 @@ class DeliveryRepository implements IRepository<IDelivery> {
 
   async findById(id: string, filters?: BaseFilters): Promise<IDelivery> {
     if (filters) {
-      const delivery = await this.deliveryModel.findOne({ _id: id, ...filters });
+      const delivery = await this.deliveryModel.findOne({ _id: id, ...filters }).populate({
+        path: 'orderId',
+        select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+        model: 'Order', // Reemplaza con el nombre de tu modelo de orden
+        options: {
+          fields: 'order', // Cambia el nombre del campo en el JSON de salida
+        },
+      });
       if (!delivery) {
         throw new DatabaseConnectionError('Delivery not found');
       }
       return delivery;
     }
-    const delivery = await this.deliveryModel.findById(id);
+    const delivery = await this.deliveryModel.findById(id).populate({
+      path: 'orderId',
+      select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+      model: 'Order', // Reemplaza con el nombre de tu modelo de orden
+      options: {
+        fields: 'order', // Cambia el nombre del campo en el JSON de salida
+      },
+    });
 
     if (!delivery) {
       throw new DatabaseConnectionError('Delivery not found');
