@@ -51,6 +51,7 @@ class UserService {
 
   static async forgotPassword(email: string): Promise<void> {
     const user = await UserRepository.findUserByEmail(email);
+    //TODO define if it is secure to show that the user does not exist
     if (!user) {
       throw new UnauthorizedError('User not found');
     }
