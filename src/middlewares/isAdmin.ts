@@ -27,6 +27,8 @@ const isAdmin = (req: Request | RequestExpressExtended, res: Response, next: Nex
       (req as RequestExpressExtended).user.role === 'admin'
     ) {
       next();
+    } else {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
     }
   } catch (err) {
     if (err instanceof JsonWebTokenError) {
