@@ -57,12 +57,14 @@ class AdminService {
             const deliveredOrders = workerDataById.workerOrders
                 .filter((delivery) => delivery.status === 'delivered')
                 .map((delivery) => {
-                return { orderId: delivery.orderId, address: delivery.destinationLocation };
+                var _a, _b;
+                return { orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id, address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address };
             });
             const pendingOrders = workerDataById.workerOrders
                 .filter((delivery) => delivery.status !== 'delivered')
                 .map((delivery) => {
-                return { orderId: delivery.orderId, address: delivery.destinationLocation };
+                var _a, _b;
+                return { orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id, address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address };
             });
             return {
                 workerId: workerDataById.workerData._id,

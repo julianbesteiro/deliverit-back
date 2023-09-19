@@ -68,5 +68,5 @@ UserController.resetPassword = (0, asyncHandler_1.asyncHandler)((req, res) => __
     if (email === undefined || token === undefined || newPassword === undefined)
         throw new customErrors_1.ValidationError('Missing fields');
     yield services_1.UserService.resetPassword(email, token, newPassword);
-    return res.status(200).send({ message: 'Password reset successfully' });
+    return res.status(200).send({ message: 'Password reset successful' });
 }));

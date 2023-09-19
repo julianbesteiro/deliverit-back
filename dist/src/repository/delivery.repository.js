@@ -50,7 +50,15 @@ class DeliveryRepository {
                 .find(filter)
                 .skip(skip)
                 .limit(limit)
-                .select('status _id orderId userId');
+                .select('status _id orderId userId')
+                .populate({
+                path: 'orderId',
+                select: '_id address',
+                model: 'Order',
+                options: {
+                    fields: 'order', // Cambia el nombre del campo en el JSON de salida
+                },
+            });
             const deliveries = yield query.exec();
             return {
                 data: deliveries,
@@ -63,13 +71,27 @@ class DeliveryRepository {
     findById(id, filters) {
         return __awaiter(this, void 0, void 0, function* () {
             if (filters) {
-                const delivery = yield this.deliveryModel.findOne(Object.assign({ _id: id }, filters));
+                const delivery = yield this.deliveryModel.findOne(Object.assign({ _id: id }, filters)).populate({
+                    path: 'orderId',
+                    select: '_id address',
+                    model: 'Order',
+                    options: {
+                        fields: 'order', // Cambia el nombre del campo en el JSON de salida
+                    },
+                });
                 if (!delivery) {
                     throw new customErrors_1.DatabaseConnectionError('Delivery not found');
                 }
                 return delivery;
             }
-            const delivery = yield this.deliveryModel.findById(id);
+            const delivery = yield this.deliveryModel.findById(id).populate({
+                path: 'orderId',
+                select: '_id address',
+                model: 'Order',
+                options: {
+                    fields: 'order', // Cambia el nombre del campo en el JSON de salida
+                },
+            });
             if (!delivery) {
                 throw new customErrors_1.DatabaseConnectionError('Delivery not found');
             }
