@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 class AdminService {
   public static async workerDataByDate(day: number, month: number, year: number, nextDay: Date) {
     const availableWorkers = (await AdminRepository.availableWorkers(nextDay)).map((worker) => {
-      return { id: worker._id, name: worker.name };
+      return { id: worker._id, name: worker.name, urlImage: worker.urlImage };
     });
 
     const deliveriesByDate = await AdminRepository.deliveriesByDate(day, month, year);
@@ -35,6 +35,7 @@ class AdminService {
       return {
         workerName: worker.name,
         workerId: worker.id,
+        workerImage: worker.urlImage,
         status: valueCounts2[objectIdToString] ? 'active' : 'inactive',
         percentage: valueCounts[objectIdToString]
           ? (valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100
@@ -69,6 +70,7 @@ class AdminService {
     return {
       workerId: workerDataById.workerData.name,
       status: workerDataById.workerData.enabled ? 'active' : 'inactive',
+      urlImage: workerDataById.workerData.urlImage,
       deliveredOrders: deliveredOrders,
       pendingOrders: pendingOrders,
     };
@@ -104,6 +106,13 @@ class AdminService {
       .filter((delivery) => delivery.status === 'delivered')
       .map((delivery) => delivery.orderId?.toString());
 
+    //find uniqueActiveWorker on availableWorkers array and get urlImage property
+
+    const activeWorkersImages = uniqueActiveWorkers.map((activeWorker) => {
+      const findResult = availableWorkers.find((worker) => worker._id.toString() === activeWorker);
+      return { id: findResult?._id.toString(), urlImage: findResult?.urlImage };
+    });
+
     return {
       deliveredOrders: deliveredDeliveries.reduce((acc, delivery) => {
         availableOrders
@@ -117,7 +126,7 @@ class AdminService {
       }, 0),
       availableOrders: availableOrders.length,
       availableWorkers: availableWorkers.length,
-      activeWorkers: uniqueActiveWorkers.length,
+      activeWorkers: { total: uniqueActiveWorkers.length, images: activeWorkersImages },
     };
   }
 
