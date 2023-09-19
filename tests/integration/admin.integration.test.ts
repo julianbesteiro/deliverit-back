@@ -330,17 +330,35 @@ describe('Admin Integration Tests:', () => {
         deliveredOrders: 1,
         availableOrders: 2,
         availableWorkers: 2,
-        activeWorkers: 1,
+        activeWorkers: {
+          total: 1,
+          images: [
+            {
+              id: userCreated2._id.toString(),
+              urlImage: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
+            },
+          ],
+        },
       });
 
       expect(response.body.data).toEqual({
         availableWorkers: expect.any(Number),
-        activeWorkers: expect.any(Number),
+        activeWorkers: expect.any(Object),
         availableOrders: expect.any(Number),
         deliveredOrders: expect.any(Number),
       });
 
-      expect(response.body.data.activeWorkers).toBeLessThanOrEqual(
+      expect(response.body.data.activeWorkers).toEqual({
+        total: expect.any(Number),
+        images: expect.arrayContaining([
+          {
+            id: expect.any(String),
+            urlImage: expect.any(String),
+          },
+        ]),
+      });
+
+      expect(response.body.data.activeWorkers.total).toBeLessThanOrEqual(
         response.body.data.availableWorkers,
       );
 
@@ -427,16 +445,20 @@ describe('Admin Integration Tests:', () => {
           workerId: userCreated._id.toString(),
           status: 'active',
           percentage: 100,
+          workerImage: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
+          workerName: userCreated.name,
         },
       ]);
       expect(Array.isArray(response.body.data)).toEqual(true);
       if (response.body.data.length > 0) {
         response.body.data.forEach((worker: IWorker) => {
-          expect(Object.keys(worker).length).toEqual(3);
+          expect(Object.keys(worker).length).toEqual(5);
           expect(worker).toEqual({
             workerId: expect.any(String),
             status: expect.any(String),
             percentage: expect.any(Number),
+            workerImage: expect.any(String),
+            workerName: expect.any(String),
           });
           expect(worker.status).toMatch(/^(active|inactive)$/);
           expect(worker.percentage).toBeLessThanOrEqual(100);
@@ -554,8 +576,9 @@ describe('Admin Integration Tests:', () => {
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Successful data request');
       expect(response.body.data).toEqual({
-        workerId: userCreatedGetWorkerDataById._id.toString(),
+        workerId: userCreatedGetWorkerDataById.name,
         status: 'active',
+        urlImage: 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png',
         deliveredOrders: [
           {
             orderId: deliveryCreatedGetWorkerDataById.orderId?.toString(),
@@ -566,24 +589,27 @@ describe('Admin Integration Tests:', () => {
           {
             orderId: deliveryCreated2GetWorkerDataById.orderId?.toString(),
             address: 'casa 17, CABA',
+            status: 'pending',
           },
         ],
       });
 
       expect(typeof response.body.data).toEqual('object');
 
-      expect(Object.keys(response.body.data).length).toEqual(4);
+      expect(Object.keys(response.body.data).length).toEqual(5);
 
       expect(response.body.data).toEqual({
         workerId: expect.any(String),
         status: expect.any(String),
         pendingOrders: expect.any(Array),
         deliveredOrders: expect.any(Array),
+        urlImage: expect.any(String),
       });
 
       expect(response.body.data.status).toMatch(/^(active|inactive)$/);
 
-      ordersCheck(response.body.data.pendingOrders);
+      ordersCheck(response.body.data.pendingOrders, 3);
+      ordersCheck(response.body.data.deliveredOrders, 2);
     });
 
     const testCases = [
@@ -655,7 +681,7 @@ describe('Admin Integration Tests:', () => {
           address: orderCreated2.address,
         },
       ]);
-      ordersCheck(response.body.data);
+      ordersCheck(response.body.data, 2);
     });
     const testCases = [
       {
