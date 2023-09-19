@@ -134,7 +134,7 @@ describe('AdminController', () => {
 
       const dataByDateOutput = {
         availableWorkers: 2,
-        activeWorkers: 0,
+        activeWorkers: { total: 0, images: [{ id: '', urlImage: '' }] },
         availableOrders: 0,
         deliveredOrders: 0,
       };
