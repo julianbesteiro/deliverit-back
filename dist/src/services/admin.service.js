@@ -17,7 +17,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 class AdminService {
     static workerDataByDate(day, month, year, nextDay) {
         return __awaiter(this, void 0, void 0, function* () {
-            const availableWorkers = (yield admin_repository_1.default.availableWorkers(nextDay)).map((worker) => worker._id);
+            const availableWorkers = (yield admin_repository_1.default.availableWorkers(nextDay)).map((worker) => {
+                return { id: worker._id, name: worker.name, urlImage: worker.urlImage };
+            });
             const deliveriesByDate = yield admin_repository_1.default.deliveriesByDate(day, month, year);
             const valueCounts = {};
             const valueCounts2 = {};
@@ -38,9 +40,11 @@ class AdminService {
                 }
             });
             const workerData = availableWorkers.map((worker) => {
-                const objectIdToString = worker.toString();
+                const objectIdToString = worker.id.toString();
                 return {
-                    workerId: worker,
+                    workerName: worker.name,
+                    workerId: worker.id,
+                    workerImage: worker.urlImage,
                     status: valueCounts2[objectIdToString] ? 'active' : 'inactive',
                     percentage: valueCounts[objectIdToString]
                         ? (valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100
@@ -64,11 +68,16 @@ class AdminService {
                 .filter((delivery) => delivery.status !== 'delivered')
                 .map((delivery) => {
                 var _a, _b;
-                return { orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id, address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address };
+                return {
+                    orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id,
+                    address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address,
+                    status: delivery.status,
+                };
             });
             return {
-                workerId: workerDataById.workerData._id,
+                workerId: workerDataById.workerData.name,
                 status: workerDataById.workerData.enabled ? 'active' : 'inactive',
+                urlImage: workerDataById.workerData.urlImage,
                 deliveredOrders: deliveredOrders,
                 pendingOrders: pendingOrders,
             };
@@ -98,6 +107,11 @@ class AdminService {
             const deliveredDeliveries = deliveriesByDate
                 .filter((delivery) => delivery.status === 'delivered')
                 .map((delivery) => { var _a; return (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a.toString(); });
+            //find uniqueActiveWorker on availableWorkers array and get urlImage property
+            const activeWorkersImages = uniqueActiveWorkers.map((activeWorker) => {
+                const findResult = availableWorkers.find((worker) => worker._id.toString() === activeWorker);
+                return { id: findResult === null || findResult === void 0 ? void 0 : findResult._id.toString(), urlImage: findResult === null || findResult === void 0 ? void 0 : findResult.urlImage };
+            });
             return {
                 deliveredOrders: deliveredDeliveries.reduce((acc, delivery) => {
                     availableOrders
@@ -112,7 +126,7 @@ class AdminService {
                 }, 0),
                 availableOrders: availableOrders.length,
                 availableWorkers: availableWorkers.length,
-                activeWorkers: uniqueActiveWorkers.length,
+                activeWorkers: { total: uniqueActiveWorkers.length, images: activeWorkersImages },
             };
         });
     }
