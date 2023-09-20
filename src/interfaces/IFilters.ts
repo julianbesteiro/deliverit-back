@@ -11,3 +11,8 @@ export interface DeliveryRepositoryFilters extends BaseFilters {
   status?: ValidStatus;
   userId?: string;
 }
+
+export interface OrderRepositoryFilters extends BaseFilters {
+  userId?: string;
+  status?: string;
+}
