@@ -6,4 +6,5 @@ export * from './IRepository';
 export * from './IFilters';
 export * from './IRepository';
 export * from './services/IDeliveryService';
-export * from './IOrderService';
+export * from './services/IOrderService';
+export * from './DataResonse';

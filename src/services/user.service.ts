@@ -4,25 +4,22 @@ import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
 import { sendMail } from '../utils/sendEmail';
+import { uploadImageToS3 } from '../utils/s3';
 
 class UserService {
-  static async userServiceTest(id: number) {
-    try {
-      //logica random
-
-      const maxUsers = id + 100;
-
-      const userRepositoryData = await UserRepository.userRepositoryTest(maxUsers);
-      console.log('test service');
-
-      return userRepositoryData;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   static async createUser(user: IUserInput) {
-    return await UserRepository.createUser(user);
+    const userCreated = await UserRepository.createUser(user);
+    if (
+      user.picture &&
+      user.picture !== 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png'
+    ) {
+      const base64Image = user.picture.split(',')[1];
+      const buffer = Buffer.from(base64Image, 'base64');
+      const uploadedImage = await uploadImageToS3(userCreated._id, buffer, 'image/jpeg');
+      userCreated.urlImage = uploadedImage;
+      userCreated.save();
+    }
+    return userCreated;
   }
 
   static async loginUser(email: string, password: string): Promise<string> {
@@ -51,6 +48,7 @@ class UserService {
 
   static async forgotPassword(email: string): Promise<void> {
     const user = await UserRepository.findUserByEmail(email);
+    //TODO define if it is secure to show that the user does not exist
     if (!user) {
       throw new UnauthorizedError('User not found');
     }

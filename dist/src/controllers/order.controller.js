@@ -31,8 +31,25 @@ OrderController.createOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __a
     });
 }));
 OrderController.getOrders = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const orders = yield services_1.OrderService.getOrders();
-    return res.status(200).send(orders);
+    const filters = req.query;
+    let orders;
+    if (Object.keys(filters).length === 0) {
+        orders = yield services_1.OrderService.getOrders();
+    }
+    else {
+        orders = yield services_1.OrderService.getOrders(filters);
+    }
+    return res.status(200).send({
+        message: 'orders found',
+        page: orders.page,
+        totalPages: orders.totalPages,
+        data: orders.data,
+        totalItems: orders.totalItems,
+        itemsPerPage: orders.data.length,
+        prevPage: orders.page > 1 ? `/orders?page=${orders.page - 1}` : null,
+        nextPage: orders.page < orders.totalPages ? `/orders?page=${orders.page + 1}` : null,
+        status: 200,
+    });
 }));
 OrderController.getOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const orderId = req.params.id;

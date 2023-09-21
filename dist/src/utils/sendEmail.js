@@ -14,18 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { google } = require('googleapis');
+const googleapis_1 = require("googleapis");
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
-const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+const oAuth2Client = new googleapis_1.google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({
+    refresh_token: REFRESH_TOKEN,
+});
 function sendMail(email, resetToken) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const accessToken = yield oAuth2Client.getAccessToken();
+            const { token } = yield oAuth2Client.getAccessToken();
+            if (!token) {
+                throw new Error('Failed to get access token');
+            }
             const transport = nodemailer_1.default.createTransport({
                 service: 'gmail',
                 auth: {
@@ -34,7 +38,7 @@ function sendMail(email, resetToken) {
                     clientId: CLIENT_ID,
                     clientSecret: CLIENT_SECRET,
                     refreshToken: REFRESH_TOKEN,
-                    accessToken: accessToken,
+                    accessToken: token,
                 },
             });
             const mailOptions = {
@@ -49,7 +53,8 @@ function sendMail(email, resetToken) {
             return result;
         }
         catch (error) {
-            return error;
+            console.log(error);
+            throw error;
         }
     });
 }

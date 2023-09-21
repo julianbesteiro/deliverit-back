@@ -9,7 +9,7 @@ const customErrors_1 = require("../errors/customErrors");
 const config_1 = __importDefault(require("../../config/config"));
 const generateToken = (payload) => {
     const secret = config_1.default.jwt.access_token.secret;
-    const token = (0, jsonwebtoken_1.sign)({ user: { id: payload.id } }, secret, {
+    const token = (0, jsonwebtoken_1.sign)({ user: payload }, secret, {
         expiresIn: '20d',
     });
     if (!token)

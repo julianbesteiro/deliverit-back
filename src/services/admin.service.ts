@@ -1,12 +1,11 @@
 import AdminRepository from '../repository/admin.repository';
-import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
 class AdminService {
   public static async workerDataByDate(day: number, month: number, year: number, nextDay: Date) {
-    const availableWorkers = (await AdminRepository.availableWorkers(nextDay)).map(
-      (worker) => worker._id,
-    );
+    const availableWorkers = (await AdminRepository.availableWorkers(nextDay)).map((worker) => {
+      return { id: worker._id, name: worker.name, urlImage: worker.urlImage };
+    });
 
     const deliveriesByDate = await AdminRepository.deliveriesByDate(day, month, year);
 
@@ -30,11 +29,13 @@ class AdminService {
       }
     });
 
-    const workerData = availableWorkers.map((worker: ObjectId) => {
-      const objectIdToString = worker.toString();
+    const workerData = availableWorkers.map((worker) => {
+      const objectIdToString = worker.id.toString();
 
       return {
-        workerId: worker,
+        workerName: worker.name,
+        workerId: worker.id,
+        workerImage: worker.urlImage,
         status: valueCounts2[objectIdToString] ? 'active' : 'inactive',
         percentage: valueCounts[objectIdToString]
           ? (valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100
@@ -59,12 +60,17 @@ class AdminService {
     const pendingOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status !== 'delivered')
       .map((delivery) => {
-        return { orderId: delivery.orderId?._id, address: delivery.orderId?.address };
+        return {
+          orderId: delivery.orderId?._id,
+          address: delivery.orderId?.address,
+          status: delivery.status,
+        };
       });
 
     return {
-      workerId: workerDataById.workerData._id,
+      workerId: workerDataById.workerData.name,
       status: workerDataById.workerData.enabled ? 'active' : 'inactive',
+      urlImage: workerDataById.workerData.urlImage,
       deliveredOrders: deliveredOrders,
       pendingOrders: pendingOrders,
     };
@@ -100,6 +106,13 @@ class AdminService {
       .filter((delivery) => delivery.status === 'delivered')
       .map((delivery) => delivery.orderId?.toString());
 
+    //find uniqueActiveWorker on availableWorkers array and get urlImage property
+
+    const activeWorkersImages = uniqueActiveWorkers.map((activeWorker) => {
+      const findResult = availableWorkers.find((worker) => worker._id.toString() === activeWorker);
+      return { id: findResult?._id.toString(), urlImage: findResult?.urlImage };
+    });
+
     return {
       deliveredOrders: deliveredDeliveries.reduce((acc, delivery) => {
         availableOrders
@@ -113,7 +126,7 @@ class AdminService {
       }, 0),
       availableOrders: availableOrders.length,
       availableWorkers: availableWorkers.length,
-      activeWorkers: uniqueActiveWorkers.length,
+      activeWorkers: { total: uniqueActiveWorkers.length, images: activeWorkersImages },
     };
   }
 

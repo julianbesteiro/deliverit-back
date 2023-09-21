@@ -71,7 +71,7 @@ class AdminRepository {
             }
             const workerOrders = yield Delivery_1.default.find({
                 userId: id,
-            });
+            }).populate('orderId');
             return { workerOrders, workerData };
         });
     }

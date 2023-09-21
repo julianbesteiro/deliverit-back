@@ -1,31 +1,22 @@
 import { BadUserInputError } from '../errors/customErrors';
-import { IDelivery, IDeliveryService, PaginationData } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
+import {
+  DataResponse,
+  IDelivery,
+  IDeliveryService,
+  PaginationData,
+  PaginationDataResponse,
+} from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
 import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '../utils/validateObjectId';
 import { validateDeliveryFilters, validateDeliveryInput } from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
 
-interface DataReponse {
-  message: string;
-  data: IDelivery | IDelivery[] | null;
-  status: number;
-}
-
-interface PaginationDataResponse extends DataReponse {
-  page: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  prevPage: string | null;
-  nextPage: string | null;
-}
-
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
 
   createDelivery = asyncHandler(
-    async (req: RequestExpress | Request, res: Response<DataReponse>) => {
+    async (req: RequestExpress | Request, res: Response<DataResponse<IDelivery>>) => {
       const { body } = req;
       const { user } = req as RequestExpress;
 
@@ -46,7 +37,7 @@ class DeliveryController {
     },
   );
 
-  getDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
+  getDelivery = asyncHandler(async (req: Request, res: Response<DataResponse<IDelivery>>) => {
     const { id } = req.params;
 
     if (!validateObjectId(id)) {
@@ -63,7 +54,10 @@ class DeliveryController {
   });
 
   getDeliveries = asyncHandler(
-    async (req: Request, res: Response<PaginationDataResponse | DataReponse>) => {
+    async (
+      req: Request,
+      res: Response<PaginationDataResponse<IDelivery> | DataResponse<IDelivery>>,
+    ) => {
       const { query } = req;
 
       const filters = await validateDeliveryFilters(query);
@@ -94,7 +88,7 @@ class DeliveryController {
   );
 
   updateDelivery = asyncHandler(
-    async (req: RequestExpress | Request, res: Response<DataReponse>) => {
+    async (req: RequestExpress | Request, res: Response<DataResponse<IDelivery>>) => {
       const { body } = req;
       const deliveryId = req.params.id;
 
@@ -117,7 +111,7 @@ class DeliveryController {
     },
   );
 
-  deleteDelivery = asyncHandler(async (req: Request, res: Response<DataReponse>) => {
+  deleteDelivery = asyncHandler(async (req: Request, res: Response<DataResponse<IDelivery>>) => {
     const { id } = req.params;
 
     if (!validateObjectId(id)) {

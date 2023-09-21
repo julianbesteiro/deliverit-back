@@ -1,5 +1,5 @@
 import Order from '../models/Order';
-import { IOrder } from '../../src/interfaces/';
+import { IOrder, OrderRepositoryFilters } from '../../src/interfaces/';
 import { EntityNotFoundError } from '../errors/customErrors';
 
 class OrderRepository {
@@ -8,9 +8,39 @@ class OrderRepository {
     return newOrder;
   }
 
-  static async getOrders() {
-    const allOrders = await Order.find();
-    return allOrders;
+  static async getOrders(
+    filters?: OrderRepositoryFilters,
+  ): Promise<Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }>> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const filter: OrderRepositoryFilters = {};
+
+    if (filters?.userId) {
+      filter.userId = filters.userId;
+    }
+    if (filters?.status) {
+      filter.status = filters.status;
+    }
+
+    const totalItems = await Order.countDocuments(filter);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const query = Order.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .select('_id status userId address packagesQuantity weight');
+
+    const orders = await query.exec();
+
+    return {
+      data: orders,
+      page,
+      totalPages,
+      totalItems,
+    };
   }
 
   static async getOrder(orderId: string) {

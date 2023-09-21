@@ -1,35 +1,25 @@
-import { IOrder } from '../../src/interfaces/';
+import { BaseFilters, IOrder, PaginationData } from '../interfaces';
 import { OrderRepository } from '../repository';
 
 class OrderService {
-  static async createOrder(order: IOrder) {
+  static async getOrder(id: string): Promise<IOrder> {
+    return await OrderRepository.getOrder(id);
+  }
+  static async getOrders(filters?: BaseFilters | undefined): Promise<PaginationData<IOrder>> {
+    return await OrderRepository.getOrders(filters);
+  }
+  static async createOrder(order: IOrder): Promise<IOrder> {
     return await OrderRepository.createOrder(order);
   }
-
-  static async getOrders(): Promise<IOrder[]> {
-    return await OrderRepository.getOrders();
+  static async updateOrder(id: string, item: IOrder): Promise<IOrder> {
+    return await OrderRepository.updateOrder(id, item);
   }
-
-  static async getOrder(orderId: string) {
-    return await OrderRepository.getOrder(orderId);
+  static async deleteOrder(id: string): Promise<IOrder> {
+    return await OrderRepository.deleteOrder(id);
   }
-
-  static async deleteOrder(orderId: string) {
-    return await OrderRepository.deleteOrder(orderId);
-  }
-
-  static async updateOrder(orderId: string, updatedOrder: IOrder) {
-    return await OrderRepository.updateOrder(orderId, updatedOrder);
-  }
-
-  static async patchOrder(orderId: string, updatedFields: Partial<IOrder>) {
+  static async patchOrder(orderId: string, updatedFields: Partial<IOrder>): Promise<IOrder | null> {
     return await OrderRepository.patchOrder(orderId, updatedFields);
   }
-
-  /*   //eslint-disable-next-line
-  getOrder(id: String): Promise<IOrder> {
-    throw new Error('Method not implemented.');
-  }*/
 }
 
 export { OrderService };

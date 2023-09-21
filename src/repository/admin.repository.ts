@@ -1,4 +1,4 @@
-import { IDeliveryForOrderPopulation } from '@/interfaces';
+import { IDeliveryForOrderPopulation } from '../interfaces';
 import { ValidationError } from '../errors/customErrors';
 import DeliveryModel from '../models/Delivery';
 import OrderModel from '../models/Order';
