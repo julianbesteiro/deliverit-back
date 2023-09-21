@@ -18,24 +18,20 @@ const repository_1 = require("../repository");
 const customErrors_1 = require("../errors/customErrors");
 const crypto_1 = __importDefault(require("crypto"));
 const sendEmail_1 = require("../utils/sendEmail");
+const s3_1 = require("../utils/s3");
 class UserService {
-    static userServiceTest(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                //logica random
-                const maxUsers = id + 100;
-                const userRepositoryData = yield repository_1.UserRepository.userRepositoryTest(maxUsers);
-                console.log('test service');
-                return userRepositoryData;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        });
-    }
     static createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.UserRepository.createUser(user);
+            const userCreated = yield repository_1.UserRepository.createUser(user);
+            if (user.picture &&
+                user.picture !== 'https://cdn-icons-png.flaticon.com/512/5249/5249427.png') {
+                const base64Image = user.picture.split(',')[1];
+                const buffer = Buffer.from(base64Image, 'base64');
+                const uploadedImage = yield (0, s3_1.uploadImageToS3)(userCreated._id, buffer, 'image/jpeg');
+                userCreated.urlImage = uploadedImage;
+                userCreated.save();
+            }
+            return userCreated;
         });
     }
     static loginUser(email, password) {

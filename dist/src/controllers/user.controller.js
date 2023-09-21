@@ -18,14 +18,6 @@ class UserController {
 }
 exports.UserController = UserController;
 _a = UserController;
-UserController.userControllerTest = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userServiceData = yield services_1.UserService.userServiceTest(1);
-    return res.status(200).send({
-        status: 200,
-        message: 'Test Controller OK',
-        users: userServiceData,
-    });
-}));
 UserController.sendUserData = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user } = req;
     if (!user)
