@@ -4,7 +4,7 @@ import { OrderService } from '../services';
 import { validateOrderInput } from '../utils/validateOrder';
 import { validateObjectId } from '../utils/validateObjectId';
 import { ValidationError } from '../errors/customErrors';
-import { DataResponse, IOrder, PaginationData, PaginationDataResponse } from '@/interfaces';
+import { DataResponse, IOrder, PaginationData, PaginationDataResponse } from '../interfaces';
 
 class OrderController {
   public static createOrder = asyncHandler(async (req: Request, res: Response) => {

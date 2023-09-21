@@ -5,10 +5,6 @@
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
   },
   "include": ["src/*.ts", "**/*.tsx", "jest.config.ts"],
   "exclude": ["node_modules"]

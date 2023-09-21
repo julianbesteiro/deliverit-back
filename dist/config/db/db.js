@@ -57,7 +57,7 @@ const connect = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.connect = connect;
 const disconnect = () => __awaiter(void 0, void 0, void 0, function* () {
-    if (process.env.NODE_ENV === 'development')
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production')
         return;
     if (mongoConnection.isConnected === 0)
         return;

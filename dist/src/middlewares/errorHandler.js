@@ -15,6 +15,9 @@ const errorHandler = (error, _req, res, _next) => {
     else if (error instanceof customErrors_1.ValidationError || error.name === 'ValidationError') {
         return res.status(400).send({ message: error.message });
     }
+    else if (error instanceof customErrors_1.S3UploadError) {
+        return res.status(500).send({ message: error.message });
+    }
     const isErrorSafeForClient = error instanceof customErrors_1.CustomError;
     let clientErrors;
     if (isErrorSafeForClient) {

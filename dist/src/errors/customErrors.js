@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseConnectionError = exports.ConflictError = exports.NotFoundError = exports.ForbiddenError = exports.UnauthorizedError = exports.InvalidTokenError = exports.BadRequestError = exports.ValidationError = exports.BadUserInputError = exports.EntityNotFoundError = exports.RouteNotFoundError = exports.CustomError = void 0;
+exports.S3UploadError = exports.DatabaseConnectionError = exports.ConflictError = exports.NotFoundError = exports.ForbiddenError = exports.UnauthorizedError = exports.InvalidTokenError = exports.BadRequestError = exports.ValidationError = exports.BadUserInputError = exports.EntityNotFoundError = exports.RouteNotFoundError = exports.CustomError = void 0;
 class CustomError extends Error {
     constructor(message, code = 'INTERNAL_ERROR', status = 500, data = {}) {
         super();
@@ -77,3 +77,9 @@ class DatabaseConnectionError extends CustomError {
     }
 }
 exports.DatabaseConnectionError = DatabaseConnectionError;
+class S3UploadError extends CustomError {
+    constructor(message) {
+        super(message, 'S3_UPLOAD_ERROR', 500);
+    }
+}
+exports.S3UploadError = S3UploadError;

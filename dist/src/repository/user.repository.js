@@ -14,22 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const User_1 = __importDefault(require("../models/User"));
-const db_1 = require("../../config/db");
 class UserRepository {
-    static userRepositoryTest(maxUsers) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield db_1.db.connect();
-                const allUsers = yield User_1.default.find().limit(maxUsers);
-                db_1.db.disconnect();
-                console.log('test repository');
-                return allUsers;
-            }
-            catch (error) {
-                console.log(error);
-            }
-        });
-    }
     static findUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield User_1.default.findById(id);
