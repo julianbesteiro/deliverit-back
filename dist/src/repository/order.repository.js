@@ -22,10 +22,31 @@ class OrderRepository {
             return newOrder;
         });
     }
-    static getOrders() {
+    static getOrders(filters) {
         return __awaiter(this, void 0, void 0, function* () {
-            const allOrders = yield Order_1.default.find();
-            return allOrders;
+            const page = (filters === null || filters === void 0 ? void 0 : filters.page) || 1;
+            const limit = (filters === null || filters === void 0 ? void 0 : filters.limit) || 10;
+            const skip = (page - 1) * limit;
+            const filter = {};
+            if (filters === null || filters === void 0 ? void 0 : filters.userId) {
+                filter.userId = filters.userId;
+            }
+            if (filters === null || filters === void 0 ? void 0 : filters.status) {
+                filter.status = filters.status;
+            }
+            const totalItems = yield Order_1.default.countDocuments(filter);
+            const totalPages = Math.ceil(totalItems / limit);
+            const query = Order_1.default.find(filter)
+                .skip(skip)
+                .limit(limit)
+                .select('_id status userId address packagesQuantity weight');
+            const orders = yield query.exec();
+            return {
+                data: orders,
+                page,
+                totalPages,
+                totalItems,
+            };
         });
     }
     static getOrder(orderId) {

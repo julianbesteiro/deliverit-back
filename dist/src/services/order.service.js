@@ -10,31 +10,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
-const repository_1 = require("../repository");
+const repository_1 = require("@/repository");
 class OrderService {
+    static getOrder(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.getOrder(id);
+        });
+    }
+    static getOrders(filters) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.getOrders(filters);
+        });
+    }
     static createOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.OrderRepository.createOrder(order);
         });
     }
-    static getOrders() {
+    static updateOrder(id, item) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.OrderRepository.getOrders();
+            return yield repository_1.OrderRepository.updateOrder(id, item);
         });
     }
-    static getOrder(orderId) {
+    static deleteOrder(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.OrderRepository.getOrder(orderId);
-        });
-    }
-    static deleteOrder(orderId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.OrderRepository.deleteOrder(orderId);
-        });
-    }
-    static updateOrder(orderId, updatedOrder) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.OrderRepository.updateOrder(orderId, updatedOrder);
+            return yield repository_1.OrderRepository.deleteOrder(id);
         });
     }
     static patchOrder(orderId, updatedFields) {

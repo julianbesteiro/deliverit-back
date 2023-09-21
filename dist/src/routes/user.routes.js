@@ -10,7 +10,6 @@ const isAuth_1 = __importDefault(require("../middlewares/isAuth"));
 const router = (0, express_1.Router)();
 exports.userRoutes = router;
 router.get('/me', isAuth_1.default, controllers_1.UserController.sendUserData);
-router.get('/', controllers_1.UserController.userControllerTest);
 router.post('/signup', controllers_1.UserController.createUser);
 router.post('/login', controllers_1.UserController.loginUser);
 router.post('/logout', controllers_1.UserController.logoutUser);

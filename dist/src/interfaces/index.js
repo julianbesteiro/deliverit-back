@@ -22,4 +22,5 @@ __exportStar(require("./IRepository"), exports);
 __exportStar(require("./IFilters"), exports);
 __exportStar(require("./IRepository"), exports);
 __exportStar(require("./services/IDeliveryService"), exports);
-__exportStar(require("./IOrderService"), exports);
+__exportStar(require("./services/IOrderService"), exports);
+__exportStar(require("./DataResonse"), exports);
