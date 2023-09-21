@@ -77,3 +77,9 @@ export class DatabaseConnectionError extends CustomError {
     super(message, 'DATABASE_CONNECTION_ERROR', 500);
   }
 }
+
+export class S3UploadError extends CustomError {
+  constructor(message: string) {
+    super(message, 'S3_UPLOAD_ERROR', 500);
+  }
+}

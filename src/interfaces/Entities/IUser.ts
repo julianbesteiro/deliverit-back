@@ -14,6 +14,7 @@ export interface IUserInput {
   email: string;
   password: string;
   urlImage?: string;
+  picture: string;
 }
 
 import { Document, Model } from 'mongoose';
