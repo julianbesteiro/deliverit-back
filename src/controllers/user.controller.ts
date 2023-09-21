@@ -5,15 +5,6 @@ import { UnauthorizedError, ValidationError } from '../errors/customErrors';
 import { RequestExpress } from '../interfaces/IRequestExpress';
 
 class UserController {
-  public static userControllerTest = asyncHandler(async (req: Request, res: Response) => {
-    const userServiceData = await UserService.userServiceTest(1);
-    return res.status(200).send({
-      status: 200,
-      message: 'Test Controller OK',
-      users: userServiceData,
-    });
-  });
-
   static sendUserData = asyncHandler(async (req: Request | RequestExpress, res: Response) => {
     const { user } = req as RequestExpress;
     if (!user) throw new UnauthorizedError('Unauthorized');

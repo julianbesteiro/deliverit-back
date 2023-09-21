@@ -2,6 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import {
   ConflictError,
   CustomError,
+  S3UploadError,
   UnauthorizedError,
   ValidationError,
 } from '../errors/customErrors';
@@ -17,6 +18,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     return res.status(409).send({ message: message });
   } else if (error instanceof ValidationError || error.name === 'ValidationError') {
     return res.status(400).send({ message: error.message });
+  } else if (error instanceof S3UploadError) {
+    return res.status(500).send({ message: error.message });
   }
 
   const isErrorSafeForClient = error instanceof CustomError;
