@@ -4,14 +4,7 @@ import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
 import { sendMail } from '../utils/sendEmail';
-import AWS from 'aws-sdk';
 import { uploadImageToS3 } from '../utils/s3';
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_PUBLIC_KEY,
-  secretAccessKey: process.env.AWS_SECRET_KEY,
-  region: process.env.AWS_BUCKET_REGION,
-});
 
 class UserService {
   static async createUser(user: IUserInput) {
