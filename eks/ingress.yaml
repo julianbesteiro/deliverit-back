@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+    name: nginx
+spec:
+    controller: k8s.io/ingress-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: deliverit-ingress
+    annotations:
+        kubernetes.io/ingress.class: nginx
+spec:
+    ingressClassName: nginx
+    rules:
+        - host: admin.deliverit.tech
+          http:
+              paths:
+                  - path: '/'
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: deliverit-front-admin-service
+                            port:
+                                number: 80
+        - host: api.deliverit.tech
+          http:
+              paths:
+                  - path: '/'
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: deliverit-api-service
+                            port:
+                                number: 80
