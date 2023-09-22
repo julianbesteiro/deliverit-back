@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadImageToS3 = void 0;
 const customErrors_1 = require("@/errors/customErrors");
+
 const client_s3_1 = require("@aws-sdk/client-s3");
 const bucketName = process.env.AWS_BUCKET_NAME;
 const bucketRegion = process.env.AWS_BUCKET_REGION;

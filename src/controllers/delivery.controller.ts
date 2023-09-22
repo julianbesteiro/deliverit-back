@@ -5,12 +5,12 @@ import {
   IDeliveryService,
   PaginationData,
   PaginationDataResponse,
-} from '@/interfaces'; // Ajusta la ruta según la estructura de carpetas
-import { asyncHandler } from '@/utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
+} from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
+import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
-import { validateObjectId } from '@/utils/validateObjectId';
-import { validateDeliveryFilters, validateDeliveryInput } from '@/utils/validationDelivery';
-import { RequestExpress } from '@/interfaces/IRequestExpress';
+import { validateObjectId } from '../utils/validateObjectId';
+import { validateDeliveryFilters, validateDeliveryInput } from '../utils/validationDelivery';
+import { RequestExpress } from '../interfaces/IRequestExpress';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}

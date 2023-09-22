@@ -5,6 +5,7 @@ import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
 import { sendMail } from '../utils/sendEmail';
 import { uploadImageToS3 } from '../utils/s3';
+import { Payload } from '../interfaces/IPayload';
 
 class UserService {
   static async createUser(user: IUserInput) {
@@ -22,7 +23,10 @@ class UserService {
     return userCreated;
   }
 
-  static async loginUser(email: string, password: string): Promise<string> {
+  static async loginUser(
+    email: string,
+    password: string,
+  ): Promise<{ token: string; user: Payload }> {
     const user = await UserRepository.findUserByEmail(email);
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
@@ -33,7 +37,7 @@ class UserService {
       throw new UnauthorizedError('Invalid credentials');
     }
 
-    const token = generateToken({
+    const payload: Payload = {
       id: user._id,
       name: user.name,
       lastName: user.lastName,
@@ -42,8 +46,11 @@ class UserService {
       enabled: user.enabled,
       lastSeenAt: user.lastSeenAt,
       urlImage: user.urlImage,
-    });
-    return token;
+    };
+
+    const token = generateToken(payload);
+
+    return { token, user: payload };
   }
 
   static async forgotPassword(email: string): Promise<void> {

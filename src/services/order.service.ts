@@ -1,5 +1,5 @@
-import { BaseFilters, IOrder, PaginationData } from '@/interfaces';
-import { OrderRepository } from '@/repository';
+import { BaseFilters, IOrder, PaginationData } from '../interfaces';
+import { OrderRepository } from '../repository';
 
 class OrderService {
   static async getOrder(id: string): Promise<IOrder> {

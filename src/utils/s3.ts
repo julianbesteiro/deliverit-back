@@ -1,4 +1,4 @@
-import { S3UploadError } from '@/errors/customErrors';
+import { S3UploadError } from '../errors/customErrors';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const bucketName = process.env.AWS_BUCKET_NAME!;
