@@ -4,7 +4,7 @@ import { ISworn } from '../interfaces';
 export function validateSwornInput(sworn: ISworn): ISworn {
   const errors = [];
 
-  // Valida que el sworneto tenga todas las propiedades requeridas
+  // Validate that sword has all required properties
   const requiredFields = ['alcoholicBeverages', 'psychoactiveMedication', 'familyProblem'];
   for (const field of requiredFields) {
     if (!(field in sworn)) {
@@ -12,7 +12,7 @@ export function validateSwornInput(sworn: ISworn): ISworn {
     }
   }
 
-  // Valida el formato de cada campo
+  // Validate each field format
   if (sworn.alcoholicBeverages !== true && sworn.alcoholicBeverages !== false) {
     errors.push(new BadUserInputError({ message: 'alcoholicBeverages is not a valid boolean' }));
   }
