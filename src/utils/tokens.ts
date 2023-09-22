@@ -1,18 +1,7 @@
 import { sign, verify } from 'jsonwebtoken';
-import { Types } from 'mongoose';
 import { CustomError } from '../errors/customErrors';
 import config from '../../config/config';
-
-interface Payload {
-  id: Types.ObjectId;
-  name: string;
-  lastName: string;
-  email: string;
-  role: string;
-  enabled: boolean;
-  lastSeenAt: Date;
-  urlImage: string;
-}
+import { Payload } from '../interfaces/IPayload';
 
 const generateToken = (payload: Payload): string => {
   const secret = config.jwt.access_token.secret as string;

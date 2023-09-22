@@ -19,10 +19,10 @@ class UserController {
   static loginUser = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
     if (email === undefined || password === undefined) throw new ValidationError('Missing fields');
-    const token = await UserService.loginUser(email, password);
+    const { token, user } = await UserService.loginUser(email, password);
     res.setHeader('Authorization', `Bearer ${token}`);
 
-    return res.status(200).send({ message: 'Login Successful' });
+    return res.status(200).send({ message: 'Login Successful', data: user });
   });
 
   static logoutUser = asyncHandler(async (req: Request, res: Response) => {
