@@ -32,9 +32,9 @@ UserController.loginUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awai
     const { email, password } = req.body;
     if (email === undefined || password === undefined)
         throw new customErrors_1.ValidationError('Missing fields');
-    const token = yield services_1.UserService.loginUser(email, password);
+    const { token, user } = yield services_1.UserService.loginUser(email, password);
     res.setHeader('Authorization', `Bearer ${token}`);
-    return res.status(200).send({ message: 'Login Successful' });
+    return res.status(200).send({ message: 'Login Successful', data: user });
 }));
 UserController.logoutUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.setHeader('Authorization', '');

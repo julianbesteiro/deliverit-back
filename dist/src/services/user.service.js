@@ -44,17 +44,19 @@ class UserService {
             if (!isMatch) {
                 throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
-            const token = (0, tokens_1.generateToken)({
+            const payload = {
                 id: user._id,
                 name: user.name,
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
                 enabled: user.enabled,
+                blockUntil: user.blockUntil,
                 lastSeenAt: user.lastSeenAt,
                 urlImage: user.urlImage,
-            });
-            return token;
+            };
+            const token = (0, tokens_1.generateToken)(payload);
+            return { token, user: payload };
         });
     }
     static forgotPassword(email) {
