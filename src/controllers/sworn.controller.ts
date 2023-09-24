@@ -3,6 +3,7 @@ import { ISwornService } from '../interfaces/services/ISwornService';
 import { asyncHandler } from '../utils/asyncHandler';
 import { validateSwornInput } from '../utils/validateSworn';
 import { Request, Response } from 'express';
+import { canSubmitSworn } from '../utils/canSubmitSworn';
 
 class SwornController {
   constructor(private readonly swornService: ISwornService) {}
@@ -10,6 +11,14 @@ class SwornController {
   createSworn = asyncHandler(async (req: RequestExpress | Request, res: Response) => {
     const { body } = req;
     const { user } = req as RequestExpress;
+
+    const canSubmit = await canSubmitSworn(user.id);
+    if (!canSubmit) {
+      return res.status(403).json({
+        success: false,
+        message: 'You already submit a sworn statement today',
+      });
+    }
 
     const swornValidate = validateSwornInput(body);
 

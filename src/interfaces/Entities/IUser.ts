@@ -5,6 +5,7 @@ export interface IUser {
   email: string;
   urlImage: string;
   enabled: boolean;
+  blockUntil?: Date | null;
   lastSeenAt: Date;
 }
 
@@ -15,6 +16,8 @@ export interface IUserInput {
   password: string;
   urlImage?: string;
   picture: string;
+  enabled?: boolean;
+  blockUntil?: Date | null;
 }
 
 import { Document, Model } from 'mongoose';

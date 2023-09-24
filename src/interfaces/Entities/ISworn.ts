@@ -5,6 +5,9 @@ export interface ISworn {
   psychoactiveMedication: boolean;
   familyProblem: boolean;
   userId: string;
+  swornStatementStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ISwornDocument extends ISworn, Document {}

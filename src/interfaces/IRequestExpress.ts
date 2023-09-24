@@ -9,5 +9,7 @@ export interface RequestExpress extends Request {
   headers: CustomHeaders;
   user: {
     id: string;
+    enabled: boolean;
+    blockUntil?: Date;
   };
 }
