@@ -19,6 +19,11 @@ export const swornSchema: Schema = new Schema(
       type: ObjectId,
       required: true,
     },
+    swornStatementStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
+    },
   },
   { timestamps: true, strict: 'throw' },
 );

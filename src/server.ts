@@ -9,10 +9,10 @@ import morgan from 'morgan';
 import config from '../config/config';
 import isAuth from './middlewares/isAuth';
 import { errorHandler } from './middlewares';
-
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { swaggerOptions } from '../config/swaggerOptions';
+import { resetUserEnabledStatus } from './utils/cronJobs';
 
 const dev = config.node_env !== 'production';
 const port = config.server.port || 8000;
@@ -66,6 +66,8 @@ app.get('/', (req: Request, res: Response) => {
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', allRoutes);
 app.use(errorHandler);
+
+resetUserEnabledStatus.start();
 
 app.listen(port, () => {
   logger.debug('debug right before info');

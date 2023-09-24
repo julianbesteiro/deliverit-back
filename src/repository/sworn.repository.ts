@@ -22,6 +22,20 @@ class SwornRepository implements IRepository<ISworn> {
       totalItems: 1,
     };
   }
+
+  async getLastSwornStatement(userId: string): Promise<ISworn | null> {
+    try {
+      //Find the last sworn statement
+      const lastSwornStatement = await this.swornModel
+        .find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(1);
+      return lastSwornStatement[0];
+    } catch (error) {
+      throw new BadUserInputError({ message: 'Sworn not found' });
+    }
+  }
+
   //eslint-disable-next-line
   async findById(id: string, filters?: BaseFilters | undefined): Promise<ISworn> {
     return {
@@ -29,6 +43,9 @@ class SwornRepository implements IRepository<ISworn> {
       psychoactiveMedication: false,
       familyProblem: false,
       userId: '',
+      swornStatementStatus: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   }
   //eslint-disable-next-line
@@ -38,6 +55,9 @@ class SwornRepository implements IRepository<ISworn> {
       psychoactiveMedication: false,
       familyProblem: false,
       userId: '',
+      swornStatementStatus: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   }
   async delete(id: string): Promise<void> {

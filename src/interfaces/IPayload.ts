@@ -7,6 +7,7 @@ export interface Payload {
   email: string;
   role: string;
   enabled: boolean;
+  blockUntil?: Date | null;
   lastSeenAt: Date;
   urlImage: string;
 }

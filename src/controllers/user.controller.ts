@@ -20,6 +20,7 @@ class UserController {
     const { email, password } = req.body;
     if (email === undefined || password === undefined) throw new ValidationError('Missing fields');
     const { token, user } = await UserService.loginUser(email, password);
+
     res.setHeader('Authorization', `Bearer ${token}`);
 
     return res.status(200).send({ message: 'Login Successful', data: user });

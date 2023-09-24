@@ -28,6 +28,7 @@ class UserService {
     password: string,
   ): Promise<{ token: string; user: Payload }> {
     const user = await UserRepository.findUserByEmail(email);
+
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
     }
@@ -44,6 +45,7 @@ class UserService {
       email: user.email,
       role: user.role,
       enabled: user.enabled,
+      blockUntil: user.blockUntil,
       lastSeenAt: user.lastSeenAt,
       urlImage: user.urlImage,
     };

@@ -1,5 +1,5 @@
 import User from '../models/User';
-import { IUserInput } from '../interfaces';
+import { IUser, IUserInput } from '../interfaces';
 
 class UserRepository {
   static async findUserById(id: string) {
@@ -13,6 +13,19 @@ class UserRepository {
 
   static async findUserByEmail(email: string) {
     return await User.findOne({ email });
+  }
+
+  static async updateUserById(id: string, updateData: Partial<IUser>) {
+    try {
+      const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+      if (!updatedUser) {
+        throw new Error('User not found');
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error('Error updating user');
+    }
   }
 }
 
