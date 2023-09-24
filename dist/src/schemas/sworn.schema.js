@@ -20,4 +20,9 @@ exports.swornSchema = new mongoose_1.Schema({
         type: mongodb_1.ObjectId,
         required: true,
     },
+    swornStatementStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending',
+    },
 }, { timestamps: true, strict: 'throw' });

@@ -67,7 +67,11 @@ exports.userSchema = new mongoose_1.default.Schema({
     },
     enabled: {
         type: Boolean,
-        default: true,
+        default: false,
+    },
+    blockUntil: {
+        type: Date,
+        default: null,
     },
     lastSeenAt: {
         type: Date,
@@ -96,7 +100,7 @@ exports.userSchema.pre('save', function (next) {
 });
 exports.userSchema.pre('findOneAndUpdate', function (next) {
     const update = this.getUpdate();
-    if (update) {
+    if (update && update.password) {
         bcrypt_1.default.genSalt(10, (genSaltError, salt) => {
             if (genSaltError) {
                 return next(genSaltError);
