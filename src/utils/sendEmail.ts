@@ -15,6 +15,7 @@ oAuth2Client.setCredentials({
 export async function sendMail(email: string, resetToken: string) {
   try {
     const { token } = await oAuth2Client.getAccessToken();
+
     if (!token) {
       throw new Error('Failed to get access token');
     }
@@ -43,7 +44,8 @@ export async function sendMail(email: string, resetToken: string) {
     const result = await transport.sendMail(mailOptions);
     return result;
   } catch (error) {
-    console.log(error);
+    const refreshedToken = await oAuth2Client.refreshAccessToken();
+    console.log('refreshedToken--------->', refreshedToken);
     throw error;
   }
 }

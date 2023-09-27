@@ -1,5 +1,5 @@
 import { generateToken } from '../utils/tokens';
-import { IUserInput } from '../interfaces';
+import { IUserDocument, IUserInput } from '../interfaces';
 import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
@@ -38,21 +38,7 @@ class UserService {
       throw new UnauthorizedError('Invalid credentials');
     }
 
-    const payload: Payload = {
-      id: user._id,
-      name: user.name,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      enabled: user.enabled,
-      blockUntil: user.blockUntil,
-      lastSeenAt: user.lastSeenAt,
-      urlImage: user.urlImage,
-    };
-
-    const token = generateToken(payload);
-
-    return { token, user: payload };
+    return this.generateUserToken(user);
   }
 
   static async forgotPassword(email: string): Promise<void> {
@@ -93,6 +79,24 @@ class UserService {
       return false;
     }
     return true;
+  }
+
+  static generateUserToken(user: IUserDocument): { token: string; user: Payload } {
+    const payload: Payload = {
+      id: user._id,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      enabled: user.enabled,
+      blockUntil: user.blockUntil,
+      lastSeenAt: user.lastSeenAt,
+      urlImage: user.urlImage,
+    };
+
+    const token = generateToken(payload);
+
+    return { token, user: payload };
   }
 
   static async resetPassword(email: string, token: string, newPassword: string): Promise<void> {

@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import { IUserDocument } from './IUser';
 
 export interface ISworn {
   alcoholicBeverages: boolean;
@@ -8,6 +9,11 @@ export interface ISworn {
   swornStatementStatus: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface SwornServiceResponse {
+  sworn: ISworn;
+  updatedUser: IUserDocument;
 }
 
 export interface ISwornDocument extends ISworn, Document {}
