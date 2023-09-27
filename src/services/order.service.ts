@@ -1,4 +1,4 @@
-import { BaseFilters, IOrder, PaginationData } from '../interfaces';
+import { BaseFilters, IOrder, IOrderInput, PaginationData } from '../interfaces';
 import { OrderRepository } from '../repository';
 
 class OrderService {
@@ -19,6 +19,9 @@ class OrderService {
   }
   static async patchOrder(orderId: string, updatedFields: Partial<IOrder>): Promise<IOrder | null> {
     return await OrderRepository.patchOrder(orderId, updatedFields);
+  }
+  static async updateOrderStatus(orders: IOrderInput[], status: string): Promise<IOrder[]> {
+    return await OrderRepository.updateOrderStatus(orders, status);
   }
 }
 
