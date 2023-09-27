@@ -26,9 +26,9 @@ class SwornService {
             const newSworn = yield this.signSwornRepository.create(sworn);
             //Update the User model with the enabled status and set blockUntil
             const blockUntil = hasIssue ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
-            yield repository_1.UserRepository.updateUserById(sworn.userId, { enabled, blockUntil });
+            const updatedUser = yield repository_1.UserRepository.updateUserById(sworn.userId, { enabled, blockUntil });
             //Implement logic to update the deliveries and orders status if the sworn statement is rejected
-            return newSworn;
+            return { sworn: newSworn, updatedUser };
         });
     }
     deleteSworn(swornId) {
