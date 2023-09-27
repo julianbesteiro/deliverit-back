@@ -1,8 +1,8 @@
-import { DeliveryRepositoryFilters, IDelivery } from '../interfaces';
+import { DeliveryRepositoryFilters, IOrderInput } from '../interfaces';
 import { hasDuplicates, validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '../errors/customErrors';
 
-export async function validateDeliveryInput(orders: IDelivery[]): Promise<IDelivery[]> {
+export async function validateOrdersInput(orders: IOrderInput[]): Promise<IOrderInput[]> {
   const errors: Error[] = [];
   if (!Array.isArray(orders)) {
     throw new BadUserInputError({ message: 'The input is input is not an array' });

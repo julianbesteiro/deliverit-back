@@ -3,14 +3,16 @@ import {
   DataResponse,
   IDelivery,
   IDeliveryService,
+  IOrderInput,
   PaginationData,
   PaginationDataResponse,
 } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
 import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '../utils/validateObjectId';
-import { validateDeliveryFilters, validateDeliveryInput } from '../utils/validationDelivery';
+import { validateDeliveryFilters, validateOrdersInput } from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
+import { OrderService } from '../services';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
@@ -20,14 +22,16 @@ class DeliveryController {
       const { body } = req;
       const { user } = req as RequestExpress;
 
-      const orders: IDelivery[] = body;
+      const orders: IOrderInput[] = body;
 
-      const ordersValidate = await validateDeliveryInput(orders);
+      const ordersValidate = await validateOrdersInput(orders);
 
       const deliveries: IDelivery | IDelivery[] = await this.deliveryServices.createDelivery({
         userId: user.id,
         orders: ordersValidate,
       });
+
+      OrderService.updateOrderStatus(ordersValidate, 'unnasigned');
 
       return res.status(201).json({
         message: 'Deliveries created',

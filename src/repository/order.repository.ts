@@ -1,5 +1,5 @@
 import Order from '../models/Order';
-import { IOrder, OrderRepositoryFilters } from '../../src/interfaces/';
+import { IOrder, IOrderInput, OrderRepositoryFilters } from '../../src/interfaces/';
 import { EntityNotFoundError } from '../errors/customErrors';
 
 class OrderRepository {
@@ -10,7 +10,7 @@ class OrderRepository {
 
   static async getOrders(
     filters?: OrderRepositoryFilters,
-  ): Promise<Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }>> {
+  ): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
     const page = filters?.page || 1;
     const limit = filters?.limit || 10;
     const skip = (page - 1) * limit;
@@ -24,11 +24,33 @@ class OrderRepository {
       filter.status = filters.status;
     }
 
-    const totalItems = await Order.countDocuments(filter);
+    let startDate: Date;
+    let endDate: Date;
+
+    // Verifica si se especifica una fecha de entrega en el filtro
+    if (filters?.deliveryDate) {
+      startDate = new Date(filters.deliveryDate);
+      endDate = new Date(filters.deliveryDate);
+      startDate.setUTCHours(0, 0, 0, 0);
+      endDate.setUTCHours(23, 59, 59, 999);
+      console.log(startDate, endDate);
+    } else {
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      startDate = today;
+      endDate = new Date(today);
+      endDate.setUTCHours(23, 59, 59, 999);
+      console.log(startDate, endDate);
+    }
+
+    const totalItems = await Order.countDocuments({
+      ...filter,
+      deliveryDate: { $gte: startDate, $lte: endDate },
+    });
 
     const totalPages = Math.ceil(totalItems / limit);
 
-    const query = Order.find(filter)
+    const query = Order.find({ ...filter, deliveryDate: { $gte: startDate, $lte: endDate } })
       .skip(skip)
       .limit(limit)
       .select('_id status userId address packagesQuantity weight');
@@ -42,7 +64,6 @@ class OrderRepository {
       totalItems,
     };
   }
-
   static async getOrder(orderId: string) {
     const order = await Order.findById(orderId);
     if (!order) {
@@ -75,6 +96,22 @@ class OrderRepository {
     const options = { new: true }; 
     const patched = await Order.findByIdAndUpdate(orderId, updatedFields, options);
     return patched;
+  }
+
+  static async updateOrderStatus(orders: IOrderInput[], status: string) {
+    const ordersId = orders.map((order) => order.orderId);
+
+    const updateResult = await Order.updateMany(
+      { _id: { $in: ordersId } },
+      { $set: { status: status } },
+    );
+
+    if (updateResult.modifiedCount === orders.length) {
+      const updatedOrders = await Order.find({ _id: { $in: ordersId } });
+      return updatedOrders;
+    } else {
+      throw new Error('No se pudieron actualizar las órdenes.');
+    }
   }
 }
 
