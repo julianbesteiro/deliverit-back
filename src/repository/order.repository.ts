@@ -83,7 +83,7 @@ class OrderRepository {
   }
 
   static async updateOrder(orderId: string, updatedOrder: IOrder) {
-    const options = { new: true }; 
+    const options = { new: true };
     const updated = await Order.findByIdAndUpdate(orderId, updatedOrder, options);
     if (!updated) {
       const entityName = 'Order';
@@ -93,7 +93,7 @@ class OrderRepository {
   }
 
   static async patchOrder(orderId: string, updatedFields: Partial<IOrder>) {
-    const options = { new: true }; 
+    const options = { new: true };
     const patched = await Order.findByIdAndUpdate(orderId, updatedFields, options);
     return patched;
   }

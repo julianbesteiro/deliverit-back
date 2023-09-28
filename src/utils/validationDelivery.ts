@@ -1,4 +1,4 @@
-import { DeliveryRepositoryFilters, IOrderInput } from '../interfaces';
+import { DeliveryRepositoryFilters, IDeliveryUpdateInput, IOrderInput } from '../interfaces';
 import { hasDuplicates, validateObjectId } from './validateObjectId';
 import { BadUserInputError } from '../errors/customErrors';
 
@@ -81,4 +81,54 @@ export async function validateDeliveryFilters(
   }
 
   return filters;
+}
+
+export const validateDeliveryUpdate = async (
+  delivery: IDeliveryUpdateInput,
+): Promise<IDeliveryUpdateInput> => {
+  const errors: Error[] = [];
+
+  if (typeof delivery !== 'object') {
+    errors.push(new BadUserInputError({ message: 'Invalid data' }));
+  }
+
+  if (Object.keys(delivery).length === 0) {
+    errors.push(new BadUserInputError({ message: 'Invalid data' }));
+  }
+
+  const updates = Object.keys(delivery);
+
+  updates.forEach((update) => {
+    if (update !== 'status') {
+      errors.push(new BadUserInputError({ message: 'Invalid data' }));
+    }
+  });
+
+  if (
+    delivery.status &&
+    delivery.status !== 'pending' &&
+    delivery.status !== 'delivered' &&
+    delivery.status !== 'cancelled' &&
+    delivery.status !== 'on-course'
+  ) {
+    errors.push(new BadUserInputError({ message: 'Status is not valid' }));
+  }
+
+  if (errors.length > 0) {
+    throw errors;
+  }
+
+  return delivery;
+};
+
+export function validarFormatoFecha(cadena: string) {
+  // Expresión regular para el formato 'AAAA-MM-DD'
+  const formatoFecha = /^\d{4}-\d{2}-\d{2}$/;
+
+  // Comprueba si la cadena coincide con el formato
+  if (formatoFecha.test(cadena)) {
+    return true; // La cadena es válida
+  } else {
+    return false; // La cadena no es válida
+  }
 }
