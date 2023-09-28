@@ -3,6 +3,7 @@ import {
   DataResponse,
   IDelivery,
   IDeliveryService,
+  IDeliveryUpdateInput,
   IOrderInput,
   PaginationData,
   PaginationDataResponse,
@@ -10,7 +11,11 @@ import {
 import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '../utils/validateObjectId';
-import { validateDeliveryFilters, validateOrdersInput } from '../utils/validationDelivery';
+import {
+  validateDeliveryFilters,
+  validateDeliveryUpdate,
+  validateOrdersInput,
+} from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
 import { OrderService } from '../services';
 
@@ -95,16 +100,27 @@ class DeliveryController {
     async (req: RequestExpress | Request, res: Response<DataResponse<IDelivery>>) => {
       const { body } = req;
       const deliveryId = req.params.id;
+      const { user } = req as RequestExpress;
 
       if (!validateObjectId(deliveryId)) {
         throw new BadUserInputError({ id: 'Invalid id' });
       }
 
-      const update: IDelivery = body;
+      const inputValidated: IDeliveryUpdateInput = await validateDeliveryUpdate(body);
+
+      const inputCheck: IDeliveryUpdateInput = await this.deliveryServices.canChangeStatus(
+        user.id,
+        deliveryId,
+        inputValidated,
+      );
+
+      const deliveryForUpdate: IDelivery = {
+        status: inputCheck.status,
+      };
 
       const deliveryUpdated: IDelivery | null = await this.deliveryServices.updateDelivery(
         deliveryId,
-        update,
+        deliveryForUpdate,
       );
 
       return res.status(200).json({

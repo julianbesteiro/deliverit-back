@@ -1,7 +1,7 @@
 import { IRepository } from '../interfaces/IRepository';
 
 import { BaseFilters, DeliveryRepositoryFilters, IDelivery, IDeliveryModel } from '../interfaces';
-import { BadUserInputError, DatabaseConnectionError } from '../errors/customErrors';
+import { BadUserInputError, DatabaseConnectionError, NoContentError } from '../errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
@@ -81,7 +81,7 @@ class DeliveryRepository implements IRepository<IDelivery> {
         },
       });
       if (!delivery) {
-        throw new DatabaseConnectionError('Delivery not found');
+        throw new NoContentError('Delivery not found');
       }
       return delivery;
     }
@@ -95,7 +95,7 @@ class DeliveryRepository implements IRepository<IDelivery> {
     });
 
     if (!delivery) {
-      throw new DatabaseConnectionError('Delivery not found');
+      throw new NoContentError('Delivery not found');
     }
 
     return delivery;
@@ -108,7 +108,7 @@ class DeliveryRepository implements IRepository<IDelivery> {
     if (!existingDelivery) {
       throw new DatabaseConnectionError('Delivery not found'); // Manejar si el documento no se encuentra
     }
-
+    console.log(updateData);
     // Actualiza los campos del documento con los datos proporcionados
     Object.assign(existingDelivery, updateData);
 

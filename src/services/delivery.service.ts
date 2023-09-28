@@ -1,8 +1,10 @@
+import { BadUserInputError } from '../errors/customErrors';
 import {
-  BaseFilters,
+  DeliveryRepositoryFilters,
   IDelivery,
   IDeliveryDTO,
   IDeliveryService,
+  IDeliveryUpdateInput,
   IRepository,
   PaginationData,
 } from '../interfaces';
@@ -13,7 +15,7 @@ class DeliveryService implements IDeliveryService {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  async getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>> {
+  async getDeliveries(filters?: DeliveryRepositoryFilters): Promise<PaginationData<IDelivery>> {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
@@ -33,9 +35,73 @@ class DeliveryService implements IDeliveryService {
     return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
   }
 
-  async updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {
-    const updatedDelivery = this.deliveryRepository.update(id, delivery);
-    return updatedDelivery;
+  async updateDelivery(id: string, update: IDelivery): Promise<IDelivery> {
+    if (update.status === 'delivered' || update.status === 'cancelled') {
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        resolutionDeliveryDate: new Date(),
+      });
+      return deliveryUpdated;
+    }
+
+    if (update.status === 'on-course') {
+      console.log('on-course');
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        startingDeliveryDate: new Date(),
+      });
+      return deliveryUpdated;
+    }
+
+    if (update.status === 'pending') {
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        startingDeliveryDate: null,
+        resolutionDeliveryDate: null,
+      });
+      return deliveryUpdated;
+    }
+
+    const deliveryUpdated = await this.deliveryRepository.update(id, update);
+
+    return deliveryUpdated;
+  }
+
+  async canChangeStatus(
+    userId: string,
+    deliveryId: string,
+    input: IDeliveryUpdateInput,
+  ): Promise<IDeliveryUpdateInput> {
+    const delivery = await this.deliveryRepository.findById(deliveryId);
+
+    if (!delivery) {
+      throw new BadUserInputError({ message: 'Delivery not found' });
+    }
+
+    if (delivery.status === 'cancelled' || delivery.status === 'delivered') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'on-course' && input.status === 'cancelled') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'pending' && input.status === 'delivered') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'pending' && input.status === 'on-course') {
+      const deliveries = await this.getDeliveries({
+        status: 'on-course',
+        userId: userId,
+      });
+
+      if (deliveries.data.length > 0) {
+        throw new BadUserInputError({ message: 'Are a delivery in course' });
+      }
+    }
+
+    return input;
   }
 
   async deleteDelivery(id: string): Promise<void> {
