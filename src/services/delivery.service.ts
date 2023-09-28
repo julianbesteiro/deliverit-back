@@ -36,7 +36,7 @@ class DeliveryService implements IDeliveryService {
   }
 
   async updateDelivery(id: string, update: IDelivery): Promise<IDelivery> {
-    if (update.status === 'delivered' || update.status === 'cancelled') {
+    if (update.status === 'delivered') {
       const deliveryUpdated = await this.deliveryRepository.update(id, {
         ...update,
         resolutionDeliveryDate: new Date(),
@@ -45,7 +45,6 @@ class DeliveryService implements IDeliveryService {
     }
 
     if (update.status === 'on-course') {
-      console.log('on-course');
       const deliveryUpdated = await this.deliveryRepository.update(id, {
         ...update,
         startingDeliveryDate: new Date(),

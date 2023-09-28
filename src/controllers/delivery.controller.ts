@@ -36,7 +36,7 @@ class DeliveryController {
         orders: ordersValidate,
       });
 
-      OrderService.updateOrderStatus(ordersValidate, 'unnasigned');
+      OrderService.updateOrderStatus(ordersValidate, 'signed');
 
       return res.status(201).json({
         message: 'Deliveries created',
@@ -114,14 +114,21 @@ class DeliveryController {
         inputValidated,
       );
 
-      const deliveryForUpdate: IDelivery = {
-        status: inputCheck.status,
-      };
-
-      const deliveryUpdated: IDelivery | null = await this.deliveryServices.updateDelivery(
+      const deliveryUpdated: IDelivery = await this.deliveryServices.updateDelivery(
         deliveryId,
-        deliveryForUpdate,
+        inputCheck,
       );
+
+      if (inputCheck.status === 'cancelled') {
+        const updateOrder = await OrderService.updateOrderStatus(
+          [{ orderId: deliveryUpdated.orderId as string }],
+          'unnasigned',
+        );
+
+        if (!updateOrder) {
+          throw new BadUserInputError({ id: 'Invalid id' });
+        }
+      }
 
       return res.status(200).json({
         message: 'Delivery updated',
@@ -140,7 +147,6 @@ class DeliveryController {
 
     await this.deliveryServices.deleteDelivery(id);
 
-    console.log('Delivery deleted');
     return res.status(204);
   });
 }

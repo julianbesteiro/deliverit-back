@@ -12,7 +12,7 @@ export interface IDeliveryService {
   getDelivery(id: string): Promise<IDelivery>;
   getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>>;
   createDelivery(item: IDeliveryDTO): Promise<IDelivery | IDelivery[]>;
-  updateDelivery(id: string, item: IDelivery): Promise<IDelivery>;
+  updateDelivery(id: string, item: IDeliveryUpdateInput): Promise<IDelivery>;
   deleteDelivery(id: string): Promise<void>;
   canChangeStatus(
     userId: string,

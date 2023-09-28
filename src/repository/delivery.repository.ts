@@ -108,12 +108,19 @@ class DeliveryRepository implements IRepository<IDelivery> {
     if (!existingDelivery) {
       throw new DatabaseConnectionError('Delivery not found'); // Manejar si el documento no se encuentra
     }
-    console.log(updateData);
+
     // Actualiza los campos del documento con los datos proporcionados
     Object.assign(existingDelivery, updateData);
 
     // Guarda los cambios en la base de datos
-    const deliveryUpdated = await existingDelivery.save();
+    const deliveryUpdated = (await existingDelivery.save()).populate({
+      path: 'orderId',
+      select: '_id address',
+      model: 'Order',
+      options: {
+        fields: 'order',
+      },
+    });
 
     return deliveryUpdated;
   }
