@@ -53,7 +53,8 @@ function sendMail(email, resetToken) {
             return result;
         }
         catch (error) {
-            console.log(error);
+            const refreshedToken = yield oAuth2Client.refreshAccessToken();
+            console.log('refreshedToken--------->', refreshedToken);
             throw error;
         }
     });

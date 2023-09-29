@@ -79,7 +79,7 @@ OrderController.patchOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __aw
     const updatedFields = req.body;
     const patchedOrder = yield services_1.OrderService.patchOrder(orderId, updatedFields);
     if (!patchedOrder) {
-        return res.status(404).send({ message: 'Orden no encontrada' });
+        return res.status(404).send({ message: 'Order not found' });
     }
     return res.status(200).send(patchedOrder);
 }));
