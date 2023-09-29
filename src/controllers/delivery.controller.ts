@@ -18,6 +18,7 @@ import {
 } from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
 import { OrderService } from '../services';
+import { IOrderForDeliverySchema } from '../interfaces/Entities/IOrder';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
@@ -121,7 +122,13 @@ class DeliveryController {
 
       if (inputCheck.status === 'cancelled') {
         const updateOrder = await OrderService.updateOrderStatus(
-          [{ orderId: deliveryUpdated.orderId as string }],
+          [
+            {
+              orderId: (deliveryUpdated.orderId as IOrderForDeliverySchema)._id as string,
+              packagesQuantity: (deliveryUpdated.orderId as IOrderForDeliverySchema)
+                .packagesQuantity as number,
+            },
+          ],
           'unassigned',
         );
 

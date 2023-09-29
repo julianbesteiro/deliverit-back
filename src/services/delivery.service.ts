@@ -5,6 +5,7 @@ import {
   IDeliveryDTO,
   IDeliveryService,
   IDeliveryUpdateInput,
+  IOrderForDeliverySchema,
   IRepository,
   PaginationData,
 } from '../interfaces';
@@ -21,6 +22,22 @@ class DeliveryService implements IDeliveryService {
   }
   async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IDelivery | IDelivery[]> {
     const { orders } = deliveryDTO;
+
+    const { data } = await this.getDeliveries({
+      userId: deliveryDTO.userId,
+    });
+
+    const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
+      return acc + (delivery.orderId as IOrderForDeliverySchema).packagesQuantity;
+    }, 0);
+
+    const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
+      return acc + order.packagesQuantity;
+    }, 0);
+
+    if (totalPackagesInDeliveries + totalOrders > 10) {
+      throw new BadUserInputError({ message: 'Maximum deliveries exceeded' });
+    }
 
     const createPromises = orders.map(async (order) => {
       const deliveryCreated = await this.deliveryRepository.create({
