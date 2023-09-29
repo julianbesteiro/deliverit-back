@@ -122,7 +122,7 @@ class DeliveryController {
       if (inputCheck.status === 'cancelled') {
         const updateOrder = await OrderService.updateOrderStatus(
           [{ orderId: deliveryUpdated.orderId as string }],
-          'unnasigned',
+          'unassigned',
         );
 
         if (!updateOrder) {
