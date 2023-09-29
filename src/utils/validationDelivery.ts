@@ -12,23 +12,21 @@ export async function validateOrdersInput(orders: IOrderInput[]): Promise<IOrder
     errors.push(new BadUserInputError({ message: 'Duplicate order id' }));
   }
 
-  if (orders.length === 0 || orders.length > 10) {
-    errors.push(
-      new BadUserInputError({
-        message: 'The input is not valid, its length is 0 or greater than 10',
-      }),
-    );
-  }
-
   orders.forEach((order) => {
     if (!validateObjectId(order.orderId!)) {
       errors.push(new BadUserInputError({ message: `Invalid order id : ${order.orderId}` }));
     }
-    if (Object.keys(order).length > 1 || Object.keys(order).length === 0) {
+    if (Object.keys(order).length === 0) {
       errors.push(new BadUserInputError({ message: 'Invalid data' }));
     }
     if (Object.keys(order)[0] !== 'orderId') {
       errors.push(new BadUserInputError({ message: 'Status cannot be changed' }));
+    }
+    if (typeof order.packagesQuantity !== 'number') {
+      errors.push(new BadUserInputError({ message: 'The packages quantity must be a number' }));
+    }
+    if (order.packagesQuantity < 0) {
+      errors.push(new BadUserInputError({ message: 'The packages quantity must be positive' }));
     }
   });
 
@@ -89,18 +87,18 @@ export const validateDeliveryUpdate = async (
   const errors: Error[] = [];
 
   if (typeof delivery !== 'object') {
-    errors.push(new BadUserInputError({ message: 'Invalid data' }));
+    errors.push(new BadUserInputError({ message: 'Are not a valid object' }));
   }
 
   if (Object.keys(delivery).length === 0) {
-    errors.push(new BadUserInputError({ message: 'Invalid data' }));
+    errors.push(new BadUserInputError({ message: 'The input is empty' }));
   }
 
   const updates = Object.keys(delivery);
 
   updates.forEach((update) => {
     if (update !== 'status') {
-      errors.push(new BadUserInputError({ message: 'Invalid data' }));
+      errors.push(new BadUserInputError({ message: 'Status cannot be changed' }));
     }
   });
 

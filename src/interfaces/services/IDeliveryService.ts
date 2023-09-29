@@ -2,10 +2,11 @@ import { IDelivery } from '../Entities/IDelivery';
 import { BaseFilters } from '../IFilters';
 import { PaginationData } from '../IRepository';
 import { IDeliveryUpdateInput } from '../inputs/IDeliveryInput';
+import { IOrderInput } from '../inputs/IOrderInput';
 
 export interface IDeliveryDTO {
   userId: string;
-  orders: IDelivery[];
+  orders: IOrderInput[];
 }
 
 export interface IDeliveryService {

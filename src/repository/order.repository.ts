@@ -110,7 +110,7 @@ class OrderRepository {
       const updatedOrders = await Order.find({ _id: { $in: ordersId } });
       return updatedOrders;
     } else {
-      throw new Error('No se pudieron actualizar las órdenes.');
+      throw new EntityNotFoundError('No se pudieron actualizar las órdenes.');
     }
   }
 }
