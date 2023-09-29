@@ -74,7 +74,8 @@ class DeliveryRepository implements IRepository<IDelivery> {
     if (filters) {
       const delivery = await this.deliveryModel.findOne({ _id: id, ...filters }).populate({
         path: 'orderId',
-        select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+        select:
+          '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
         model: 'Order', // Reemplaza con el nombre de tu modelo de orden
         options: {
           fields: 'order', // Cambia el nombre del campo en el JSON de salida
@@ -87,7 +88,8 @@ class DeliveryRepository implements IRepository<IDelivery> {
     }
     const delivery = await this.deliveryModel.findById(id).populate({
       path: 'orderId',
-      select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+      select:
+        '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
       model: 'Order', // Reemplaza con el nombre de tu modelo de orden
       options: {
         fields: 'order', // Cambia el nombre del campo en el JSON de salida

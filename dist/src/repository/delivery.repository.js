@@ -73,27 +73,27 @@ class DeliveryRepository {
             if (filters) {
                 const delivery = yield this.deliveryModel.findOne(Object.assign({ _id: id }, filters)).populate({
                     path: 'orderId',
-                    select: '_id address',
+                    select: '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
                     model: 'Order',
                     options: {
                         fields: 'order', // Cambia el nombre del campo en el JSON de salida
                     },
                 });
                 if (!delivery) {
-                    throw new customErrors_1.DatabaseConnectionError('Delivery not found');
+                    throw new customErrors_1.NoContentError('Delivery not found');
                 }
                 return delivery;
             }
             const delivery = yield this.deliveryModel.findById(id).populate({
                 path: 'orderId',
-                select: '_id address',
+                select: '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
                 model: 'Order',
                 options: {
                     fields: 'order', // Cambia el nombre del campo en el JSON de salida
                 },
             });
             if (!delivery) {
-                throw new customErrors_1.DatabaseConnectionError('Delivery not found');
+                throw new customErrors_1.NoContentError('Delivery not found');
             }
             return delivery;
         });
@@ -108,7 +108,14 @@ class DeliveryRepository {
             // Actualiza los campos del documento con los datos proporcionados
             Object.assign(existingDelivery, updateData);
             // Guarda los cambios en la base de datos
-            const deliveryUpdated = yield existingDelivery.save();
+            const deliveryUpdated = (yield existingDelivery.save()).populate({
+                path: 'orderId',
+                select: '_id address',
+                model: 'Order',
+                options: {
+                    fields: 'order',
+                },
+            });
             return deliveryUpdated;
         });
     }

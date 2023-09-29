@@ -14,6 +14,7 @@ const customErrors_1 = require("../errors/customErrors");
 const asyncHandler_1 = require("../utils/asyncHandler"); // Ajusta la ruta según la estructura de carpetas
 const validateObjectId_1 = require("../utils/validateObjectId");
 const validationDelivery_1 = require("../utils/validationDelivery");
+const services_1 = require("../services");
 class DeliveryController {
     constructor(deliveryServices) {
         this.deliveryServices = deliveryServices;
@@ -21,11 +22,12 @@ class DeliveryController {
             const { body } = req;
             const { user } = req;
             const orders = body;
-            const ordersValidate = yield (0, validationDelivery_1.validateDeliveryInput)(orders);
+            const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(orders);
             const deliveries = yield this.deliveryServices.createDelivery({
                 userId: user.id,
                 orders: ordersValidate,
             });
+            services_1.OrderService.updateOrderStatus(ordersValidate, 'signed');
             return res.status(201).json({
                 message: 'Deliveries created',
                 data: deliveries,
@@ -71,11 +73,19 @@ class DeliveryController {
         this.updateDelivery = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { body } = req;
             const deliveryId = req.params.id;
+            const { user } = req;
             if (!(0, validateObjectId_1.validateObjectId)(deliveryId)) {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
-            const update = body;
-            const deliveryUpdated = yield this.deliveryServices.updateDelivery(deliveryId, update);
+            const inputValidated = yield (0, validationDelivery_1.validateDeliveryUpdate)(body);
+            const inputCheck = yield this.deliveryServices.canChangeStatus(user.id, deliveryId, inputValidated);
+            const deliveryUpdated = yield this.deliveryServices.updateDelivery(deliveryId, inputCheck);
+            if (inputCheck.status === 'cancelled') {
+                const updateOrder = yield services_1.OrderService.updateOrderStatus([{ orderId: deliveryUpdated.orderId }], 'unnasigned');
+                if (!updateOrder) {
+                    throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
+                }
+            }
             return res.status(200).json({
                 message: 'Delivery updated',
                 data: deliveryUpdated,
@@ -88,7 +98,6 @@ class DeliveryController {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
             yield this.deliveryServices.deleteDelivery(id);
-            console.log('Delivery deleted');
             return res.status(204);
         }));
     }
