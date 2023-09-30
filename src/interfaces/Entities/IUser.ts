@@ -6,7 +6,13 @@ export interface IUser {
   urlImage: string;
   enabled: boolean;
   blockUntil?: Date | null;
+  numberOfPacakagesPerDay: number;
   lastSeenAt: Date;
+}
+
+export interface IUserUpdateOutput {
+  user: Payload;
+  token: string;
 }
 
 export interface IUserInput {
@@ -21,6 +27,7 @@ export interface IUserInput {
 }
 
 import { Document, Model } from 'mongoose';
+import { Payload } from '../IPayload';
 
 export interface IUserDocument extends IUser, Document {
   // Propiedades que no están en el esquema original para un usuario
@@ -29,6 +36,7 @@ export interface IUserDocument extends IUser, Document {
     token: string;
     expiration: Date;
   };
+
   // Método para verificar la contraseña
   checkPassword(password: string): Promise<boolean>;
 }

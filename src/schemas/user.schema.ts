@@ -48,6 +48,10 @@ export const userSchema: Schema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    numberOfPacakagesPerDay: {
+      type: Number,
+      default: 0,
+    },
     lastSeenAt: {
       type: Date,
       default: Date.now,

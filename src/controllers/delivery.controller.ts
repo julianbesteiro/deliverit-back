@@ -5,6 +5,7 @@ import {
   IDeliveryService,
   IDeliveryUpdateInput,
   IOrderInput,
+  IOutputCreateDelivery,
   PaginationData,
   PaginationDataResponse,
 } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
@@ -17,7 +18,7 @@ import {
   validateOrdersInput,
 } from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
-import { OrderService } from '../services';
+import { OrderService, UserService } from '../services';
 import { IOrderForDeliverySchema } from '../interfaces/Entities/IOrder';
 
 class DeliveryController {
@@ -32,12 +33,19 @@ class DeliveryController {
 
       const ordersValidate = await validateOrdersInput(orders);
 
-      const deliveries: IDelivery | IDelivery[] = await this.deliveryServices.createDelivery({
-        userId: user.id,
-        orders: ordersValidate,
-      });
+      const { deliveries, totalPackages }: IOutputCreateDelivery =
+        await this.deliveryServices.createDelivery({
+          userId: user.id,
+          orders: ordersValidate,
+        });
 
       OrderService.updateOrderStatus(ordersValidate, 'signed');
+
+      const { token } = await UserService.updateUser(user.id, {
+        numberOfPacakagesPerDay: totalPackages,
+      });
+
+      res.setHeader('Authorization', `Bearer ${token}`);
 
       return res.status(201).json({
         message: 'Deliveries created',
