@@ -1,6 +1,9 @@
 import Order from '../models/Order';
 import { IOrder, IOrderInput, OrderRepositoryFilters } from '../../src/interfaces/';
 import { EntityNotFoundError } from '../errors/customErrors';
+import OrderModel from '../models/Order';
+import { OrderRepositoryFiltersWithDeliveryDate } from '../../src/interfaces/IFiltersWithDeliveryDate';
+
 
 class OrderRepository {
   static async createOrder(order: IOrder) {
@@ -64,6 +67,46 @@ class OrderRepository {
       totalItems,
     };
   }
+
+//-----------------------------------------------------------------------------------------------------
+
+static async findAll(
+  filters?: OrderRepositoryFiltersWithDeliveryDate,
+): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
+  const page = filters?.page || 1;
+  const limit = filters?.limit || 10;
+  const skip = (page - 1) * limit;
+
+  const filter: OrderRepositoryFilters = {};
+
+  if (filters?.deliveryDate) {
+    filter.deliveryDate = filters.deliveryDate;
+  }
+  if (filters?.status) {
+    filter.status = filters.status;
+  }
+
+  const totalItems = await Order.countDocuments(filter);
+
+  const totalPages = Math.ceil(totalItems / limit);
+
+  const query = Order.find(filter)
+    .skip(skip)
+/*     .limit(limit)
+    .select('_id status userId address packagesQuantity weight'); */
+
+  const orders = await query.exec();
+
+  return {
+    data: orders,
+    page,
+    totalPages,
+    totalItems,
+  };
+}
+
+//-----------------------------------------------------------------------------------------------------
+
   static async getOrder(orderId: string) {
     const order = await Order.findById(orderId);
     if (!order) {
