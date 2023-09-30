@@ -5,9 +5,20 @@ class OrderService {
   static async getOrder(id: string): Promise<IOrder> {
     return await OrderRepository.getOrder(id);
   }
-  static async getOrders(filters?: BaseFilters | undefined): Promise<PaginationData<IOrder>> {
-    return await OrderRepository.getOrders(filters);
+
+  //----------------------------------------------------------------------------------------------
+
+  static async getOrders(filters?: BaseFilters): Promise<PaginationData<IOrder>> {
+    const orders = await OrderRepository.findAll(filters);
+    return orders;
   }
+
+   //----------------------------------------------------------------------------------------------
+
+
+/*   static async getOrders(filters?: BaseFilters | undefined): Promise<PaginationData<IOrder>> {
+    return await OrderRepository.getOrders(filters);
+  } */
   static async createOrder(order: IOrder): Promise<IOrder> {
     return await OrderRepository.createOrder(order);
   }
