@@ -4,10 +4,10 @@ export interface Payload {
   id: Types.ObjectId;
   name: string;
   lastName: string;
-  email: string;
   role: string;
   enabled: boolean;
   blockUntil?: Date | null;
+  numberOfPacakagesPerDay: number;
   lastSeenAt: Date;
   urlImage: string;
 }

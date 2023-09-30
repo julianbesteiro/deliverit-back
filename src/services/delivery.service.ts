@@ -1,3 +1,4 @@
+import config from '../../config/config';
 import { BadUserInputError } from '../errors/customErrors';
 import {
   DeliveryRepositoryFilters,
@@ -6,6 +7,7 @@ import {
   IDeliveryService,
   IDeliveryUpdateInput,
   IOrderForDeliverySchema,
+  IOutputCreateDelivery,
   IRepository,
   PaginationData,
 } from '../interfaces';
@@ -20,7 +22,7 @@ class DeliveryService implements IDeliveryService {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
-  async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IDelivery | IDelivery[]> {
+  async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IOutputCreateDelivery> {
     const { orders } = deliveryDTO;
 
     const { data } = await this.getDeliveries({
@@ -35,7 +37,9 @@ class DeliveryService implements IDeliveryService {
       return acc + order.packagesQuantity;
     }, 0);
 
-    if (totalPackagesInDeliveries + totalOrders > 10) {
+    const totalPackages = totalPackagesInDeliveries + totalOrders;
+
+    if (totalPackages > config.constants.max_number_of_packages_per_day) {
       throw new BadUserInputError({ message: 'Maximum deliveries exceeded' });
     }
 
@@ -49,7 +53,7 @@ class DeliveryService implements IDeliveryService {
 
     const deliveriesCreated = await Promise.all(createPromises);
 
-    return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
+    return { deliveries: deliveriesCreated, totalPackages };
   }
 
   async updateDelivery(id: string, update: IDelivery): Promise<IDelivery> {
