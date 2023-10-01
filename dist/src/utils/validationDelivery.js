@@ -21,20 +21,21 @@ function validateOrdersInput(orders) {
         if ((0, validateObjectId_1.hasDuplicates)(orders, 'orderId')) {
             errors.push(new customErrors_1.BadUserInputError({ message: 'Duplicate order id' }));
         }
-        if (orders.length === 0 || orders.length > 10) {
-            errors.push(new customErrors_1.BadUserInputError({
-                message: 'The input is not valid, its length is 0 or greater than 10',
-            }));
-        }
         orders.forEach((order) => {
             if (!(0, validateObjectId_1.validateObjectId)(order.orderId)) {
                 errors.push(new customErrors_1.BadUserInputError({ message: `Invalid order id : ${order.orderId}` }));
             }
-            if (Object.keys(order).length > 1 || Object.keys(order).length === 0) {
+            if (Object.keys(order).length === 0) {
                 errors.push(new customErrors_1.BadUserInputError({ message: 'Invalid data' }));
             }
             if (Object.keys(order)[0] !== 'orderId') {
                 errors.push(new customErrors_1.BadUserInputError({ message: 'Status cannot be changed' }));
+            }
+            if (typeof order.packagesQuantity !== 'number') {
+                errors.push(new customErrors_1.BadUserInputError({ message: 'The packages quantity must be a number' }));
+            }
+            if (order.packagesQuantity < 0) {
+                errors.push(new customErrors_1.BadUserInputError({ message: 'The packages quantity must be positive' }));
             }
         });
         if (errors.length > 0) {
@@ -84,15 +85,15 @@ exports.validateDeliveryFilters = validateDeliveryFilters;
 const validateDeliveryUpdate = (delivery) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = [];
     if (typeof delivery !== 'object') {
-        errors.push(new customErrors_1.BadUserInputError({ message: 'Invalid data' }));
+        errors.push(new customErrors_1.BadUserInputError({ message: 'Are not a valid object' }));
     }
     if (Object.keys(delivery).length === 0) {
-        errors.push(new customErrors_1.BadUserInputError({ message: 'Invalid data' }));
+        errors.push(new customErrors_1.BadUserInputError({ message: 'The input is empty' }));
     }
     const updates = Object.keys(delivery);
     updates.forEach((update) => {
         if (update !== 'status') {
-            errors.push(new customErrors_1.BadUserInputError({ message: 'Invalid data' }));
+            errors.push(new customErrors_1.BadUserInputError({ message: 'Status cannot be changed' }));
         }
     });
     if (delivery.status &&
