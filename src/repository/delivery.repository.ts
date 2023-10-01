@@ -53,7 +53,8 @@ class DeliveryRepository implements IRepository<IDelivery> {
       .select('status _id orderId userId')
       .populate({
         path: 'orderId',
-        select: '_id address packagesQuantity',
+        select:
+          '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
         model: 'Order', // Reemplaza con el nombre de tu modelo de orden
         options: {
           fields: 'order', // Cambia el nombre del campo en el JSON de salida
@@ -117,7 +118,8 @@ class DeliveryRepository implements IRepository<IDelivery> {
     // Guarda los cambios en la base de datos
     const deliveryUpdated = (await existingDelivery.save()).populate({
       path: 'orderId',
-      select: '_id address packagesQuantity',
+      select:
+        '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
       model: 'Order',
       options: {
         fields: 'order',
