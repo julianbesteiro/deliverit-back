@@ -53,7 +53,7 @@ class DeliveryRepository {
                 .select('status _id orderId userId')
                 .populate({
                 path: 'orderId',
-                select: '_id address',
+                select: '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
                 model: 'Order',
                 options: {
                     fields: 'order', // Cambia el nombre del campo en el JSON de salida
@@ -110,12 +110,15 @@ class DeliveryRepository {
             // Guarda los cambios en la base de datos
             const deliveryUpdated = (yield existingDelivery.save()).populate({
                 path: 'orderId',
-                select: '_id address',
+                select: '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
                 model: 'Order',
                 options: {
                     fields: 'order',
                 },
             });
+            if (!deliveryUpdated) {
+                throw new customErrors_1.DatabaseConnectionError('Delivery not updated');
+            }
             return deliveryUpdated;
         });
     }

@@ -114,7 +114,7 @@ class OrderRepository {
                 return updatedOrders;
             }
             else {
-                throw new Error('No se pudieron actualizar las órdenes.');
+                throw new customErrors_1.EntityNotFoundError('No se pudieron actualizar las órdenes.');
             }
         });
     }

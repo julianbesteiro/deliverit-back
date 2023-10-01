@@ -81,7 +81,13 @@ class DeliveryController {
             const inputCheck = yield this.deliveryServices.canChangeStatus(user.id, deliveryId, inputValidated);
             const deliveryUpdated = yield this.deliveryServices.updateDelivery(deliveryId, inputCheck);
             if (inputCheck.status === 'cancelled') {
-                const updateOrder = yield services_1.OrderService.updateOrderStatus([{ orderId: deliveryUpdated.orderId }], 'unnasigned');
+                const updateOrder = yield services_1.OrderService.updateOrderStatus([
+                    {
+                        orderId: deliveryUpdated.orderId._id,
+                        packagesQuantity: deliveryUpdated.orderId
+                            .packagesQuantity,
+                    },
+                ], 'unassigned');
                 if (!updateOrder) {
                     throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
                 }
