@@ -68,7 +68,6 @@ class OrderRepository {
     };
   }
 
-//-----------------------------------------------------------------------------------------------------
 
 static async findAll(
   filters?: OrderRepositoryFiltersWithDeliveryDate,
@@ -92,8 +91,7 @@ static async findAll(
 
   const query = Order.find(filter)
     .skip(skip)
-/*     .limit(limit)
-    .select('_id status userId address packagesQuantity weight'); */
+    .limit(limit)
 
   const orders = await query.exec();
 
@@ -105,7 +103,6 @@ static async findAll(
   };
 }
 
-//-----------------------------------------------------------------------------------------------------
 
   static async getOrder(orderId: string) {
     const order = await Order.findById(orderId);

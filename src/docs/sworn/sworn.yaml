@@ -1,0 +1,142 @@
+tags:
+  - name: Oath
+
+definitions:
+  ISworn:
+    type: object
+    properties:
+      alcoholicBeverages:
+        type: boolean
+      psychoactiveMedication:
+        type: boolean
+      familyProblem:
+        type: boolean
+      userId:
+        type: string
+      swornStatementStatus:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+
+  SwornServiceResponse:
+    type: object
+    properties:
+      oath:
+        $ref: '#/definitions/ISworn'
+      updatedUser:
+        $ref: '#/definitions/IUserDocument'
+
+  IUser:
+    type: object
+    properties:
+      name:
+        type: string
+      lastName:
+        type: string
+      role:
+        type: string
+      email:
+        type: string
+      urlImage:
+        type: string
+      enabled:
+        type: boolean
+      blockUntil:
+        type: string
+        format: date-time
+      lastSeenAt:
+        type: string
+        format: date-time
+
+  IUserInput:
+    type: object
+    properties:
+      name:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      urlImage:
+        type: string
+      picture:
+        type: string
+      enabled:
+        type: boolean
+      blockUntil:
+        type: string
+        format: date-time
+
+  IUserDocument:
+    type: object
+    properties:
+      name:
+        type: string
+      lastName:
+        type: string
+      role:
+        type: string
+      email:
+        type: string
+      urlImage:
+        type: string
+      enabled:
+        type: boolean
+      blockUntil:
+        type: string
+        format: date-time
+      lastSeenAt:
+        type: string
+        format: date-time
+      password:
+        type: string
+      passwordReset:
+        type: object
+        properties:
+          token:
+            type: string
+          expiration:
+            type: string
+            format: date-time
+
+  IWorker:
+    type: object
+    properties:
+      status:
+        type: string
+      workerId:
+        type: integer
+      percentage:
+        type: number
+
+paths:
+  /oath:
+    post:
+      summary: Create a new oath.
+      tags:
+        - Oath
+      parameters:
+        - in: body
+          name: body
+          description: Oath data to create.
+          required: true
+          schema:
+            $ref: '#/definitions/ISworn'
+      responses:
+        201:
+          description: Oath created successfully.
+          schema:
+            $ref: '#/definitions/SwornServiceResponse'
+        403:
+          description: Oath cann't be created.
+          schema:
+            $ref: '#/definitions/Error'
+
+  tags:
+    - Oath
