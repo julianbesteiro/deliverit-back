@@ -42,5 +42,10 @@ class OrderService {
             return yield repository_1.OrderRepository.patchOrder(orderId, updatedFields);
         });
     }
+    static updateOrderStatus(orders, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield repository_1.OrderRepository.updateOrderStatus(orders, status);
+        });
+    }
 }
 exports.OrderService = OrderService;

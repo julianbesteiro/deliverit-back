@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const customErrors_1 = require("../errors/customErrors");
 class DeliveryService {
     constructor(deliveryRepository) {
         this.deliveryRepository = deliveryRepository;
@@ -28,6 +29,18 @@ class DeliveryService {
     createDelivery(deliveryDTO) {
         return __awaiter(this, void 0, void 0, function* () {
             const { orders } = deliveryDTO;
+            const { data } = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+            });
+            const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
+                return acc + delivery.orderId.packagesQuantity;
+            }, 0);
+            const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
+                return acc + order.packagesQuantity;
+            }, 0);
+            if (totalPackagesInDeliveries + totalOrders > 10) {
+                throw new customErrors_1.BadUserInputError({ message: 'Maximum deliveries exceeded' });
+            }
             const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
                 const deliveryCreated = yield this.deliveryRepository.create({
                     orderId: order.orderId,
@@ -39,10 +52,49 @@ class DeliveryService {
             return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
         });
     }
-    updateDelivery(id, delivery) {
+    updateDelivery(id, update) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updatedDelivery = this.deliveryRepository.update(id, delivery);
-            return updatedDelivery;
+            if (update.status === 'delivered') {
+                const deliveryUpdated = yield this.deliveryRepository.update(id, Object.assign(Object.assign({}, update), { resolutionDeliveryDate: new Date() }));
+                return deliveryUpdated;
+            }
+            if (update.status === 'on-course') {
+                const deliveryUpdated = yield this.deliveryRepository.update(id, Object.assign(Object.assign({}, update), { startingDeliveryDate: new Date() }));
+                return deliveryUpdated;
+            }
+            if (update.status === 'pending') {
+                const deliveryUpdated = yield this.deliveryRepository.update(id, Object.assign(Object.assign({}, update), { startingDeliveryDate: null, resolutionDeliveryDate: null }));
+                return deliveryUpdated;
+            }
+            const deliveryUpdated = yield this.deliveryRepository.update(id, update);
+            return deliveryUpdated;
+        });
+    }
+    canChangeStatus(userId, deliveryId, input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const delivery = yield this.deliveryRepository.findById(deliveryId);
+            if (!delivery) {
+                throw new customErrors_1.BadUserInputError({ message: 'Delivery not found' });
+            }
+            if (delivery.status === 'cancelled' || delivery.status === 'delivered') {
+                throw new customErrors_1.BadUserInputError({ message: 'Delivery cannot be changed' });
+            }
+            if (delivery.status === 'on-course' && input.status === 'cancelled') {
+                throw new customErrors_1.BadUserInputError({ message: 'Delivery cannot be changed' });
+            }
+            if (delivery.status === 'pending' && input.status === 'delivered') {
+                throw new customErrors_1.BadUserInputError({ message: 'Delivery cannot be changed' });
+            }
+            if (delivery.status === 'pending' && input.status === 'on-course') {
+                const deliveries = yield this.getDeliveries({
+                    status: 'on-course',
+                    userId: userId,
+                });
+                if (deliveries.data.length > 0) {
+                    throw new customErrors_1.BadUserInputError({ message: 'Are a delivery in course' });
+                }
+            }
+            return input;
         });
     }
     deleteDelivery(id) {

@@ -31,5 +31,19 @@ class UserRepository {
             return yield User_1.default.findOne({ email });
         });
     }
+    static updateUserById(id, updateData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const updatedUser = yield User_1.default.findByIdAndUpdate(id, updateData, { new: true });
+                if (!updatedUser) {
+                    throw new Error('User not found');
+                }
+                return updatedUser;
+            }
+            catch (error) {
+                throw new Error('Error updating user');
+            }
+        });
+    }
 }
 exports.UserRepository = UserRepository;

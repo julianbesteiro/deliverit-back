@@ -44,17 +44,7 @@ class UserService {
             if (!isMatch) {
                 throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
-            const token = (0, tokens_1.generateToken)({
-                id: user._id,
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email,
-                role: user.role,
-                enabled: user.enabled,
-                lastSeenAt: user.lastSeenAt,
-                urlImage: user.urlImage,
-            });
-            return token;
+            return this.generateUserToken(user);
         });
     }
     static forgotPassword(email) {
@@ -91,6 +81,21 @@ class UserService {
             }
             return true;
         });
+    }
+    static generateUserToken(user) {
+        const payload = {
+            id: user._id,
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            enabled: user.enabled,
+            blockUntil: user.blockUntil,
+            lastSeenAt: user.lastSeenAt,
+            urlImage: user.urlImage,
+        };
+        const token = (0, tokens_1.generateToken)(payload);
+        return { token, user: payload };
     }
     static resetPassword(email, token, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {

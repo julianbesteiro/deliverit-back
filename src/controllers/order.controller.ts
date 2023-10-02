@@ -20,6 +20,13 @@ class OrderController {
     });
   });
 
+  //------------------------------------------------------------------------------------------------------------
+
+
+
+  //------------------------------------------------------------------------------------------------------------
+
+
   public static getOrders = asyncHandler(
     async (req: Request, res: Response<PaginationDataResponse<IOrder> | DataResponse<IOrder>>) => {
       const filters = req.query;
@@ -81,7 +88,7 @@ class OrderController {
     const patchedOrder = await OrderService.patchOrder(orderId, updatedFields);
 
     if (!patchedOrder) {
-      return res.status(404).send({ message: 'Orden no encontrada' });
+      return res.status(404).send({ message: 'Order not found' });
     }
 
     return res.status(200).send(patchedOrder);

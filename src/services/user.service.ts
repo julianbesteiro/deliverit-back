@@ -1,10 +1,11 @@
 import { generateToken } from '../utils/tokens';
-import { IUserInput } from '../interfaces';
+import { IUser, IUserDocument, IUserInput, IUserUpdateOutput } from '../interfaces';
 import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
 import { sendMail } from '../utils/sendEmail';
 import { uploadImageToS3 } from '../utils/s3';
+import { Payload } from '../interfaces/IPayload';
 
 class UserService {
   static async createUser(user: IUserInput) {
@@ -22,8 +23,12 @@ class UserService {
     return userCreated;
   }
 
-  static async loginUser(email: string, password: string): Promise<string> {
+  static async loginUser(
+    email: string,
+    password: string,
+  ): Promise<{ token: string; user: Payload }> {
     const user = await UserRepository.findUserByEmail(email);
+
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
     }
@@ -32,18 +37,25 @@ class UserService {
     if (!isMatch) {
       throw new UnauthorizedError('Invalid credentials');
     }
+    const currentDate = new Date();
+    const lastSeenUpDate = new Date(user.lastSeenAt);
 
-    const token = generateToken({
-      id: user._id,
-      name: user.name,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      enabled: user.enabled,
-      lastSeenAt: user.lastSeenAt,
-      urlImage: user.urlImage,
+    if (
+      lastSeenUpDate.getDate() !== currentDate.getDate() ||
+      lastSeenUpDate.getMonth() !== currentDate.getMonth() ||
+      lastSeenUpDate.getFullYear() !== currentDate.getFullYear()
+    ) {
+      return await this.updateUser(user._id, {
+        enabled: false,
+        numberOfPacakagesPerDay: 0,
+        blockUntil: null,
+        lastSeenAt: currentDate,
+      });
+    }
+
+    return await this.updateUser(user._id, {
+      lastSeenAt: currentDate,
     });
-    return token;
   }
 
   static async forgotPassword(email: string): Promise<void> {
@@ -86,6 +98,24 @@ class UserService {
     return true;
   }
 
+  static generateUserToken(user: IUserDocument): { token: string; user: Payload } {
+    const payload: Payload = {
+      id: user._id,
+      name: user.name,
+      lastName: user.lastName,
+      role: user.role,
+      enabled: user.enabled,
+      blockUntil: user.blockUntil,
+      numberOfPacakagesPerDay: user.numberOfPacakagesPerDay,
+      lastSeenAt: user.lastSeenAt,
+      urlImage: user.urlImage,
+    };
+
+    const token = generateToken(payload);
+
+    return { token, user: payload };
+  }
+
   static async resetPassword(email: string, token: string, newPassword: string): Promise<void> {
     const user = await UserRepository.findUserByEmail(email);
     if (!user || !user.passwordReset) {
@@ -99,6 +129,14 @@ class UserService {
     user.passwordReset = undefined;
 
     await user.save();
+  }
+
+  static async updateUser(id: string, updateQuery: Partial<IUser>): Promise<IUserUpdateOutput> {
+    const userUpdated = await UserRepository.updateUserById(id, updateQuery);
+
+    const { token, user } = await this.generateUserToken(userUpdated);
+
+    return { user: user, token: token };
   }
 }
 

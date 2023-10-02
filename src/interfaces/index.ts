@@ -8,3 +8,5 @@ export * from './IRepository';
 export * from './services/IDeliveryService';
 export * from './services/IOrderService';
 export * from './DataResonse';
+export * from './inputs/IOrderInput';
+export * from './inputs/IDeliveryInput';

@@ -13,6 +13,12 @@ export class CustomError extends Error {
   }
 }
 
+export class NoContentError extends CustomError {
+  constructor(message: string) {
+    super(message, 'NO_CONTENT', 204);
+  }
+}
+
 export class RouteNotFoundError extends CustomError {
   constructor(originalUrl: string) {
     super(`Route '${originalUrl}' does not exist.`, 'ROUTE_NOT_FOUND', 404);

@@ -34,6 +34,21 @@ class SwornRepository {
             };
         });
     }
+    getLastSwornStatement(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                //Find the last sworn statement
+                const lastSwornStatement = yield this.swornModel
+                    .find({ userId })
+                    .sort({ createdAt: -1 })
+                    .limit(1);
+                return lastSwornStatement[0];
+            }
+            catch (error) {
+                throw new customErrors_1.BadUserInputError({ message: 'Sworn not found' });
+            }
+        });
+    }
     //eslint-disable-next-line
     findById(id, filters) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -42,6 +57,9 @@ class SwornRepository {
                 psychoactiveMedication: false,
                 familyProblem: false,
                 userId: '',
+                swornStatementStatus: '',
+                createdAt: new Date(),
+                updatedAt: new Date(),
             };
         });
     }
@@ -53,6 +71,9 @@ class SwornRepository {
                 psychoactiveMedication: false,
                 familyProblem: false,
                 userId: '',
+                swornStatementStatus: '',
+                createdAt: new Date(),
+                updatedAt: new Date(),
             };
         });
     }

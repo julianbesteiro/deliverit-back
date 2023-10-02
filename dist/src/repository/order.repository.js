@@ -34,9 +34,27 @@ class OrderRepository {
             if (filters === null || filters === void 0 ? void 0 : filters.status) {
                 filter.status = filters.status;
             }
-            const totalItems = yield Order_1.default.countDocuments(filter);
+            let startDate;
+            let endDate;
+            // Verifica si se especifica una fecha de entrega en el filtro
+            if (filters === null || filters === void 0 ? void 0 : filters.deliveryDate) {
+                startDate = new Date(filters.deliveryDate);
+                endDate = new Date(filters.deliveryDate);
+                startDate.setUTCHours(0, 0, 0, 0);
+                endDate.setUTCHours(23, 59, 59, 999);
+                console.log(startDate, endDate);
+            }
+            else {
+                const today = new Date();
+                today.setUTCHours(0, 0, 0, 0);
+                startDate = today;
+                endDate = new Date(today);
+                endDate.setUTCHours(23, 59, 59, 999);
+                console.log(startDate, endDate);
+            }
+            const totalItems = yield Order_1.default.countDocuments(Object.assign(Object.assign({}, filter), { deliveryDate: { $gte: startDate, $lte: endDate } }));
             const totalPages = Math.ceil(totalItems / limit);
-            const query = Order_1.default.find(filter)
+            const query = Order_1.default.find(Object.assign(Object.assign({}, filter), { deliveryDate: { $gte: startDate, $lte: endDate } }))
                 .skip(skip)
                 .limit(limit)
                 .select('_id status userId address packagesQuantity weight');
@@ -71,7 +89,7 @@ class OrderRepository {
     }
     static updateOrder(orderId, updatedOrder) {
         return __awaiter(this, void 0, void 0, function* () {
-            const options = { new: true }; // Devolver el documento actualizado
+            const options = { new: true };
             const updated = yield Order_1.default.findByIdAndUpdate(orderId, updatedOrder, options);
             if (!updated) {
                 const entityName = 'Order';
@@ -82,9 +100,22 @@ class OrderRepository {
     }
     static patchOrder(orderId, updatedFields) {
         return __awaiter(this, void 0, void 0, function* () {
-            const options = { new: true }; // Devolver el documento actualizado
+            const options = { new: true };
             const patched = yield Order_1.default.findByIdAndUpdate(orderId, updatedFields, options);
             return patched;
+        });
+    }
+    static updateOrderStatus(orders, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ordersId = orders.map((order) => order.orderId);
+            const updateResult = yield Order_1.default.updateMany({ _id: { $in: ordersId } }, { $set: { status: status } });
+            if (updateResult.modifiedCount === orders.length) {
+                const updatedOrders = yield Order_1.default.find({ _id: { $in: ordersId } });
+                return updatedOrders;
+            }
+            else {
+                throw new customErrors_1.EntityNotFoundError('No se pudieron actualizar las órdenes.');
+            }
         });
     }
 }

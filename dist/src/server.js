@@ -26,6 +26,7 @@ const middlewares_1 = require("./middlewares");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swaggerOptions_1 = require("../config/swaggerOptions");
+const cronJobs_1 = require("./utils/cronJobs");
 const dev = config_1.default.node_env !== 'production';
 const port = config_1.default.server.port || 8000;
 // Connect to MongoDB
@@ -68,6 +69,7 @@ app.get('/', (req, res) => {
 // Mount the router on a specific path (e.g., "/api")
 app.use('/api', routes_1.allRoutes);
 app.use(middlewares_1.errorHandler);
+cronJobs_1.resetUserEnabledStatus.start();
 app.listen(port, () => {
     logger_1.default.debug('debug right before info');
     logger_1.default.info(`> Ready on ${dev ? config_1.default.server.local_url : config_1.default.server.producction_url}`);

@@ -4,14 +4,14 @@ exports.validateSwornInput = void 0;
 const customErrors_1 = require("../errors/customErrors");
 function validateSwornInput(sworn) {
     const errors = [];
-    // Valida que el sworneto tenga todas las propiedades requeridas
+    // Validate that sword has all required properties
     const requiredFields = ['alcoholicBeverages', 'psychoactiveMedication', 'familyProblem'];
     for (const field of requiredFields) {
         if (!(field in sworn)) {
             errors.push(`${field} is missing`);
         }
     }
-    // Valida el formato de cada campo
+    // Validate each field format
     if (sworn.alcoholicBeverages !== true && sworn.alcoholicBeverages !== false) {
         errors.push(new customErrors_1.BadUserInputError({ message: 'alcoholicBeverages is not a valid boolean' }));
     }

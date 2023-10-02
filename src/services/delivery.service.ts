@@ -1,8 +1,13 @@
+import config from '../../config/config';
+import { BadUserInputError } from '../errors/customErrors';
 import {
-  BaseFilters,
+  DeliveryRepositoryFilters,
   IDelivery,
   IDeliveryDTO,
   IDeliveryService,
+  IDeliveryUpdateInput,
+  IOrderForDeliverySchema,
+  IOutputCreateDelivery,
   IRepository,
   PaginationData,
 } from '../interfaces';
@@ -13,12 +18,30 @@ class DeliveryService implements IDeliveryService {
     const delivery = this.deliveryRepository.findById(id);
     return delivery;
   }
-  async getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>> {
+  async getDeliveries(filters?: DeliveryRepositoryFilters): Promise<PaginationData<IDelivery>> {
     const deliveries = this.deliveryRepository.findAll(filters);
     return deliveries;
   }
-  async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IDelivery | IDelivery[]> {
+  async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IOutputCreateDelivery> {
     const { orders } = deliveryDTO;
+
+    const { data } = await this.getDeliveries({
+      userId: deliveryDTO.userId,
+    });
+
+    const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
+      return acc + (delivery.orderId as IOrderForDeliverySchema).packagesQuantity;
+    }, 0);
+
+    const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
+      return acc + order.packagesQuantity;
+    }, 0);
+
+    const totalPackages = totalPackagesInDeliveries + totalOrders;
+
+    if (totalPackages > config.constants.max_number_of_packages_per_day) {
+      throw new BadUserInputError({ message: 'Maximum deliveries exceeded' });
+    }
 
     const createPromises = orders.map(async (order) => {
       const deliveryCreated = await this.deliveryRepository.create({
@@ -30,12 +53,75 @@ class DeliveryService implements IDeliveryService {
 
     const deliveriesCreated = await Promise.all(createPromises);
 
-    return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
+    return { deliveries: deliveriesCreated, totalPackages };
   }
 
-  async updateDelivery(id: string, delivery: IDelivery): Promise<IDelivery> {
-    const updatedDelivery = this.deliveryRepository.update(id, delivery);
-    return updatedDelivery;
+  async updateDelivery(id: string, update: IDelivery): Promise<IDelivery> {
+    if (update.status === 'delivered') {
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        resolutionDeliveryDate: new Date(),
+      });
+      return deliveryUpdated;
+    }
+
+    if (update.status === 'on-course') {
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        startingDeliveryDate: new Date(),
+      });
+      return deliveryUpdated;
+    }
+
+    if (update.status === 'pending') {
+      const deliveryUpdated = await this.deliveryRepository.update(id, {
+        ...update,
+        startingDeliveryDate: null,
+        resolutionDeliveryDate: null,
+      });
+      return deliveryUpdated;
+    }
+
+    const deliveryUpdated = await this.deliveryRepository.update(id, update);
+
+    return deliveryUpdated;
+  }
+
+  async canChangeStatus(
+    userId: string,
+    deliveryId: string,
+    input: IDeliveryUpdateInput,
+  ): Promise<IDeliveryUpdateInput> {
+    const delivery = await this.deliveryRepository.findById(deliveryId);
+
+    if (!delivery) {
+      throw new BadUserInputError({ message: 'Delivery not found' });
+    }
+
+    if (delivery.status === 'cancelled' || delivery.status === 'delivered') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'on-course' && input.status === 'cancelled') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'pending' && input.status === 'delivered') {
+      throw new BadUserInputError({ message: 'Delivery cannot be changed' });
+    }
+
+    if (delivery.status === 'pending' && input.status === 'on-course') {
+      const deliveries = await this.getDeliveries({
+        status: 'on-course',
+        userId: userId,
+      });
+
+      if (deliveries.data.length > 0) {
+        throw new BadUserInputError({ message: 'Are a delivery in course' });
+      }
+    }
+
+    return input;
   }
 
   async deleteDelivery(id: string): Promise<void> {

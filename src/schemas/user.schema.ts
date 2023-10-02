@@ -42,7 +42,15 @@ export const userSchema: Schema = new mongoose.Schema(
     },
     enabled: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+    blockUntil: {
+      type: Date,
+      default: null,
+    },
+    numberOfPacakagesPerDay: {
+      type: Number,
+      default: 0,
     },
     lastSeenAt: {
       type: Date,
@@ -79,7 +87,7 @@ userSchema.pre<IUserDocument>('save', function (next) {
 userSchema.pre('findOneAndUpdate', function (next) {
   const update: UpdateQuery<IUserDocument> | null = this.getUpdate();
 
-  if (update) {
+  if (update && update.password) {
     bcrypt.genSalt(10, (genSaltError, salt) => {
       if (genSaltError) {
         return next(genSaltError);

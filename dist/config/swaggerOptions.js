@@ -24,5 +24,5 @@ exports.swaggerOptions = {
             },
         },
     },
-    apis: ['./src/docs/user/*.yaml', './src/docs/admin/*.yaml'],
+    apis: ['./src/docs/user/*.yaml', './src/docs/admin/*.yaml', './src/docs/order/*.yaml', './src/docs/sworn/*.yaml'],
 };

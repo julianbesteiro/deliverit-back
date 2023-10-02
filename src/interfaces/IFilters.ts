@@ -15,4 +15,5 @@ export interface DeliveryRepositoryFilters extends BaseFilters {
 export interface OrderRepositoryFilters extends BaseFilters {
   userId?: string;
   status?: string;
+  deliveryDate?: string | Date;
 }

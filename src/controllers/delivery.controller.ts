@@ -3,14 +3,23 @@ import {
   DataResponse,
   IDelivery,
   IDeliveryService,
+  IDeliveryUpdateInput,
+  IOrderInput,
+  IOutputCreateDelivery,
   PaginationData,
   PaginationDataResponse,
 } from '../interfaces'; // Ajusta la ruta según la estructura de carpetas
 import { asyncHandler } from '../utils/asyncHandler'; // Ajusta la ruta según la estructura de carpetas
 import { Request, Response } from 'express';
 import { validateObjectId } from '../utils/validateObjectId';
-import { validateDeliveryFilters, validateDeliveryInput } from '../utils/validationDelivery';
+import {
+  validateDeliveryFilters,
+  validateDeliveryUpdate,
+  validateOrdersInput,
+} from '../utils/validationDelivery';
 import { RequestExpress } from '../interfaces/IRequestExpress';
+import { OrderService, UserService } from '../services';
+import { IOrderForDeliverySchema } from '../interfaces/Entities/IOrder';
 
 class DeliveryController {
   constructor(private readonly deliveryServices: IDeliveryService) {}
@@ -20,14 +29,23 @@ class DeliveryController {
       const { body } = req;
       const { user } = req as RequestExpress;
 
-      const orders: IDelivery[] = body;
+      const orders: IOrderInput[] = body;
 
-      const ordersValidate = await validateDeliveryInput(orders);
+      const ordersValidate = await validateOrdersInput(orders);
 
-      const deliveries: IDelivery | IDelivery[] = await this.deliveryServices.createDelivery({
-        userId: user.id,
-        orders: ordersValidate,
+      const { deliveries, totalPackages }: IOutputCreateDelivery =
+        await this.deliveryServices.createDelivery({
+          userId: user.id,
+          orders: ordersValidate,
+        });
+
+      OrderService.updateOrderStatus(ordersValidate, 'signed');
+
+      const { token } = await UserService.updateUser(user.id, {
+        numberOfPacakagesPerDay: totalPackages,
       });
+
+      res.setHeader('Authorization', `Bearer ${token}`);
 
       return res.status(201).json({
         message: 'Deliveries created',
@@ -91,17 +109,41 @@ class DeliveryController {
     async (req: RequestExpress | Request, res: Response<DataResponse<IDelivery>>) => {
       const { body } = req;
       const deliveryId = req.params.id;
+      const { user } = req as RequestExpress;
 
       if (!validateObjectId(deliveryId)) {
         throw new BadUserInputError({ id: 'Invalid id' });
       }
 
-      const update: IDelivery = body;
+      const inputValidated: IDeliveryUpdateInput = await validateDeliveryUpdate(body);
 
-      const deliveryUpdated: IDelivery | null = await this.deliveryServices.updateDelivery(
+      const inputCheck: IDeliveryUpdateInput = await this.deliveryServices.canChangeStatus(
+        user.id,
         deliveryId,
-        update,
+        inputValidated,
       );
+
+      const deliveryUpdated: IDelivery = await this.deliveryServices.updateDelivery(
+        deliveryId,
+        inputCheck,
+      );
+
+      if (inputCheck.status === 'cancelled') {
+        const updateOrder = await OrderService.updateOrderStatus(
+          [
+            {
+              orderId: (deliveryUpdated.orderId as IOrderForDeliverySchema)._id as string,
+              packagesQuantity: (deliveryUpdated.orderId as IOrderForDeliverySchema)
+                .packagesQuantity as number,
+            },
+          ],
+          'unassigned',
+        );
+
+        if (!updateOrder) {
+          throw new BadUserInputError({ id: 'Invalid id' });
+        }
+      }
 
       return res.status(200).json({
         message: 'Delivery updated',
@@ -120,7 +162,6 @@ class DeliveryController {
 
     await this.deliveryServices.deleteDelivery(id);
 
-    console.log('Delivery deleted');
     return res.status(204);
   });
 }

@@ -1,7 +1,7 @@
 import { IRepository } from '../interfaces/IRepository';
 
 import { BaseFilters, DeliveryRepositoryFilters, IDelivery, IDeliveryModel } from '../interfaces';
-import { BadUserInputError, DatabaseConnectionError } from '../errors/customErrors';
+import { BadUserInputError, DatabaseConnectionError, NoContentError } from '../errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
@@ -42,18 +42,38 @@ class DeliveryRepository implements IRepository<IDelivery> {
       filter.userId = filters.userId;
     }
 
-    const totalItems = await this.deliveryModel.countDocuments(filter);
+    // Agregamos el filtro de fecha para el día actual
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
+    const totalItems = await this.deliveryModel.countDocuments({
+      ...filter,
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    });
 
     const totalPages = Math.ceil(totalItems / limit);
 
     const query = this.deliveryModel
-      .find(filter)
+      .find({
+        ...filter,
+        createdAt: { $gte: startOfDay, $lte: endOfDay },
+      })
       .skip(skip)
       .limit(limit)
       .select('status _id orderId userId')
       .populate({
         path: 'orderId',
-        select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+        select:
+          '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
         model: 'Order', // Reemplaza con el nombre de tu modelo de orden
         options: {
           fields: 'order', // Cambia el nombre del campo en el JSON de salida
@@ -74,20 +94,22 @@ class DeliveryRepository implements IRepository<IDelivery> {
     if (filters) {
       const delivery = await this.deliveryModel.findOne({ _id: id, ...filters }).populate({
         path: 'orderId',
-        select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
-        model: 'Order', // Reemplaza con el nombre de tu modelo de orden
+        select:
+          '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
+        model: 'Order',
         options: {
-          fields: 'order', // Cambia el nombre del campo en el JSON de salida
+          fields: 'order',
         },
       });
       if (!delivery) {
-        throw new DatabaseConnectionError('Delivery not found');
+        throw new NoContentError('Delivery not found');
       }
       return delivery;
     }
     const delivery = await this.deliveryModel.findById(id).populate({
       path: 'orderId',
-      select: '_id address', // Reemplaza con los campos que deseas seleccionar de la orden
+      select:
+        '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
       model: 'Order', // Reemplaza con el nombre de tu modelo de orden
       options: {
         fields: 'order', // Cambia el nombre del campo en el JSON de salida
@@ -95,7 +117,7 @@ class DeliveryRepository implements IRepository<IDelivery> {
     });
 
     if (!delivery) {
-      throw new DatabaseConnectionError('Delivery not found');
+      throw new NoContentError('Delivery not found');
     }
 
     return delivery;
@@ -113,7 +135,19 @@ class DeliveryRepository implements IRepository<IDelivery> {
     Object.assign(existingDelivery, updateData);
 
     // Guarda los cambios en la base de datos
-    const deliveryUpdated = await existingDelivery.save();
+    const deliveryUpdated = (await existingDelivery.save()).populate({
+      path: 'orderId',
+      select:
+        '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
+      model: 'Order',
+      options: {
+        fields: 'order',
+      },
+    });
+
+    if (!deliveryUpdated) {
+      throw new DatabaseConnectionError('Delivery not updated');
+    }
 
     return deliveryUpdated;
   }

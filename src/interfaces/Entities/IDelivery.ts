@@ -11,7 +11,7 @@ export type ValidStatus = 'pending' | 'on-course' | 'delivered' | 'cancelled';
 export interface IDelivery {
   _id?: string;
   status?: ValidStatus;
-  orderId?: string;
+  orderId?: string | IOrderForDeliverySchema;
   userId?: string;
   startingLocation?: Cords;
   destinationLocation?: Cords;
@@ -36,9 +36,9 @@ export interface IDeliveryForOrderPopulation {
   updatedAt?: string;
 }
 
-export interface IDeliveryForTesting {
-  orderId: number;
-  address: string;
+export interface IOutputCreateDelivery {
+  deliveries: IDelivery[];
+  totalPackages: number;
 }
 
 export interface IDeliveryDocument extends IDelivery, Document {}

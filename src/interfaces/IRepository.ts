@@ -1,3 +1,4 @@
+import { IDelivery } from './Entities/IDelivery';
 import { BaseFilters } from './IFilters';
 
 export interface IRepository<T> {
@@ -6,6 +7,11 @@ export interface IRepository<T> {
   findById: (id: string, filters?: BaseFilters) => Promise<T>;
   update: (id: string, item: T) => Promise<T>;
   delete: (id: string) => Promise<void>;
+  getLastSwornStatement?: (userId: string) => Promise<T | null>;
+}
+
+export interface IDeliveryRepository extends IRepository<IDelivery> {
+  updateUserDeliveries: (userId: string, status: string) => Promise<IDelivery>;
 }
 
 export interface PaginationData<T> {

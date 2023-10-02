@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.S3UploadError = exports.DatabaseConnectionError = exports.ConflictError = exports.NotFoundError = exports.ForbiddenError = exports.UnauthorizedError = exports.InvalidTokenError = exports.BadRequestError = exports.ValidationError = exports.BadUserInputError = exports.EntityNotFoundError = exports.RouteNotFoundError = exports.CustomError = void 0;
+exports.S3UploadError = exports.DatabaseConnectionError = exports.ConflictError = exports.NotFoundError = exports.ForbiddenError = exports.UnauthorizedError = exports.InvalidTokenError = exports.BadRequestError = exports.ValidationError = exports.BadUserInputError = exports.EntityNotFoundError = exports.RouteNotFoundError = exports.NoContentError = exports.CustomError = void 0;
 class CustomError extends Error {
     constructor(message, code = 'INTERNAL_ERROR', status = 500, data = {}) {
         super();
@@ -11,6 +11,12 @@ class CustomError extends Error {
     }
 }
 exports.CustomError = CustomError;
+class NoContentError extends CustomError {
+    constructor(message) {
+        super(message, 'NO_CONTENT', 204);
+    }
+}
+exports.NoContentError = NoContentError;
 class RouteNotFoundError extends CustomError {
     constructor(originalUrl) {
         super(`Route '${originalUrl}' does not exist.`, 'ROUTE_NOT_FOUND', 404);
