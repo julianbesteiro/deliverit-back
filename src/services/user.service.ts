@@ -1,5 +1,5 @@
 import { generateToken } from '../utils/tokens';
-import { IUserDocument, IUserInput } from '../interfaces';
+import { IUser, IUserDocument, IUserInput, IUserUpdateOutput } from '../interfaces';
 import { UserRepository } from '../repository';
 import { UnauthorizedError } from '../errors/customErrors';
 import crypto from 'crypto';
@@ -37,8 +37,25 @@ class UserService {
     if (!isMatch) {
       throw new UnauthorizedError('Invalid credentials');
     }
+    const currentDate = new Date();
+    const lastSeenUpDate = new Date(user.lastSeenAt);
 
-    return this.generateUserToken(user);
+    if (
+      lastSeenUpDate.getDate() !== currentDate.getDate() ||
+      lastSeenUpDate.getMonth() !== currentDate.getMonth() ||
+      lastSeenUpDate.getFullYear() !== currentDate.getFullYear()
+    ) {
+      return await this.updateUser(user._id, {
+        enabled: false,
+        numberOfPacakagesPerDay: 0,
+        blockUntil: null,
+        lastSeenAt: currentDate,
+      });
+    }
+
+    return await this.updateUser(user._id, {
+      lastSeenAt: currentDate,
+    });
   }
 
   static async forgotPassword(email: string): Promise<void> {
@@ -86,10 +103,10 @@ class UserService {
       id: user._id,
       name: user.name,
       lastName: user.lastName,
-      email: user.email,
       role: user.role,
       enabled: user.enabled,
       blockUntil: user.blockUntil,
+      numberOfPacakagesPerDay: user.numberOfPacakagesPerDay,
       lastSeenAt: user.lastSeenAt,
       urlImage: user.urlImage,
     };
@@ -112,6 +129,14 @@ class UserService {
     user.passwordReset = undefined;
 
     await user.save();
+  }
+
+  static async updateUser(id: string, updateQuery: Partial<IUser>): Promise<IUserUpdateOutput> {
+    const userUpdated = await UserRepository.updateUserById(id, updateQuery);
+
+    const { token, user } = await this.generateUserToken(userUpdated);
+
+    return { user: user, token: token };
   }
 }
 

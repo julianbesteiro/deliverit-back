@@ -36,6 +36,11 @@ export interface IDeliveryForOrderPopulation {
   updatedAt?: string;
 }
 
+export interface IOutputCreateDelivery {
+  deliveries: IDelivery[];
+  totalPackages: number;
+}
+
 export interface IDeliveryDocument extends IDelivery, Document {}
 
 export interface IDeliveryModel extends Model<IDelivery> {}

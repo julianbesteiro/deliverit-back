@@ -1,9 +1,8 @@
 import Order from '../models/Order';
 import { IOrder, IOrderInput, OrderRepositoryFilters } from '../../src/interfaces/';
 import { EntityNotFoundError } from '../errors/customErrors';
-import OrderModel from '../models/Order';
-import { OrderRepositoryFiltersWithDeliveryDate } from '../../src/interfaces/IFiltersWithDeliveryDate';
 
+import { OrderRepositoryFiltersWithDeliveryDate } from '../../src/interfaces/IFiltersWithDeliveryDate';
 
 class OrderRepository {
   static async createOrder(order: IOrder) {
@@ -36,14 +35,12 @@ class OrderRepository {
       endDate = new Date(filters.deliveryDate);
       startDate.setUTCHours(0, 0, 0, 0);
       endDate.setUTCHours(23, 59, 59, 999);
-      console.log(startDate, endDate);
     } else {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
       startDate = today;
       endDate = new Date(today);
       endDate.setUTCHours(23, 59, 59, 999);
-      console.log(startDate, endDate);
     }
 
     const totalItems = await Order.countDocuments({
@@ -69,39 +66,39 @@ class OrderRepository {
   }
 
 
-static async findAll(
-  filters?: OrderRepositoryFiltersWithDeliveryDate,
-): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
-  const page = filters?.page || 1;
-  const limit = filters?.limit || 10;
-  const skip = (page - 1) * limit;
+  static async findAll(
+    filters?: OrderRepositoryFiltersWithDeliveryDate,
+  ): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10;
+    const skip = (page - 1) * limit;
 
-  const filter: OrderRepositoryFilters = {};
+    const filter: OrderRepositoryFilters = {};
 
-  if (filters?.deliveryDate) {
-    filter.deliveryDate = filters.deliveryDate;
-  }
-  if (filters?.status) {
-    filter.status = filters.status;
-  }
+    if (filters?.deliveryDate) {
+      filter.deliveryDate = filters.deliveryDate;
+    }
+    if (filters?.status) {
+      filter.status = filters.status;
+    }
 
-  const totalItems = await Order.countDocuments(filter);
+    const totalItems = await Order.countDocuments(filter);
 
-  const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(totalItems / limit);
 
   const query = Order.find(filter)
     .skip(skip)
     .limit(limit)
 
-  const orders = await query.exec();
+    const orders = await query.exec();
 
-  return {
-    data: orders,
-    page,
-    totalPages,
-    totalItems,
-  };
-}
+    return {
+      data: orders,
+      page,
+      totalPages,
+      totalItems,
+    };
+  }
 
 
   static async getOrder(orderId: string) {

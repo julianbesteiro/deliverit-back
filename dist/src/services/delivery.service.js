@@ -29,6 +29,18 @@ class DeliveryService {
     createDelivery(deliveryDTO) {
         return __awaiter(this, void 0, void 0, function* () {
             const { orders } = deliveryDTO;
+            const { data } = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+            });
+            const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
+                return acc + delivery.orderId.packagesQuantity;
+            }, 0);
+            const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
+                return acc + order.packagesQuantity;
+            }, 0);
+            if (totalPackagesInDeliveries + totalOrders > 10) {
+                throw new customErrors_1.BadUserInputError({ message: 'Maximum deliveries exceeded' });
+            }
             const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
                 const deliveryCreated = yield this.deliveryRepository.create({
                     orderId: order.orderId,

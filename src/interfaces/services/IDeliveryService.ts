@@ -1,4 +1,4 @@
-import { IDelivery } from '../Entities/IDelivery';
+import { IDelivery, IOutputCreateDelivery } from '../Entities/IDelivery';
 import { BaseFilters } from '../IFilters';
 import { PaginationData } from '../IRepository';
 import { IDeliveryUpdateInput } from '../inputs/IDeliveryInput';
@@ -12,7 +12,7 @@ export interface IDeliveryDTO {
 export interface IDeliveryService {
   getDelivery(id: string): Promise<IDelivery>;
   getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>>;
-  createDelivery(item: IDeliveryDTO): Promise<IDelivery | IDelivery[]>;
+  createDelivery(item: IDeliveryDTO): Promise<IOutputCreateDelivery>;
   updateDelivery(id: string, item: IDeliveryUpdateInput): Promise<IDelivery>;
   deleteDelivery(id: string): Promise<void>;
   canChangeStatus(
