@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = __importDefault(require("../../config/config"));
 const customErrors_1 = require("../errors/customErrors");
 class DeliveryService {
     constructor(deliveryRepository) {
@@ -38,7 +42,8 @@ class DeliveryService {
             const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
                 return acc + order.packagesQuantity;
             }, 0);
-            if (totalPackagesInDeliveries + totalOrders > 10) {
+            const totalPackages = totalPackagesInDeliveries + totalOrders;
+            if (totalPackages > config_1.default.constants.max_number_of_packages_per_day) {
                 throw new customErrors_1.BadUserInputError({ message: 'Maximum deliveries exceeded' });
             }
             const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
@@ -49,7 +54,7 @@ class DeliveryService {
                 return deliveryCreated;
             }));
             const deliveriesCreated = yield Promise.all(createPromises);
-            return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
+            return { deliveries: deliveriesCreated, totalPackages };
         });
     }
     updateDelivery(id, update) {

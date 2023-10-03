@@ -23,11 +23,15 @@ class DeliveryController {
             const { user } = req;
             const orders = body;
             const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(orders);
-            const deliveries = yield this.deliveryServices.createDelivery({
+            const { deliveries, totalPackages } = yield this.deliveryServices.createDelivery({
                 userId: user.id,
                 orders: ordersValidate,
             });
             services_1.OrderService.updateOrderStatus(ordersValidate, 'signed');
+            const { token } = yield services_1.UserService.updateUser(user.id, {
+                numberOfPacakagesPerDay: totalPackages,
+            });
+            res.setHeader('Authorization', `Bearer ${token}`);
             return res.status(201).json({
                 message: 'Deliveries created',
                 data: deliveries,
