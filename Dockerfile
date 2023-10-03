@@ -1,14 +1,15 @@
 FROM node:18-alpine
 
-RUN npm install --omit=dev
-RUN npm run build
-
+# Copiar los archivos de compilación y otros recursos necesarios
 COPY package*.json ./
 COPY dist ./dist
 COPY start.sh ./
 COPY .env .
-COPY start.sh /usr/local/bin/
 
+# Instalar las dependencias
+RUN npm install --omit=dev
+
+COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 5000
