@@ -28,7 +28,8 @@ class UserRepository {
     }
     static findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield User_1.default.findOne({ email });
+            const user = yield User_1.default.findOne({ email });
+            return user;
         });
     }
     static updateUserById(id, updateData) {

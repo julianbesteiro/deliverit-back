@@ -40,6 +40,7 @@ const envSchema = joi_1.default.object().keys({
     REFRESH_TOKEN_SECRET: joi_1.default.string().min(8).required(),
     REFRESH_TOKEN_EXPIRE: joi_1.default.string().required().default('1d'),
     REFRESH_TOKEN_COOKIE_NAME: joi_1.default.string().required().default('jid'),
+    MAX_NUMBER_OF_PACKAGES_PER_DAY: joi_1.default.number().required().default(5),
     DATABASE_LOCAL_URL: joi_1.default.string().required(),
     DATABASE_URL: joi_1.default.string().required(),
     DATABASE_URL_TEST: joi_1.default.string().required(),
@@ -66,6 +67,9 @@ const config = {
     },
     cors: {
         cors_origin: validatedEnv.CORS_ORIGIN,
+    },
+    constants: {
+        max_number_of_packages_per_day: validatedEnv.MAX_NUMBER_OF_PACKAGES_PER_DAY,
     },
     jwt: {
         access_token: {

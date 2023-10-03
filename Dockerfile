@@ -1,8 +1,7 @@
 FROM node:18-alpine
 
-# Instalar las dependencias
 RUN npm install --omit=dev
-RUN nmp run build
+RUN npm run build
 
 COPY package*.json ./
 COPY dist ./dist

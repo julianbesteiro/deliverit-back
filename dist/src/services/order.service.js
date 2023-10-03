@@ -17,11 +17,17 @@ class OrderService {
             return yield repository_1.OrderRepository.getOrder(id);
         });
     }
+    //----------------------------------------------------------------------------------------------
     static getOrders(filters) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield repository_1.OrderRepository.getOrders(filters);
+            const orders = yield repository_1.OrderRepository.findAll(filters);
+            return orders;
         });
     }
+    //----------------------------------------------------------------------------------------------
+    /*   static async getOrders(filters?: BaseFilters | undefined): Promise<PaginationData<IOrder>> {
+        return await OrderRepository.getOrders(filters);
+      } */
     static createOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.OrderRepository.createOrder(order);

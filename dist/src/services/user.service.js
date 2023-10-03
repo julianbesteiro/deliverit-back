@@ -44,7 +44,21 @@ class UserService {
             if (!isMatch) {
                 throw new customErrors_1.UnauthorizedError('Invalid credentials');
             }
-            return this.generateUserToken(user);
+            const currentDate = new Date();
+            const lastSeenUpDate = new Date(user.lastSeenAt);
+            if (lastSeenUpDate.getDate() !== currentDate.getDate() ||
+                lastSeenUpDate.getMonth() !== currentDate.getMonth() ||
+                lastSeenUpDate.getFullYear() !== currentDate.getFullYear()) {
+                return yield this.updateUser(user._id, {
+                    enabled: false,
+                    numberOfPacakagesPerDay: 0,
+                    blockUntil: null,
+                    lastSeenAt: currentDate,
+                });
+            }
+            return yield this.updateUser(user._id, {
+                lastSeenAt: currentDate,
+            });
         });
     }
     static forgotPassword(email) {
@@ -87,10 +101,10 @@ class UserService {
             id: user._id,
             name: user.name,
             lastName: user.lastName,
-            email: user.email,
             role: user.role,
             enabled: user.enabled,
             blockUntil: user.blockUntil,
+            numberOfPacakagesPerDay: user.numberOfPacakagesPerDay,
             lastSeenAt: user.lastSeenAt,
             urlImage: user.urlImage,
         };
@@ -109,6 +123,13 @@ class UserService {
             user.password = newPassword;
             user.passwordReset = undefined;
             yield user.save();
+        });
+    }
+    static updateUser(id, updateQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userUpdated = yield repository_1.UserRepository.updateUserById(id, updateQuery);
+            const { token, user } = yield this.generateUserToken(userUpdated);
+            return { user: user, token: token };
         });
     }
 }

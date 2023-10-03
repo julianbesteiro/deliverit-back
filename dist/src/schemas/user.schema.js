@@ -73,6 +73,10 @@ exports.userSchema = new mongoose_1.default.Schema({
         type: Date,
         default: null,
     },
+    numberOfPacakagesPerDay: {
+        type: Number,
+        default: 0,
+    },
     lastSeenAt: {
         type: Date,
         default: Date.now,
