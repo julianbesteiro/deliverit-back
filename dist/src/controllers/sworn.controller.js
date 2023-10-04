@@ -51,14 +51,6 @@ class SwornController {
                 user: userPublicData,
             });
         }));
-        this.deleteSworn = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            yield this.swornService.deleteSworn(id);
-            res.status(200).json({
-                success: true,
-                data: {},
-            });
-        }));
     }
 }
 exports.SwornController = SwornController;
