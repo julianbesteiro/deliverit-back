@@ -9,7 +9,7 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  // console.error('function', error);
+  console.error('debug:', error);
 
   if (error instanceof UnauthorizedError) {
     return res.status(401).send({ message: error.message });
@@ -29,10 +29,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (isErrorSafeForClient) {
     clientErrors = [error];
   } else if (Array.isArray(error)) {
-    // Si el error es un array, asume que ya contiene múltiples errores y úsalo
     clientErrors = error;
   } else {
-    // Si no es seguro o no es un array, crea un error genérico
     clientErrors = [
       {
         message: 'Something went wrong, please contact our support.',
