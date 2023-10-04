@@ -60,14 +60,8 @@ class SwornRepository implements IRepository<ISworn> {
       updatedAt: new Date(),
     };
   }
-  async delete(id: string): Promise<void> {
-    const swornDeleted = this.swornModel.findByIdAndDelete(id);
-
-    if (!swornDeleted) {
-      throw new BadUserInputError({ message: 'Sworn not deleted' });
-    }
-    return;
-  }
+  //eslint-disable-next-line
+  async delete(id: string, userId: string): Promise<void> {}
 }
 
 export default SwornRepository;

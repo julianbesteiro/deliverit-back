@@ -53,7 +53,8 @@ class DeliveryController {
         }));
         this.getDeliveries = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { query } = req;
-            const filters = yield (0, validationDelivery_1.validateDeliveryFilters)(query);
+            const { user } = req;
+            const filters = yield (0, validationDelivery_1.validateDeliveryFilters)(Object.assign(Object.assign({}, query), { userId: user.id }));
             let deliveries;
             if (Object.keys(filters).length === 0) {
                 deliveries = yield this.deliveryServices.getDeliveries();
@@ -105,10 +106,11 @@ class DeliveryController {
         }));
         this.deleteDelivery = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
+            const { user } = req;
             if (!(0, validateObjectId_1.validateObjectId)(id)) {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
-            yield this.deliveryServices.deleteDelivery(id);
+            yield this.deliveryServices.deleteDelivery(id, user.id);
             return res.status(204);
         }));
     }

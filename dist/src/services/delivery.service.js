@@ -33,9 +33,23 @@ class DeliveryService {
     createDelivery(deliveryDTO) {
         return __awaiter(this, void 0, void 0, function* () {
             const { orders } = deliveryDTO;
-            const { data } = yield this.getDeliveries({
+            const deliveriesPending = yield this.getDeliveries({
                 userId: deliveryDTO.userId,
+                status: 'pending',
             });
+            const deliveriesOnCourse = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+                status: 'on-course',
+            });
+            const deliveriesComplete = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+                status: 'delivered',
+            });
+            const data = [
+                ...deliveriesPending.data,
+                ...deliveriesOnCourse.data,
+                ...deliveriesComplete.data,
+            ];
             const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
                 return acc + delivery.orderId.packagesQuantity;
             }, 0);
@@ -99,12 +113,16 @@ class DeliveryService {
                     throw new customErrors_1.BadUserInputError({ message: 'Are a delivery in course' });
                 }
             }
+            console.log(delivery.userId, userId);
+            if (delivery.userId != userId) {
+                throw new customErrors_1.UnauthorizedError("You don't have permission to change this delivery");
+            }
             return input;
         });
     }
-    deleteDelivery(id) {
+    deleteDelivery(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedDelivery = this.deliveryRepository.delete(id);
+            const deletedDelivery = this.deliveryRepository.delete(id, userId);
             return deletedDelivery;
         });
     }

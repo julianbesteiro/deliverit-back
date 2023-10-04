@@ -31,11 +31,5 @@ class SwornService {
             return { sworn: newSworn, updatedUser };
         });
     }
-    deleteSworn(swornId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const deletedSworn = yield this.signSwornRepository.delete(swornId);
-            return deletedSworn;
-        });
-    }
 }
 exports.default = SwornService;

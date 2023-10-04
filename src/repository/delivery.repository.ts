@@ -1,7 +1,12 @@
 import { IRepository } from '../interfaces/IRepository';
 
 import { BaseFilters, DeliveryRepositoryFilters, IDelivery, IDeliveryModel } from '../interfaces';
-import { BadUserInputError, DatabaseConnectionError, NoContentError } from '../errors/customErrors';
+import {
+  BadUserInputError,
+  DatabaseConnectionError,
+  NoContentError,
+  UnauthorizedError,
+} from '../errors/customErrors';
 
 class DeliveryRepository implements IRepository<IDelivery> {
   constructor(private readonly deliveryModel: IDeliveryModel) {}
@@ -152,7 +157,13 @@ class DeliveryRepository implements IRepository<IDelivery> {
     return deliveryUpdated;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, userId: string): Promise<void> {
+    const existingDelivery = await this.deliveryModel.findById(id);
+
+    if (existingDelivery?.userId !== userId) {
+      throw new UnauthorizedError('You are not authorized to delete this delivery');
+    }
+
     await this.deliveryModel.findByIdAndDelete(id);
   }
 }

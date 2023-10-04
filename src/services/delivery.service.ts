@@ -1,5 +1,5 @@
 import config from '../../config/config';
-import { BadUserInputError } from '../errors/customErrors';
+import { BadUserInputError, UnauthorizedError } from '../errors/customErrors';
 import {
   DeliveryRepositoryFilters,
   IDelivery,
@@ -25,9 +25,26 @@ class DeliveryService implements IDeliveryService {
   async createDelivery(deliveryDTO: IDeliveryDTO): Promise<IOutputCreateDelivery> {
     const { orders } = deliveryDTO;
 
-    const { data } = await this.getDeliveries({
+    const deliveriesPending = await this.getDeliveries({
       userId: deliveryDTO.userId,
+      status: 'pending',
     });
+
+    const deliveriesOnCourse = await this.getDeliveries({
+      userId: deliveryDTO.userId,
+      status: 'on-course',
+    });
+
+    const deliveriesComplete = await this.getDeliveries({
+      userId: deliveryDTO.userId,
+      status: 'delivered',
+    });
+
+    const data = [
+      ...deliveriesPending.data,
+      ...deliveriesOnCourse.data,
+      ...deliveriesComplete.data,
+    ];
 
     const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
       return acc + (delivery.orderId as IOrderForDeliverySchema).packagesQuantity;
@@ -120,12 +137,17 @@ class DeliveryService implements IDeliveryService {
         throw new BadUserInputError({ message: 'Are a delivery in course' });
       }
     }
+    console.log(delivery.userId, userId);
+
+    if (delivery.userId != userId) {
+      throw new UnauthorizedError("You don't have permission to change this delivery");
+    }
 
     return input;
   }
 
-  async deleteDelivery(id: string): Promise<void> {
-    const deletedDelivery = this.deliveryRepository.delete(id);
+  async deleteDelivery(id: string, userId: string): Promise<void> {
+    const deletedDelivery = this.deliveryRepository.delete(id, userId);
     return deletedDelivery;
   }
 }

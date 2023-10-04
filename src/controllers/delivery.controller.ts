@@ -79,8 +79,9 @@ class DeliveryController {
       res: Response<PaginationDataResponse<IDelivery> | DataResponse<IDelivery>>,
     ) => {
       const { query } = req;
+      const { user } = req as RequestExpress;
 
-      const filters = await validateDeliveryFilters(query);
+      const filters = await validateDeliveryFilters({ ...query, userId: user.id });
 
       let deliveries: PaginationData<IDelivery>;
 
@@ -157,12 +158,12 @@ class DeliveryController {
 
   deleteDelivery = asyncHandler(async (req: Request, res: Response<DataResponse<IDelivery>>) => {
     const { id } = req.params;
-
+    const { user } = req as RequestExpress;
     if (!validateObjectId(id)) {
       throw new BadUserInputError({ id: 'Invalid id' });
     }
 
-    await this.deliveryServices.deleteDelivery(id);
+    await this.deliveryServices.deleteDelivery(id, user.id);
 
     return res.status(204);
   });

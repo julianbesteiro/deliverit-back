@@ -77,14 +77,9 @@ class SwornRepository {
             };
         });
     }
-    delete(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const swornDeleted = this.swornModel.findByIdAndDelete(id);
-            if (!swornDeleted) {
-                throw new customErrors_1.BadUserInputError({ message: 'Sworn not deleted' });
-            }
-            return;
-        });
+    //eslint-disable-next-line
+    delete(id, userId) {
+        return __awaiter(this, void 0, void 0, function* () { });
     }
 }
 exports.default = SwornRepository;
