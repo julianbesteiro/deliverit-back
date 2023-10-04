@@ -31,7 +31,9 @@ class DeliveryController {
 
       const orders: IOrderInput[] = body;
 
-      const ordersValidate = await validateOrdersInput(orders);
+      const ordersCheck = await OrderService.checkIfOrdersAreValid(orders);
+
+      const ordersValidate = await validateOrdersInput(ordersCheck);
 
       const { deliveries, totalPackages }: IOutputCreateDelivery =
         await this.deliveryServices.createDelivery({

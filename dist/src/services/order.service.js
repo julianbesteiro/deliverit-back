@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
+const customErrors_1 = require("../errors/customErrors");
 const repository_1 = require("../repository");
 class OrderService {
     static getOrder(id) {
@@ -17,17 +18,12 @@ class OrderService {
             return yield repository_1.OrderRepository.getOrder(id);
         });
     }
-    //----------------------------------------------------------------------------------------------
     static getOrders(filters) {
         return __awaiter(this, void 0, void 0, function* () {
             const orders = yield repository_1.OrderRepository.findAll(filters);
             return orders;
         });
     }
-    //----------------------------------------------------------------------------------------------
-    /*   static async getOrders(filters?: BaseFilters | undefined): Promise<PaginationData<IOrder>> {
-        return await OrderRepository.getOrders(filters);
-      } */
     static createOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.OrderRepository.createOrder(order);
@@ -51,6 +47,21 @@ class OrderService {
     static updateOrderStatus(orders, status) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield repository_1.OrderRepository.updateOrderStatus(orders, status);
+        });
+    }
+    static checkIfOrdersAreValid(orders) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ordersPromise = orders.map((orderInput) => __awaiter(this, void 0, void 0, function* () {
+                const orderFound = yield repository_1.OrderRepository.getOrder(orderInput.orderId);
+                if (!orderFound) {
+                    throw new customErrors_1.BadUserInputError({ message: `Order ${orderInput.orderId} not found` });
+                }
+                return { orderInput, orderFound };
+            }));
+            const results = yield Promise.all(ordersPromise);
+            const filteredOrders = results.filter(({ orderFound }) => orderFound.status === 'unassigned');
+            const ordersChecked = filteredOrders.map(({ orderInput }) => orderInput);
+            return ordersChecked;
         });
     }
 }

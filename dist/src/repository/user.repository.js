@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const User_1 = __importDefault(require("../models/User"));
+const customErrors_1 = require("../errors/customErrors");
 class UserRepository {
     static findUserById(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,16 +35,12 @@ class UserRepository {
     }
     static updateUserById(id, updateData) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedUser = yield User_1.default.findByIdAndUpdate(id, updateData, { new: true });
-                if (!updatedUser) {
-                    throw new Error('User not found');
-                }
-                return updatedUser;
+            console.log('id', id);
+            const updatedUser = yield User_1.default.findByIdAndUpdate(id, updateData, { new: true });
+            if (!updatedUser) {
+                throw new customErrors_1.CustomError('User not found', 404);
             }
-            catch (error) {
-                throw new Error('Error updating user');
-            }
+            return updatedUser;
         });
     }
 }

@@ -22,7 +22,8 @@ class DeliveryController {
             const { body } = req;
             const { user } = req;
             const orders = body;
-            const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(orders);
+            const ordersCheck = yield services_1.OrderService.checkIfOrdersAreValid(orders);
+            const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(ordersCheck);
             const { deliveries, totalPackages } = yield this.deliveryServices.createDelivery({
                 userId: user.id,
                 orders: ordersValidate,
