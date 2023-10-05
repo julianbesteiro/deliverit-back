@@ -1,22 +1,8 @@
 import mongoose from 'mongoose';
-import config from '../config';
+import currentEnv from '../config/index';
+import logger from '../src/logger';
 
-let MONGO_URL: string;
-
-switch (config.node_env) {
-  case 'development':
-    MONGO_URL = config.db.local_url;
-    break;
-  case 'production':
-    MONGO_URL = config.db.producction_url;
-    break;
-  case 'test':
-    MONGO_URL = config.db.test_url;
-    break;
-  default:
-    MONGO_URL = config.db.local_url;
-}
-
+const MONGO_URL = currentEnv.DATABASE_URL || '';
 /**
  * 0 = disconnected
  * 1 = Conenected
@@ -30,14 +16,14 @@ const mongoConnection = {
 
 export const connect = async () => {
   if (mongoConnection.isConnected) {
-    console.log('Ya estamos conectados');
+    logger.info('Ya estamos conectados');
     return;
   }
   if (mongoose.connections.length > 0) {
     mongoConnection.isConnected = mongoose.connections[0].readyState;
 
     if (mongoConnection.isConnected === 1) {
-      console.log('Usando Conexion Anterior');
+      logger.info('Usando Conexion Anterior');
       return;
     }
 
@@ -47,16 +33,16 @@ export const connect = async () => {
   await mongoose.connect(MONGO_URL || '');
 
   mongoConnection.isConnected = 1;
-  console.log('Conectado a MongoDb', MONGO_URL);
+  logger.info('Conectado a MongoDb', MONGO_URL);
 };
 
 export const disconnect = async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') return;
+  if (currentEnv.NODE_ENV === 'development' || currentEnv.NODE_ENV === 'production') return;
 
   if (mongoConnection.isConnected === 0) return;
 
   await mongoose.disconnect();
 
   mongoConnection.isConnected = 0;
-  console.log('Desconectado de MongoDB');
+  logger.info('Desconectado de MongoDB');
 };

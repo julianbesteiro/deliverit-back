@@ -14,7 +14,7 @@ export interface IDeliveryService {
   getDeliveries(filters?: BaseFilters): Promise<PaginationData<IDelivery>>;
   createDelivery(item: IDeliveryDTO): Promise<IOutputCreateDelivery>;
   updateDelivery(id: string, item: IDeliveryUpdateInput): Promise<IDelivery>;
-  deleteDelivery(id: string, userId: string): Promise<void>;
+  deleteDelivery(id: string): Promise<void>;
   canChangeStatus(
     userId: string,
     deliveryId: string,

@@ -3,7 +3,7 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT 
+      bearerFormat: JWT
 
   schemas:
     Order:
@@ -42,7 +42,7 @@ components:
           example: Juan Quiroz
         deliveryDate:
           type: date
-          example: '2020-10-10T00:00:00.000Z'
+          example: "2020-10-10T00:00:00.000Z"
 
 paths:
   /order/:
@@ -59,24 +59,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
           application/xml:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
         required: true
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'          
+                $ref: "#/components/schemas/Order"
             application/xml:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: "#/components/schemas/Order"
 
     get:
       tags:
@@ -92,7 +92,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
         404:
           description: Orders not found
 
@@ -116,7 +116,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/components/schemas/Order'
+            $ref: "#/components/schemas/Order"
         404:
           description: Order not found
 
@@ -140,19 +140,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
           application/xml:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Order'
+              $ref: "#/components/schemas/Order"
         required: true
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/components/schemas/Order'
+            $ref: "#/components/schemas/Order"
         404:
           description: Order not found
         400:
@@ -180,7 +180,7 @@ paths:
           description: Order data to update
           required: true
           schema:
-            $ref: '#/components/schemas/Order'
+            $ref: "#/components/schemas/Order"
           properties:
             id:
               type: integer
@@ -193,7 +193,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/components/schemas/Order'
+            $ref: "#/components/schemas/Order"
         404:
           description: Order not found
         400:

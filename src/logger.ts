@@ -1,6 +1,7 @@
 import * as winston from 'winston';
+import currentEnv from '../config';
 
-const dev = process.env.NODE_ENV !== 'production';
+const dev = currentEnv.NODE_ENV !== 'production';
 
 const logger = winston.createLogger({
   format: winston.format.simple(),

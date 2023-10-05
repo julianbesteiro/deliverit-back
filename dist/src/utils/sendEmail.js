@@ -15,10 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const googleapis_1 = require("googleapis");
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
+const index_1 = __importDefault(require("../../config/index"));
+const CLIENT_ID = index_1.default.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = index_1.default.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = index_1.default.GOOGLE_REDIRECT_URI;
+const REFRESH_TOKEN = index_1.default.GOOGLE_REFRESH_TOKEN;
 const oAuth2Client = new googleapis_1.google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({
     refresh_token: REFRESH_TOKEN,

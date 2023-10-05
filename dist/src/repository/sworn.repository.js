@@ -78,7 +78,7 @@ class SwornRepository {
         });
     }
     //eslint-disable-next-line
-    delete(id, userId) {
+    delete(id) {
         return __awaiter(this, void 0, void 0, function* () { });
     }
 }

@@ -126,11 +126,11 @@ class DeliveryRepository {
             return deliveryUpdated;
         });
     }
-    delete(id, userId) {
+    delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const existingDelivery = yield this.deliveryModel.findById(id);
-            if ((existingDelivery === null || existingDelivery === void 0 ? void 0 : existingDelivery.userId) !== userId) {
-                throw new customErrors_1.UnauthorizedError('You are not authorized to delete this delivery');
+            if (!existingDelivery) {
+                throw new customErrors_1.DatabaseConnectionError('Delivery not found');
             }
             yield this.deliveryModel.findByIdAndDelete(id);
         });

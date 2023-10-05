@@ -107,10 +107,13 @@ class DeliveryController {
         this.deleteDelivery = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const { user } = req;
+            if (user.role !== 'admin') {
+                throw new customErrors_1.UnauthorizedError('Unauthorized');
+            }
             if (!(0, validateObjectId_1.validateObjectId)(id)) {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
-            yield this.deliveryServices.deleteDelivery(id, user.id);
+            yield this.deliveryServices.deleteDelivery(id);
             return res.status(204);
         }));
     }

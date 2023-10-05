@@ -1,0 +1,255 @@
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    DeliveryDetailResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Delivery"
+        status:
+          type: integer
+    Delivery:
+      type: object
+      properties:
+        _id:
+          type: string
+        orderId:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+        startingDeliveryDate:
+          type: string
+        resolutionDeliveryDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        __v:
+          type: integer
+    OrderIpunt:
+      type: object
+      properties:
+        orderId:
+          type: string
+        packagesQuantity:
+          type: integer
+    DeliveryPaginated:
+      type: object
+      properties:
+        _id:
+          type: string
+        orderId:
+          $ref: "#/components/schemas/Order"
+        userId:
+          type: string
+        status:
+          type: string
+    Order:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+        address:
+          type: string
+        coords:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+        packagesQuantity:
+          type: integer
+        weight:
+          type: number
+        recipient:
+          type: string
+        deliveryDate:
+          type: string
+
+paths:
+  /delivery:
+    post:
+      tags:
+        - Delivery
+      summary: Crear entregas basadas en datos proporcionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/OrderIpunt"
+      responses:
+        "201":
+          description: Entregas creadas
+          content:
+            application/json:
+              example:
+                message: Entregas creadas
+                data:
+                  - _id: "651f1329ee1f901faf21a80b"
+                    orderId: "651dbd413bfa8318b5612ae6"
+                    userId: "651dbd113bfa8318b5612ae2"
+                    status: "pending"
+                    startingDeliveryDate: null
+                    resolutionDeliveryDate: null
+                    createdAt: "2023-10-05T19:48:57.323Z"
+                    updatedAt: "2023-10-05T19:48:57.323Z"
+                    __v: 0
+                  - _id: "651f1329ee1f901faf21a80d"
+                    orderId: "651dbd433bfa8318b5612ae8"
+                    userId: "651dbd113bfa8318b5612ae2"
+                    status: "pending"
+                    startingDeliveryDate: null
+                    resolutionDeliveryDate: null
+                    createdAt: "2023-10-05T19:48:57.327Z"
+                    updatedAt: "2023-10-05T19:48:57.327Z"
+                    __v: 0
+                  - _id: "651f1329ee1f901faf21a80f"
+                    orderId: "651dbd453bfa8318b5612aea"
+                    userId: "651dbd113bfa8318b5612ae2"
+                    status: "pending"
+                    startingDeliveryDate: null
+                    resolutionDeliveryDate: null
+                    createdAt: "2023-10-05T19:48:57.329Z"
+                    updatedAt: "2023-10-05T19:48:57.329Z"
+                    __v: 0
+        "400":
+          description: Solicitud inválida
+
+    /delivery/{delivery_id}:
+    put:
+      tags:
+        - Delivery
+      summary: Actualizar el estado de una entrega por ID.
+      parameters:
+        - in: path
+          name: delivery_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - pending
+      responses:
+        "200":
+          description: Estado de entrega actualizado con éxito.
+          content:
+      application/json:
+        example:
+          message: "Delivery updated"
+          data:
+            _id: "651f1329ee1f901faf21a80b"
+            orderId:
+              _id: "651dbd413bfa8318b5612ae6"
+              status: "signed"
+              address: "Los claveles"
+              coords:
+                lat: 22.3
+                lng: -15.0903
+              packagesQuantity: 2
+              weight: 22
+              recipient: "Luisa"
+              deliveryDate: "2023-09-29T00:00:00.000Z"
+            userId: "651dbd113bfa8318b5612ae2"
+            status: "pending"
+            startingDeliveryDate: null
+            resolutionDeliveryDate: null
+            createdAt: "2023-10-05T19:48:57.323Z"
+            updatedAt: "2023-10-05T19:48:57.323Z"
+            __v: 0
+          status: 200
+        "400":
+          description: Solicitud inválida. El estado debe ser "pending".
+        "404":
+          description: Entrega no encontrada.
+
+  /delivery/{delivery_id}:
+    get:
+      tags:
+        - Delivery
+      summary: Obtener información de entrega según el ID proporcionado.
+      parameters:
+        - in: path
+          name: delivery_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Entrega encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryDetailResponse"
+        "404":
+          description: Entrega no encontrada
+  /delivery/all:
+    get:
+      tags:
+        - Delivery
+      summary: Get deliveries with filters and pagination
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Filter deliveries by status (pending, on-course, cancelled, delivered)
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination
+      responses:
+        "200":
+          description: Deliveries found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  page:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DeliveryPaginated"
+                  totalItems:
+                    type: integer
+                  itemsPerPage:
+                    type: integer
+                  prevPage:
+                    type: integer
+                  nextPage:
+                    type: integer
+                  status:
+                    type: integer
+        "400":
+          description: Bad Request

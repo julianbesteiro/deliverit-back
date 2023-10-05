@@ -1,4 +1,4 @@
-import config from '../../config/config';
+import currentEnv from '../../config';
 import { BadUserInputError, UnauthorizedError } from '../errors/customErrors';
 import {
   DeliveryRepositoryFilters,
@@ -56,7 +56,7 @@ class DeliveryService implements IDeliveryService {
 
     const totalPackages = totalPackagesInDeliveries + totalOrders;
 
-    if (totalPackages > config.constants.max_number_of_packages_per_day) {
+    if (totalPackages > Number(currentEnv.MAX_NUMBER_OF_PACKAGES_PER_DAY)) {
       throw new BadUserInputError({ message: 'Maximum deliveries exceeded' });
     }
 
@@ -137,7 +137,6 @@ class DeliveryService implements IDeliveryService {
         throw new BadUserInputError({ message: 'Are a delivery in course' });
       }
     }
-    console.log(delivery.userId, userId);
 
     if (delivery.userId != userId) {
       throw new UnauthorizedError("You don't have permission to change this delivery");
@@ -146,8 +145,8 @@ class DeliveryService implements IDeliveryService {
     return input;
   }
 
-  async deleteDelivery(id: string, userId: string): Promise<void> {
-    const deletedDelivery = this.deliveryRepository.delete(id, userId);
+  async deleteDelivery(id: string): Promise<void> {
+    const deletedDelivery = this.deliveryRepository.delete(id);
     return deletedDelivery;
   }
 }

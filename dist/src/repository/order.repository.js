@@ -22,49 +22,6 @@ class OrderRepository {
             return newOrder;
         });
     }
-    static getOrders(filters) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const page = (filters === null || filters === void 0 ? void 0 : filters.page) || 1;
-            const limit = (filters === null || filters === void 0 ? void 0 : filters.limit) || 10;
-            const skip = (page - 1) * limit;
-            const filter = {};
-            if (filters === null || filters === void 0 ? void 0 : filters.userId) {
-                filter.userId = filters.userId;
-            }
-            if (filters === null || filters === void 0 ? void 0 : filters.status) {
-                filter.status = filters.status;
-            }
-            let startDate;
-            let endDate;
-            // Verifica si se especifica una fecha de entrega en el filtro
-            if (filters === null || filters === void 0 ? void 0 : filters.deliveryDate) {
-                startDate = new Date(filters.deliveryDate);
-                endDate = new Date(filters.deliveryDate);
-                startDate.setUTCHours(0, 0, 0, 0);
-                endDate.setUTCHours(23, 59, 59, 999);
-            }
-            else {
-                const today = new Date();
-                today.setUTCHours(0, 0, 0, 0);
-                startDate = today;
-                endDate = new Date(today);
-                endDate.setUTCHours(23, 59, 59, 999);
-            }
-            const totalItems = yield Order_1.default.countDocuments(Object.assign(Object.assign({}, filter), { deliveryDate: { $gte: startDate, $lte: endDate } }));
-            const totalPages = Math.ceil(totalItems / limit);
-            const query = Order_1.default.find(Object.assign(Object.assign({}, filter), { deliveryDate: { $gte: startDate, $lte: endDate } }))
-                .skip(skip)
-                .limit(limit)
-                .select('_id status userId address packagesQuantity weight');
-            const orders = yield query.exec();
-            return {
-                data: orders,
-                page,
-                totalPages,
-                totalItems,
-            };
-        });
-    }
     static findAll(filters) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = (filters === null || filters === void 0 ? void 0 : filters.page) || 1;
@@ -79,9 +36,7 @@ class OrderRepository {
             }
             const totalItems = yield Order_1.default.countDocuments(filter);
             const totalPages = Math.ceil(totalItems / limit);
-            const query = Order_1.default.find(filter)
-                .skip(skip)
-                .limit(limit);
+            const query = Order_1.default.find(filter).skip(skip).limit(limit);
             const orders = yield query.exec();
             return {
                 data: orders,
