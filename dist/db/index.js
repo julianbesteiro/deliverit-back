@@ -22,16 +22,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston = __importStar(require("winston"));
-const config_1 = __importDefault(require("../config"));
-const dev = config_1.default.NODE_ENV !== 'production';
-const logger = winston.createLogger({
-    format: winston.format.simple(),
-    level: dev ? 'debug' : 'info',
-    transports: [new winston.transports.Console()],
-});
-exports.default = logger;
+exports.db = void 0;
+exports.db = __importStar(require("./db"));

@@ -1,4 +1,4 @@
-import { BadUserInputError } from '../errors/customErrors';
+import { BadUserInputError, UnauthorizedError } from '../errors/customErrors';
 import {
   DataResponse,
   IDelivery,
@@ -159,11 +159,15 @@ class DeliveryController {
   deleteDelivery = asyncHandler(async (req: Request, res: Response<DataResponse<IDelivery>>) => {
     const { id } = req.params;
     const { user } = req as RequestExpress;
+    if (user.role !== 'admin') {
+      throw new UnauthorizedError('Unauthorized');
+    }
+
     if (!validateObjectId(id)) {
       throw new BadUserInputError({ id: 'Invalid id' });
     }
 
-    await this.deliveryServices.deleteDelivery(id, user.id);
+    await this.deliveryServices.deleteDelivery(id);
 
     return res.status(204);
   });

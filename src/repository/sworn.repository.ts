@@ -61,7 +61,7 @@ class SwornRepository implements IRepository<ISworn> {
     };
   }
   //eslint-disable-next-line
-  async delete(id: string, userId: string): Promise<void> {}
+  async delete(id: string): Promise<void> {}
 }
 
 export default SwornRepository;

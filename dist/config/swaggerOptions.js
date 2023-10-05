@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerOptions = void 0;
+const _1 = __importDefault(require("."));
 exports.swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -11,7 +15,7 @@ exports.swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:5000/api',
+                url: _1.default.SERVER_URL + '/api',
             },
         ],
         components: {
@@ -24,5 +28,11 @@ exports.swaggerOptions = {
             },
         },
     },
-    apis: ['./src/docs/user/*.yaml', './src/docs/admin/*.yaml', './src/docs/order/*.yaml', './src/docs/sworn/*.yaml'],
+    apis: [
+        './docs/user/*.yaml',
+        './docs/admin/*.yaml',
+        './docs/order/*.yaml',
+        './docs/sworn/*.yaml',
+        './docs/delivery/*.yaml',
+    ],
 };

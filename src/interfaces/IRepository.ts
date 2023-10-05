@@ -6,7 +6,7 @@ export interface IRepository<T> {
   findAll: (filters?: BaseFilters) => Promise<PaginationData<T>>;
   findById: (id: string, filters?: BaseFilters) => Promise<T>;
   update: (id: string, item: T) => Promise<T>;
-  delete: (id: string, userId: string) => Promise<void>;
+  delete: (id: string) => Promise<void>;
   getLastSwornStatement?: (userId: string) => Promise<T | null>;
 }
 

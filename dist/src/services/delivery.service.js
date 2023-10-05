@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("../../config/config"));
+const config_1 = __importDefault(require("../../config"));
 const customErrors_1 = require("../errors/customErrors");
 class DeliveryService {
     constructor(deliveryRepository) {
@@ -57,7 +57,7 @@ class DeliveryService {
                 return acc + order.packagesQuantity;
             }, 0);
             const totalPackages = totalPackagesInDeliveries + totalOrders;
-            if (totalPackages > config_1.default.constants.max_number_of_packages_per_day) {
+            if (totalPackages > Number(config_1.default.MAX_NUMBER_OF_PACKAGES_PER_DAY)) {
                 throw new customErrors_1.BadUserInputError({ message: 'Maximum deliveries exceeded' });
             }
             const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
@@ -113,16 +113,15 @@ class DeliveryService {
                     throw new customErrors_1.BadUserInputError({ message: 'Are a delivery in course' });
                 }
             }
-            console.log(delivery.userId, userId);
             if (delivery.userId != userId) {
                 throw new customErrors_1.UnauthorizedError("You don't have permission to change this delivery");
             }
             return input;
         });
     }
-    deleteDelivery(id, userId) {
+    deleteDelivery(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedDelivery = this.deliveryRepository.delete(id, userId);
+            const deletedDelivery = this.deliveryRepository.delete(id);
             return deletedDelivery;
         });
     }
