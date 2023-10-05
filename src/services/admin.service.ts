@@ -38,7 +38,7 @@ class AdminService {
         workerImage: worker.urlImage,
         status: valueCounts2[objectIdToString] ? 'active' : 'inactive',
         percentage: valueCounts[objectIdToString]
-          ? (valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100
+          ? Math.round((valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100)
           : 0,
       };
     });
@@ -54,14 +54,14 @@ class AdminService {
     const deliveredOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status === 'delivered')
       .map((delivery) => {
-        return { orderId: delivery.orderId?._id, address: delivery.orderId?.address };
+        return { deliveryId: delivery._id, address: delivery.orderId?.address };
       });
 
     const pendingOrders = workerDataById.workerOrders
       .filter((delivery) => delivery.status !== 'delivered')
       .map((delivery) => {
         return {
-          orderId: delivery.orderId?._id,
+          deliveryId: delivery._id,
           address: delivery.orderId?.address,
           status: delivery.status,
         };
