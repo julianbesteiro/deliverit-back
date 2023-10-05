@@ -17,7 +17,7 @@ spec:
         - host: admin.deliverit.tech
           http:
               paths:
-                  - path: '/'
+                  - path: "/"
                     pathType: Prefix
                     backend:
                         service:
@@ -27,7 +27,7 @@ spec:
         - host: api.deliverit.tech
           http:
               paths:
-                  - path: '/'
+                  - path: "/doc"
                     pathType: Prefix
                     backend:
                         service:
@@ -37,10 +37,10 @@ spec:
         - host: www.deliverit.tech
           http:
               paths:
-                  - path: '/'
+                  - path: "/"
                     pathType: Prefix
                     backend:
                         service:
                             name: deliverit-front-dealer-service
                             port:
-                                number: 80                               
+                                number: 80
