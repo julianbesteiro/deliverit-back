@@ -41,8 +41,9 @@ const config_1 = __importDefault(require("../config"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json({ limit: '50mb' }));
 // Express configuration
+console.log('currentEnv.CORS_ORIGIN', config_1.default.CORS_ORIGIN);
 app.use((0, cors_1.default)({
-    origin: config_1.default.CORS_ORIGIN,
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Authorization'],

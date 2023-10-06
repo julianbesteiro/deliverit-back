@@ -29,9 +29,11 @@ const app = express();
 app.use(express.json({ limit: '50mb' }));
 
 // Express configuration
+console.log('currentEnv.CORS_ORIGIN', currentEnv.CORS_ORIGIN);
+
 app.use(
   cors({
-    origin: currentEnv.CORS_ORIGIN,
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Authorization'],
