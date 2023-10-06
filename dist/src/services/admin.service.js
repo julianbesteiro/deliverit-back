@@ -134,7 +134,12 @@ class AdminService {
         return __awaiter(this, void 0, void 0, function* () {
             const objectId = new mongoose_1.default.Types.ObjectId(id);
             const updateResult = yield admin_repository_1.default.workerStatus(objectId);
-            return `Worker status updated to ${(updateResult === null || updateResult === void 0 ? void 0 : updateResult.enabled) ? 'active' : 'inactive'}`;
+            const newStatus = updateResult
+                ? Number(updateResult.blockUntil) > 86400000
+                    ? 'inactive'
+                    : 'active'
+                : 'Unknown status';
+            return `Worker status updated to ${newStatus}`;
         });
     }
 }

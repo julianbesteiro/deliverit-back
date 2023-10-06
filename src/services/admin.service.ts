@@ -135,7 +135,13 @@ class AdminService {
 
     const updateResult = await AdminRepository.workerStatus(objectId);
 
-    return `Worker status updated to ${updateResult?.enabled ? 'active' : 'inactive'}`;
+    const newStatus = updateResult
+      ? Number(updateResult.blockUntil) > 86400000
+        ? 'inactive'
+        : 'active'
+      : 'Unknown status';
+
+    return `Worker status updated to ${newStatus}`;
   }
 }
 
