@@ -120,11 +120,10 @@ class DeliveryController {
 
       const inputValidated: IDeliveryUpdateInput = await validateDeliveryUpdate(body);
 
-      const inputCheck: IDeliveryUpdateInput = await this.deliveryServices.canChangeStatus(
-        user.id,
-        deliveryId,
-        inputValidated,
-      );
+      const inputCheck: IDeliveryUpdateInput =
+        user.role === 'admin'
+          ? inputValidated
+          : await this.deliveryServices.canChangeStatus(user.id, deliveryId, inputValidated);
 
       const deliveryUpdated: IDelivery = await this.deliveryServices.updateDelivery(
         deliveryId,
@@ -169,7 +168,11 @@ class DeliveryController {
 
     await this.deliveryServices.deleteDelivery(id);
 
-    return res.status(204);
+    return res.status(204).json({
+      message: 'Delivery deleted',
+      data: null,
+      status: 204,
+    });
   });
 }
 

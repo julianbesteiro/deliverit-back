@@ -57,8 +57,14 @@ class AdminRepository {
             if (!workerData) {
                 throw new customErrors_1.ValidationError('Invalid id');
             }
-            const newStatus = !workerData.enabled;
-            yield User_1.default.updateOne({ _id: id }, { enabled: newStatus });
+            const blockUntil = workerData.blockUntil
+                ? Number(new Date(workerData.blockUntil))
+                : Number(new Date());
+            const differenceBetweenBlockUntilAndCurrentDate = blockUntil - Number(new Date());
+            const newBlockUntil = differenceBetweenBlockUntilAndCurrentDate > 86400000
+                ? null
+                : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+            yield User_1.default.updateOne({ _id: id }, { enabled: false, blockUntil: newBlockUntil });
             const updatedUser = yield User_1.default.findOne({ _id: id });
             return updatedUser;
         });
