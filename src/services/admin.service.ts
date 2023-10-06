@@ -58,7 +58,7 @@ class AdminService {
       });
 
     const pendingOrders = workerDataById.workerOrders
-      .filter((delivery) => delivery.status !== 'delivered')
+      .filter((delivery) => delivery.status !== 'delivered' && delivery.status !== 'cancelled')
       .map((delivery) => {
         return {
           deliveryId: delivery._id,

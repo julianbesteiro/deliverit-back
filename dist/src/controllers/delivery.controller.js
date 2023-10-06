@@ -84,7 +84,9 @@ class DeliveryController {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
             const inputValidated = yield (0, validationDelivery_1.validateDeliveryUpdate)(body);
-            const inputCheck = yield this.deliveryServices.canChangeStatus(user.id, deliveryId, inputValidated);
+            const inputCheck = user.role === 'admin'
+                ? inputValidated
+                : yield this.deliveryServices.canChangeStatus(user.id, deliveryId, inputValidated);
             const deliveryUpdated = yield this.deliveryServices.updateDelivery(deliveryId, inputCheck);
             if (inputCheck.status === 'cancelled') {
                 const updateOrder = yield services_1.OrderService.updateOrderStatus([
@@ -114,7 +116,11 @@ class DeliveryController {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }
             yield this.deliveryServices.deleteDelivery(id);
-            return res.status(204);
+            return res.status(204).json({
+                message: 'Delivery deleted',
+                data: null,
+                status: 204,
+            });
         }));
     }
 }
