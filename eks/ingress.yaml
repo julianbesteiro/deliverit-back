@@ -27,7 +27,7 @@ spec:
         - host: api.deliverit.tech
           http:
               paths:
-                  - path: "/doc"
+                  - path: "/"
                     pathType: Prefix
                     backend:
                         service:
