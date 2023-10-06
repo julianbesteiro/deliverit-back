@@ -44,10 +44,14 @@ class DeliveryRepository {
             if (filters === null || filters === void 0 ? void 0 : filters.userId) {
                 filter.userId = filters.userId;
             }
-            const totalItems = yield this.deliveryModel.countDocuments(filter);
+            // Agregamos el filtro de fecha para el día actual
+            const today = new Date();
+            const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+            const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+            const totalItems = yield this.deliveryModel.countDocuments(Object.assign(Object.assign({}, filter), { createdAt: { $gte: startOfDay, $lte: endOfDay } }));
             const totalPages = Math.ceil(totalItems / limit);
             const query = this.deliveryModel
-                .find(filter)
+                .find(Object.assign(Object.assign({}, filter), { createdAt: { $gte: startOfDay, $lte: endOfDay } }))
                 .skip(skip)
                 .limit(limit)
                 .select('status _id orderId userId')
@@ -76,7 +80,7 @@ class DeliveryRepository {
                     select: '_id status address coords.lat coords.lng packagesQuantity weight recipient deliveryDate',
                     model: 'Order',
                     options: {
-                        fields: 'order', // Cambia el nombre del campo en el JSON de salida
+                        fields: 'order',
                     },
                 });
                 if (!delivery) {
@@ -124,6 +128,10 @@ class DeliveryRepository {
     }
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            const existingDelivery = yield this.deliveryModel.findById(id);
+            if (!existingDelivery) {
+                throw new customErrors_1.DatabaseConnectionError('Delivery not found');
+            }
             yield this.deliveryModel.findByIdAndDelete(id);
         });
     }

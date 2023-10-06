@@ -1,3 +1,5 @@
+import currentEnv from '.';
+
 export const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -9,7 +11,7 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api',
+        url: currentEnv.SERVER_URL + '/api',
       },
     ],
     components: {
@@ -22,5 +24,11 @@ export const swaggerOptions = {
       },
     },
   },
-  apis: ['./src/docs/user/*.yaml', './src/docs/admin/*.yaml', './src/docs/order/*.yaml', './src/docs/sworn/*.yaml'],
+  apis: [
+    './docs/user/*.yaml',
+    './docs/admin/*.yaml',
+    './docs/order/*.yaml',
+    './docs/sworn/*.yaml',
+    './docs/delivery/*.yaml',
+  ],
 };

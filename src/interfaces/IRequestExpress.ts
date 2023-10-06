@@ -11,5 +11,6 @@ export interface RequestExpress extends Request {
     id: string;
     enabled: boolean;
     blockUntil?: Date;
+    role: string;
   };
 }

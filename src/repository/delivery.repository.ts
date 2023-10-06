@@ -153,6 +153,11 @@ class DeliveryRepository implements IRepository<IDelivery> {
   }
 
   async delete(id: string): Promise<void> {
+    const existingDelivery = await this.deliveryModel.findById(id);
+
+    if (!existingDelivery) {
+      throw new DatabaseConnectionError('Delivery not found');
+    }
     await this.deliveryModel.findByIdAndDelete(id);
   }
 }

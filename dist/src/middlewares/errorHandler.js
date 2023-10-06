@@ -4,7 +4,7 @@ exports.errorHandler = void 0;
 const customErrors_1 = require("../errors/customErrors");
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (error, _req, res, _next) => {
-    // console.error('function', error);
+    console.error('debug:', error);
     if (error instanceof customErrors_1.UnauthorizedError) {
         return res.status(401).send({ message: error.message });
     }
@@ -24,11 +24,9 @@ const errorHandler = (error, _req, res, _next) => {
         clientErrors = [error];
     }
     else if (Array.isArray(error)) {
-        // Si el error es un array, asume que ya contiene múltiples errores y úsalo
         clientErrors = error;
     }
     else {
-        // Si no es seguro o no es un array, crea un error genérico
         clientErrors = [
             {
                 message: 'Something went wrong, please contact our support.',

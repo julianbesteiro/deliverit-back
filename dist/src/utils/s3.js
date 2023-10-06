@@ -8,14 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadImageToS3 = void 0;
 const customErrors_1 = require("../errors/customErrors");
 const client_s3_1 = require("@aws-sdk/client-s3");
-const bucketName = process.env.AWS_BUCKET_NAME;
-const bucketRegion = process.env.AWS_BUCKET_REGION;
-const publicKey = process.env.AWS_PUBLIC_KEY;
-const secretKey = process.env.AWS_SECRET_KEY;
+const index_1 = __importDefault(require("../../config/index"));
+const bucketName = index_1.default.AWS_BUCKET_NAME;
+const bucketRegion = index_1.default.AWS_BUCKET_REGION;
+const publicKey = index_1.default.AWS_PUBLIC_KEY;
+const secretKey = index_1.default.AWS_SECRET_KEY;
 const s3 = new client_s3_1.S3Client({
     region: bucketRegion,
     credentials: {

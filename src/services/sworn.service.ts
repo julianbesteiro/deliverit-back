@@ -26,10 +26,6 @@ class SwornService implements ISwornService {
 
     return { sworn: newSworn, updatedUser };
   }
-  async deleteSworn(swornId: string): Promise<void> {
-    const deletedSworn = await this.signSwornRepository.delete(swornId);
-    return deletedSworn;
-  }
 }
 
 export default SwornService;

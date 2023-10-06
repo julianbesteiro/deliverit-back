@@ -30,6 +30,8 @@ OrderController.createOrder = (0, asyncHandler_1.asyncHandler)((req, res) => __a
         status: 201,
     });
 }));
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 OrderController.getOrders = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = req.query;
     let orders;

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateToken = exports.generateToken = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const customErrors_1 = require("../errors/customErrors");
-const config_1 = __importDefault(require("../../config/config"));
+const config_1 = __importDefault(require("../../config"));
 const getSecondsUntilMidnight = () => {
     const now = new Date();
     const midnight = new Date(now);
@@ -14,7 +14,7 @@ const getSecondsUntilMidnight = () => {
     return (midnight.getTime() - now.getTime()) / 1000;
 };
 const generateToken = (payload) => {
-    const secret = config_1.default.jwt.access_token.secret;
+    const secret = config_1.default.ACCESS_TOKEN_SECRET;
     const expirationTime = Math.floor(getSecondsUntilMidnight());
     try {
         const token = (0, jsonwebtoken_1.sign)({ user: payload }, secret, {
@@ -28,7 +28,7 @@ const generateToken = (payload) => {
 };
 exports.generateToken = generateToken;
 const validateToken = (token) => {
-    const user = (0, jsonwebtoken_1.verify)(token, config_1.default.jwt.access_token.secret);
+    const user = (0, jsonwebtoken_1.verify)(token, config_1.default.ACCESS_TOKEN_SECRET);
     return user;
 };
 exports.validateToken = validateToken;

@@ -22,12 +22,17 @@ class DeliveryController {
             const { body } = req;
             const { user } = req;
             const orders = body;
-            const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(orders);
-            const deliveries = yield this.deliveryServices.createDelivery({
+            const ordersCheck = yield services_1.OrderService.checkIfOrdersAreValid(orders);
+            const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(ordersCheck);
+            const { deliveries, totalPackages } = yield this.deliveryServices.createDelivery({
                 userId: user.id,
                 orders: ordersValidate,
             });
             services_1.OrderService.updateOrderStatus(ordersValidate, 'signed');
+            const { token } = yield services_1.UserService.updateUser(user.id, {
+                numberOfPacakagesPerDay: totalPackages,
+            });
+            res.setHeader('Authorization', `Bearer ${token}`);
             return res.status(201).json({
                 message: 'Deliveries created',
                 data: deliveries,
@@ -48,7 +53,8 @@ class DeliveryController {
         }));
         this.getDeliveries = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { query } = req;
-            const filters = yield (0, validationDelivery_1.validateDeliveryFilters)(query);
+            const { user } = req;
+            const filters = yield (0, validationDelivery_1.validateDeliveryFilters)(Object.assign(Object.assign({}, query), { userId: user.id }));
             let deliveries;
             if (Object.keys(filters).length === 0) {
                 deliveries = yield this.deliveryServices.getDeliveries();
@@ -100,6 +106,10 @@ class DeliveryController {
         }));
         this.deleteDelivery = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
+            const { user } = req;
+            if (user.role !== 'admin') {
+                throw new customErrors_1.UnauthorizedError('Unauthorized');
+            }
             if (!(0, validateObjectId_1.validateObjectId)(id)) {
                 throw new customErrors_1.BadUserInputError({ id: 'Invalid id' });
             }

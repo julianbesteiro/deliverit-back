@@ -1,4 +1,4 @@
-import { BadUserInputError } from '../errors/customErrors';
+import { BadUserInputError, UnauthorizedError } from '../errors/customErrors';
 import {
   DataResponse,
   IDelivery,
@@ -31,7 +31,9 @@ class DeliveryController {
 
       const orders: IOrderInput[] = body;
 
-      const ordersValidate = await validateOrdersInput(orders);
+      const ordersCheck = await OrderService.checkIfOrdersAreValid(orders);
+
+      const ordersValidate = await validateOrdersInput(ordersCheck);
 
       const { deliveries, totalPackages }: IOutputCreateDelivery =
         await this.deliveryServices.createDelivery({
@@ -77,8 +79,9 @@ class DeliveryController {
       res: Response<PaginationDataResponse<IDelivery> | DataResponse<IDelivery>>,
     ) => {
       const { query } = req;
+      const { user } = req as RequestExpress;
 
-      const filters = await validateDeliveryFilters(query);
+      const filters = await validateDeliveryFilters({ ...query, userId: user.id });
 
       let deliveries: PaginationData<IDelivery>;
 
@@ -155,6 +158,10 @@ class DeliveryController {
 
   deleteDelivery = asyncHandler(async (req: Request, res: Response<DataResponse<IDelivery>>) => {
     const { id } = req.params;
+    const { user } = req as RequestExpress;
+    if (user.role !== 'admin') {
+      throw new UnauthorizedError('Unauthorized');
+    }
 
     if (!validateObjectId(id)) {
       throw new BadUserInputError({ id: 'Invalid id' });

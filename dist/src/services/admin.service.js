@@ -47,7 +47,7 @@ class AdminService {
                     workerImage: worker.urlImage,
                     status: valueCounts2[objectIdToString] ? 'active' : 'inactive',
                     percentage: valueCounts[objectIdToString]
-                        ? (valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100
+                        ? Math.round((valueCounts2[objectIdToString] / valueCounts[objectIdToString]) * 100)
                         : 0,
                 };
             });
@@ -61,16 +61,16 @@ class AdminService {
             const deliveredOrders = workerDataById.workerOrders
                 .filter((delivery) => delivery.status === 'delivered')
                 .map((delivery) => {
-                var _a, _b;
-                return { orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id, address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address };
+                var _a;
+                return { deliveryId: delivery._id, address: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a.address };
             });
             const pendingOrders = workerDataById.workerOrders
                 .filter((delivery) => delivery.status !== 'delivered')
                 .map((delivery) => {
-                var _a, _b;
+                var _a;
                 return {
-                    orderId: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a._id,
-                    address: (_b = delivery.orderId) === null || _b === void 0 ? void 0 : _b.address,
+                    deliveryId: delivery._id,
+                    address: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a.address,
                     status: delivery.status,
                 };
             });

@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = __importDefault(require("../../config"));
 const customErrors_1 = require("../errors/customErrors");
 class DeliveryService {
     constructor(deliveryRepository) {
@@ -29,16 +33,31 @@ class DeliveryService {
     createDelivery(deliveryDTO) {
         return __awaiter(this, void 0, void 0, function* () {
             const { orders } = deliveryDTO;
-            const { data } = yield this.getDeliveries({
+            const deliveriesPending = yield this.getDeliveries({
                 userId: deliveryDTO.userId,
+                status: 'pending',
             });
+            const deliveriesOnCourse = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+                status: 'on-course',
+            });
+            const deliveriesComplete = yield this.getDeliveries({
+                userId: deliveryDTO.userId,
+                status: 'delivered',
+            });
+            const data = [
+                ...deliveriesPending.data,
+                ...deliveriesOnCourse.data,
+                ...deliveriesComplete.data,
+            ];
             const totalPackagesInDeliveries = data.reduce((acc, delivery) => {
                 return acc + delivery.orderId.packagesQuantity;
             }, 0);
             const totalOrders = deliveryDTO.orders.reduce((acc, order) => {
                 return acc + order.packagesQuantity;
             }, 0);
-            if (totalPackagesInDeliveries + totalOrders > 10) {
+            const totalPackages = totalPackagesInDeliveries + totalOrders;
+            if (totalPackages > Number(config_1.default.MAX_NUMBER_OF_PACKAGES_PER_DAY)) {
                 throw new customErrors_1.BadUserInputError({ message: 'Maximum deliveries exceeded' });
             }
             const createPromises = orders.map((order) => __awaiter(this, void 0, void 0, function* () {
@@ -49,7 +68,7 @@ class DeliveryService {
                 return deliveryCreated;
             }));
             const deliveriesCreated = yield Promise.all(createPromises);
-            return deliveriesCreated.length === 1 ? deliveriesCreated[0] : deliveriesCreated;
+            return { deliveries: deliveriesCreated, totalPackages };
         });
     }
     updateDelivery(id, update) {
@@ -93,6 +112,9 @@ class DeliveryService {
                 if (deliveries.data.length > 0) {
                     throw new customErrors_1.BadUserInputError({ message: 'Are a delivery in course' });
                 }
+            }
+            if (delivery.userId != userId) {
+                throw new customErrors_1.UnauthorizedError("You don't have permission to change this delivery");
             }
             return input;
         });

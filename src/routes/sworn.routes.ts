@@ -11,6 +11,5 @@ const swornService = new SwornService(swornRepository);
 const swornController = new SwornController(swornService);
 
 router.post('/', swornController.createSworn);
-router.delete('/:id', swornController.deleteSworn);
 
 export { router as swornRouter };

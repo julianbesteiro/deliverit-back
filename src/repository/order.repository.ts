@@ -10,62 +10,6 @@ class OrderRepository {
     return newOrder;
   }
 
-  static async getOrders(
-    filters?: OrderRepositoryFilters,
-  ): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
-    const page = filters?.page || 1;
-    const limit = filters?.limit || 10;
-    const skip = (page - 1) * limit;
-
-    const filter: OrderRepositoryFilters = {};
-
-    if (filters?.userId) {
-      filter.userId = filters.userId;
-    }
-    if (filters?.status) {
-      filter.status = filters.status;
-    }
-
-    let startDate: Date;
-    let endDate: Date;
-
-    // Verifica si se especifica una fecha de entrega en el filtro
-    if (filters?.deliveryDate) {
-      startDate = new Date(filters.deliveryDate);
-      endDate = new Date(filters.deliveryDate);
-      startDate.setUTCHours(0, 0, 0, 0);
-      endDate.setUTCHours(23, 59, 59, 999);
-    } else {
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
-      startDate = today;
-      endDate = new Date(today);
-      endDate.setUTCHours(23, 59, 59, 999);
-    }
-
-    const totalItems = await Order.countDocuments({
-      ...filter,
-      deliveryDate: { $gte: startDate, $lte: endDate },
-    });
-
-    const totalPages = Math.ceil(totalItems / limit);
-
-    const query = Order.find({ ...filter, deliveryDate: { $gte: startDate, $lte: endDate } })
-      .skip(skip)
-      .limit(limit)
-      .select('_id status userId address packagesQuantity weight');
-
-    const orders = await query.exec();
-
-    return {
-      data: orders,
-      page,
-      totalPages,
-      totalItems,
-    };
-  }
-
-
   static async findAll(
     filters?: OrderRepositoryFiltersWithDeliveryDate,
   ): Promise<{ data: IOrder[]; page: number; totalPages: number; totalItems: number }> {
@@ -86,9 +30,7 @@ class OrderRepository {
 
     const totalPages = Math.ceil(totalItems / limit);
 
-  const query = Order.find(filter)
-    .skip(skip)
-    .limit(limit)
+    const query = Order.find(filter).skip(skip).limit(limit);
 
     const orders = await query.exec();
 
@@ -99,7 +41,6 @@ class OrderRepository {
       totalItems,
     };
   }
-
 
   static async getOrder(orderId: string) {
     const order = await Order.findById(orderId);

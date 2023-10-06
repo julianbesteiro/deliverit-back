@@ -1,7 +1,7 @@
 import { sign, verify } from 'jsonwebtoken';
 import { CustomError } from '../errors/customErrors';
-import config from '../../config/config';
 import { Payload } from '../interfaces/IPayload';
+import currentEnv from '../../config';
 
 const getSecondsUntilMidnight = (): number => {
   const now = new Date();
@@ -11,7 +11,7 @@ const getSecondsUntilMidnight = (): number => {
 };
 
 const generateToken = (payload: Payload): string => {
-  const secret = config.jwt.access_token.secret as string;
+  const secret = currentEnv.ACCESS_TOKEN_SECRET as string;
   const expirationTime = Math.floor(getSecondsUntilMidnight());
 
   try {
@@ -26,7 +26,7 @@ const generateToken = (payload: Payload): string => {
 };
 
 const validateToken = (token: string) => {
-  const user = verify(token, config.jwt.access_token.secret as string);
+  const user = verify(token, currentEnv.ACCESS_TOKEN_SECRET as string);
   return user;
 };
 
