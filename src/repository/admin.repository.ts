@@ -47,9 +47,17 @@ class AdminRepository {
       throw new ValidationError('Invalid id');
     }
 
-    const newStatus = !workerData.enabled;
+    const blockUntil = workerData.blockUntil
+      ? Number(new Date(workerData.blockUntil))
+      : Number(new Date());
 
-    await UserModel.updateOne({ _id: id }, { enabled: newStatus });
+    const differenceBetweenBlockUntilAndCurrentDate = blockUntil - Number(new Date());
+    const newBlockUntil =
+      differenceBetweenBlockUntilAndCurrentDate > 86400000
+        ? null
+        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+
+    await UserModel.updateOne({ _id: id }, { enabled: false, blockUntil: newBlockUntil });
 
     const updatedUser = await UserModel.findOne({ _id: id });
 
