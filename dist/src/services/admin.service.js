@@ -65,7 +65,7 @@ class AdminService {
                 return { deliveryId: delivery._id, address: (_a = delivery.orderId) === null || _a === void 0 ? void 0 : _a.address };
             });
             const pendingOrders = workerDataById.workerOrders
-                .filter((delivery) => delivery.status !== 'delivered')
+                .filter((delivery) => delivery.status !== 'delivered' && delivery.status !== 'cancelled')
                 .map((delivery) => {
                 var _a;
                 return {
