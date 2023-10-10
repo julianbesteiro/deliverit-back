@@ -17,6 +17,7 @@ import {
   validateDeliveryUpdate,
   validateOrdersInput,
 } from '../utils/validationDelivery';
+import { isBlockedByAdmin } from '../utils/isBlockedByAdmin';
 import { RequestExpress } from '../interfaces/IRequestExpress';
 import { OrderService, UserService } from '../services';
 import { IOrderForDeliverySchema } from '../interfaces/Entities/IOrder';
@@ -30,6 +31,8 @@ class DeliveryController {
       const { user } = req as RequestExpress;
 
       const orders: IOrderInput[] = body;
+
+      await isBlockedByAdmin(user.id);
 
       const ordersCheck = await OrderService.checkIfOrdersAreValid(orders);
 

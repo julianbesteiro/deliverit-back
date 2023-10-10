@@ -67,9 +67,13 @@ class AdminService {
         };
       });
 
+    const blockUntil = workerDataById.workerData.blockUntil
+      ? Number(new Date(workerDataById.workerData.blockUntil))
+      : Number(new Date());
+
     return {
       workerId: workerDataById.workerData.name,
-      status: workerDataById.workerData.enabled ? 'active' : 'inactive',
+      status: blockUntil - Number(new Date()) > 86400000 ? 'inactive' : 'active',
       urlImage: workerDataById.workerData.urlImage,
       deliveredOrders: deliveredOrders,
       pendingOrders: pendingOrders,
