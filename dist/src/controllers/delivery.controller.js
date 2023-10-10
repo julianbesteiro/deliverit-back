@@ -14,6 +14,7 @@ const customErrors_1 = require("../errors/customErrors");
 const asyncHandler_1 = require("../utils/asyncHandler"); // Ajusta la ruta según la estructura de carpetas
 const validateObjectId_1 = require("../utils/validateObjectId");
 const validationDelivery_1 = require("../utils/validationDelivery");
+const isBlockedByAdmin_1 = require("../utils/isBlockedByAdmin");
 const services_1 = require("../services");
 class DeliveryController {
     constructor(deliveryServices) {
@@ -22,6 +23,7 @@ class DeliveryController {
             const { body } = req;
             const { user } = req;
             const orders = body;
+            yield (0, isBlockedByAdmin_1.isBlockedByAdmin)(user.id);
             const ordersCheck = yield services_1.OrderService.checkIfOrdersAreValid(orders);
             const ordersValidate = yield (0, validationDelivery_1.validateOrdersInput)(ordersCheck);
             const { deliveries, totalPackages } = yield this.deliveryServices.createDelivery({
